@@ -12,7 +12,6 @@ import {
   eyeOutline,
   eyeOffOutline,
   arrowForwardOutline,
-  receiptOutline,
   shieldCheckmarkOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
@@ -184,15 +183,6 @@ export const LoginPage: React.FC = () => {
                     Regístrate aquí
                   </button>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => history.push("/home")}
-                  className="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-700 flex items-center justify-center gap-2 border border-slate-200/80 transition-colors"
-                >
-                  <IonIcon icon={receiptOutline} className="text-sm text-[#f2720c]" />
-                  <span>Facturar ticket sin iniciar sesión</span>
-                </button>
               </div>
             </div>
 

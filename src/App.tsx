@@ -11,6 +11,7 @@ import { IonReactRouter } from "@ionic/react-router";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { PwaInstallGate } from "./components/PwaInstallGate";
 import { MenuLateral } from "./components/MenuLateral";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -87,8 +88,8 @@ function UpdatePrompt() {
 }
 
 const RootRedirect: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-  return <Redirect to={isAuthenticated ? "/home" : "/login"} />;
+  const { isAuthenticated, token } = useAuth();
+  return <Redirect to={isAuthenticated && token ? "/home" : "/login"} />;
 };
 
 const App: React.FC = () => (
@@ -103,8 +104,9 @@ const App: React.FC = () => (
             <Route exact path="/login" component={LoginPage} />
             <Route exact path="/registro" component={RegisterPage} />
             <Route exact path="/recuperar" component={ForgotPasswordPage} />
-            <Route exact path="/home" component={Home} />
+            <ProtectedRoute exact path="/home" component={Home} />
             <Route exact path="/" component={RootRedirect} />
+            <Route render={() => <RootRedirect />} />
           </IonRouterOutlet>
         </IonReactRouter>
       </PwaInstallGate>
