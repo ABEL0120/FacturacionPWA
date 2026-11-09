@@ -16,7 +16,7 @@ import {
   fingerPrintOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { TrompoLogo } from "../components/TrompoLogo";
+import { VentioLogo } from "../components/VentioLogo";
 import { useAuth } from "../context/AuthContext";
 import { passkeyService } from "../services/passkeyService";
 
@@ -114,14 +114,14 @@ export const LoginPage: React.FC = () => {
         <div className="min-h-full flex flex-col justify-between py-6 px-4 sm:px-6 lg:px-8">
           <div className="w-full max-w-md mx-auto my-auto space-y-6">
             <div className="text-center space-y-2">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#142642] shadow-xl shadow-slate-900/10 border-4 border-white mb-2">
-                <TrompoLogo className="w-12 h-12 drop-shadow-md" />
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#010080] shadow-xl shadow-[#010080]/20 border-4 border-white mb-2">
+                <VentioLogo className="w-12 h-12 drop-shadow-md" variant="white" />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-[#142642] tracking-tight uppercase">
-                EL TIZONCITO
+              <h1 className="text-2xl sm:text-3xl font-black text-[#010080] tracking-tight uppercase">
+                VENTIO
               </h1>
-              <p className="text-xs font-bold tracking-widest text-[#f2720c] uppercase">
-                Facturación en Línea
+              <p className="text-xs font-bold tracking-widest text-[#0b5ed7] uppercase">
+                Facturación Electrónica CFDI 4.0
               </p>
             </div>
 
@@ -149,7 +149,7 @@ export const LoginPage: React.FC = () => {
                       value={usuario}
                       onChange={(e) => setUsuario(e.target.value)}
                       placeholder="ejemplo@correo.com"
-                      className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export const LoginPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => history.push("/recuperar")}
-                      className="text-[11px] font-bold text-[#f2720c] hover:underline"
+                      className="text-[11px] font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline transition-colors"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
@@ -176,7 +176,7 @@ export const LoginPage: React.FC = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                     />
                     <button
                       type="button"
@@ -194,14 +194,17 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading || passkeyLoading}
-                  className="w-full h-12 bg-[#142642] hover:bg-[#1a3258] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                  className="w-full h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                 >
                   {loading ? (
                     <IonSpinner name="dots" className="text-white h-5" />
                   ) : (
                     <>
                       <span>Ingresar con Contraseña</span>
-                      <IonIcon icon={arrowForwardOutline} className="text-base" />
+                      <IonIcon
+                        icon={arrowForwardOutline}
+                        className="text-base"
+                      />
                     </>
                   )}
                 </button>
@@ -221,14 +224,17 @@ export const LoginPage: React.FC = () => {
                     type="button"
                     disabled={passkeyLoading || loading}
                     onClick={handlePasskeyLogin}
-                    className="w-full h-12 bg-slate-50 hover:bg-slate-100 active:scale-[0.99] border-2 border-slate-200 hover:border-[#142642] text-[#142642] font-black text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full h-12 bg-slate-50 hover:bg-[#eef5ff] active:scale-[0.99] border-2 border-slate-200 hover:border-[#0b5ed7] text-[#010080] font-black text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {passkeyLoading ? (
-                      <IonSpinner name="dots" className="text-[#142642] h-5" />
+                      <IonSpinner name="dots" className="text-[#010080] h-5" />
                     ) : (
                       <>
-                        <IonIcon icon={fingerPrintOutline} className="text-xl text-[#f2720c]" />
-                        <span>Iniciar con Passkey / Huella</span>
+                        <IonIcon
+                          icon={fingerPrintOutline}
+                          className="text-xl text-[#0b5ed7]"
+                        />
+                        <span>Iniciar con Passkey</span>
                       </>
                     )}
                   </button>
@@ -241,7 +247,7 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.push("/registro")}
-                    className="font-bold text-[#142642] hover:underline"
+                    className="font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline"
                   >
                     Regístrate aquí
                   </button>
@@ -250,8 +256,11 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-center gap-1.5 text-slate-400 text-[11px] font-medium">
-              <IonIcon icon={shieldCheckmarkOutline} className="text-sm text-emerald-500" />
-              <span>Conexión segura SSL CFDI 4.0 con Passkey</span>
+              <IonIcon
+                icon={shieldCheckmarkOutline}
+                className="text-sm text-[#0b5ed7]"
+              />
+              <span>Conexión segura Ventio SSL CFDI 4.0</span>
             </div>
           </div>
         </div>

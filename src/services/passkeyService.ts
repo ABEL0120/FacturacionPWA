@@ -66,7 +66,7 @@ export const passkeyService = {
     const optionsJSON: any = {
       challenge: challengeBase64,
       rp: {
-        name: "El Tizoncito Facturación",
+        name: "Facturación Ventio",
         id: window.location.hostname,
       },
       user: {
@@ -122,7 +122,7 @@ export const passkeyService = {
     const authResponse = await startAuthentication({ optionsJSON });
 
     const saved = passkeyService.getSavedPasskeyData();
-    const usuario = saved?.usuario || "usuario_passkey@eltizoncito.com";
+    const usuario = saved?.usuario || "usuario_passkey@ventio.com";
     const nombre = saved?.nombre || "Usuario Passkey";
 
     return {

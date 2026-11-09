@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
     );
-    const simulatedSignature = btoa("jwt_secret_tizoncito_token");
+    const simulatedSignature = btoa("jwt_secret_ventio_token");
     const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
 
     const session: UserSession = {
@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
     );
-    const simulatedSignature = btoa("jwt_secret_tizoncito_token");
+    const simulatedSignature = btoa("jwt_secret_ventio_token");
     const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
 
     const session: UserSession = {
@@ -135,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
     );
-    const simulatedSignature = btoa("jwt_secret_tizoncito_token");
+    const simulatedSignature = btoa("jwt_secret_ventio_token");
     const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
 
     const session: UserSession = {

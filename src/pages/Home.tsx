@@ -12,7 +12,7 @@ import {
 import { useHistory } from "react-router-dom";
 import { logOutOutline, logInOutline } from "ionicons/icons";
 import { facturacionApi, TicketBusquedaParams } from "../api/facturacionApi";
-import { TrompoLogo } from "../components/TrompoLogo";
+import { VentioLogo } from "../components/VentioLogo";
 import { useAuth } from "../context/AuthContext";
 
 export const Home: React.FC = () => {
@@ -53,7 +53,7 @@ export const Home: React.FC = () => {
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar className="tizoncito-toolbar px-2 py-1">
+        <IonToolbar className="ventio-toolbar px-2 py-1">
           <IonButtons slot="start">
             <IonMenuButton
               autoHide={false}
@@ -62,13 +62,13 @@ export const Home: React.FC = () => {
             />
           </IonButtons>
           <div className="flex items-center gap-3">
-            <TrompoLogo className="w-8 h-8 shrink-0 drop-shadow" />
+            <VentioLogo className="w-8 h-8 shrink-0 drop-shadow" variant="white" />
             <div className="flex flex-col leading-tight">
               <span className="text-base sm:text-lg font-black tracking-wider uppercase text-white font-sans">
-                EL TIZONCITO
+                VENTIO
               </span>
-              <span className="text-[9px] sm:text-[10px] tracking-wider text-orange-400 font-bold uppercase">
-                LOS CREADORES DEL TACO AL PASTOR
+              <span className="text-[9px] sm:text-[10px] tracking-wider text-[#38bdf8] font-bold uppercase">
+                FACTURACIÓN ELECTRÓNICA CFDI 4.0
               </span>
             </div>
           </div>
@@ -89,7 +89,7 @@ export const Home: React.FC = () => {
               <button
                 type="button"
                 onClick={() => history.push("/login")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f2720c] hover:bg-[#d96508] text-white text-xs font-bold transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0b5ed7] hover:bg-[#0a58ca] text-white text-xs font-bold transition-colors shadow-sm"
               >
                 <IonIcon icon={logInOutline} className="text-sm" />
                 <span>Acceder</span>
@@ -104,11 +104,15 @@ export const Home: React.FC = () => {
           {isAuthenticated && user && (
             <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl">
               <div>
-                <p className="text-xs text-slate-500 font-medium">Sesión iniciada como:</p>
-                <p className="text-sm font-black text-slate-800">{user.nombre || user.email}</p>
+                <p className="text-xs text-slate-500 font-medium">
+                  Sesión iniciada como:
+                </p>
+                <p className="text-sm font-black text-slate-800">
+                  {user.nombre || user.email}
+                </p>
               </div>
               {user.rfc && (
-                <span className="px-2.5 py-1 bg-[#142642] text-white text-[11px] font-bold rounded-lg uppercase tracking-wider">
+                <span className="px-2.5 py-1 bg-[#010080] text-white text-[11px] font-bold rounded-lg uppercase tracking-wider">
                   RFC: {user.rfc}
                 </span>
               )}
@@ -119,7 +123,7 @@ export const Home: React.FC = () => {
             Facturación en línea
           </h1>
 
-          <div className="bg-[#f2720c] text-white px-4 py-3 rounded-md flex items-center gap-3 shadow-sm">
+          <div className="bg-gradient-to-r from-[#010080] to-[#0b5ed7] text-white px-4 py-3.5 rounded-xl flex items-center gap-3 shadow-md shadow-[#010080]/15">
             <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center font-bold text-xs shrink-0 select-none">
               !
             </div>
@@ -142,7 +146,7 @@ export const Home: React.FC = () => {
                   <select
                     value={sucursal}
                     onChange={(e) => setSucursal(e.target.value)}
-                    className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
+                    className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7] appearance-none cursor-pointer"
                   >
                     <option value="1">Sucursal 1</option>
                     <option value="2">Sucursal 2</option>
@@ -164,7 +168,7 @@ export const Home: React.FC = () => {
                   placeholder="#"
                   value={folio}
                   onChange={(e) => setFolio(e.target.value)}
-                  className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-blue-500 placeholder:text-slate-400"
+                  className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7] placeholder:text-slate-400"
                 />
               </div>
 
@@ -177,7 +181,7 @@ export const Home: React.FC = () => {
                   placeholder="$"
                   value={monto}
                   onChange={(e) => setMonto(e.target.value)}
-                  className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-blue-500 placeholder:text-slate-400"
+                  className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7] placeholder:text-slate-400"
                 />
               </div>
 
@@ -185,7 +189,7 @@ export const Home: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full md:w-auto h-11 px-8 bg-[#449d44] hover:bg-[#398439] active:bg-[#255625] text-white font-bold text-sm rounded-md transition-colors shadow-sm flex items-center justify-center uppercase tracking-wide disabled:opacity-50"
+                  className="w-full md:w-auto h-11 px-8 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-bold text-sm rounded-md transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center uppercase tracking-wide disabled:opacity-50"
                 >
                   {loading ? (
                     <IonSpinner name="dots" className="text-white h-5" />

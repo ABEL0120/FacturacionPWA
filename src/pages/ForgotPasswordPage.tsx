@@ -18,7 +18,7 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { TrompoLogo } from "../components/TrompoLogo";
+import { VentioLogo } from "../components/VentioLogo";
 import { useAuth } from "../context/AuthContext";
 
 export const ForgotPasswordPage: React.FC = () => {
@@ -123,9 +123,9 @@ export const ForgotPasswordPage: React.FC = () => {
               </button>
 
               <div className="flex items-center gap-2">
-                <TrompoLogo className="w-6 h-6" />
-                <span className="text-xs font-black tracking-wider uppercase text-[#142642]">
-                  El Tizoncito
+                <VentioLogo className="w-6 h-6" />
+                <span className="text-xs font-black tracking-wider uppercase text-[#010080]">
+                  VENTIO
                 </span>
               </div>
             </div>
@@ -134,7 +134,7 @@ export const ForgotPasswordPage: React.FC = () => {
               {paso === 1 && (
                 <>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#f2720c]">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#0b5ed7]">
                       Paso 1 de 2
                     </span>
                     <h1 className="text-2xl font-black text-slate-800">
@@ -160,7 +160,7 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={rfc}
                           onChange={(e) => setRfc(e.target.value.toUpperCase())}
                           placeholder="XAXX010101000"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm font-semibold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm font-semibold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -178,7 +178,7 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={contacto}
                           onChange={(e) => setContacto(e.target.value)}
                           placeholder="tu@correo.com o teléfono"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -187,7 +187,7 @@ export const ForgotPasswordPage: React.FC = () => {
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-12 bg-[#142642] hover:bg-[#1a3258] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                        className="w-full h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                       >
                         {loading ? (
                           <IonSpinner name="dots" className="text-white h-5" />
@@ -206,7 +206,7 @@ export const ForgotPasswordPage: React.FC = () => {
               {paso === 2 && (
                 <>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#f2720c]">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#0b5ed7]">
                       Paso 2 de 2
                     </span>
                     <h1 className="text-2xl font-black text-slate-800">
@@ -231,7 +231,7 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={nuevaPassword}
                           onChange={(e) => setNuevaPassword(e.target.value)}
                           placeholder="Mínimo 6 caracteres"
-                          className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                         <button
                           type="button"
@@ -259,7 +259,7 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={confirmarPassword}
                           onChange={(e) => setConfirmarPassword(e.target.value)}
                           placeholder="Repite la contraseña"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -268,7 +268,7 @@ export const ForgotPasswordPage: React.FC = () => {
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-12 bg-[#f2720c] hover:bg-[#d96508] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#f2720c]/25 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                        className="w-full h-12 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                       >
                         {loading ? (
                           <IonSpinner name="dots" className="text-white h-5" />
@@ -310,7 +310,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.replace("/login")}
-                    className="w-full h-12 bg-[#142642] hover:bg-[#1a3258] text-white font-extrabold text-sm rounded-xl shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider"
+                    className="w-full h-12 bg-[#010080] hover:bg-[#000066] text-white font-extrabold text-sm rounded-xl shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider"
                   >
                     <span>Ir a Iniciar Sesión</span>
                   </button>
@@ -323,7 +323,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.push("/login")}
-                    className="font-bold text-[#142642] hover:underline"
+                    className="font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline"
                   >
                     Inicia sesión
                   </button>

@@ -13,7 +13,7 @@ import {
 } from "@ionic/react";
 import { homeOutline, logInOutline, logOutOutline, personCircleOutline } from "ionicons/icons";
 import { useLocation, useHistory } from "react-router-dom";
-import { TrompoLogo } from "./TrompoLogo";
+import { VentioLogo } from "./VentioLogo";
 import { useAuth } from "../context/AuthContext";
 
 export const MenuLateral: React.FC = () => {
@@ -29,11 +29,11 @@ export const MenuLateral: React.FC = () => {
   return (
     <IonMenu contentId="main-content" type="overlay">
       <IonHeader className="ion-no-border">
-        <IonToolbar className="tizoncito-toolbar px-2">
+        <IonToolbar className="ventio-toolbar px-2">
           <div className="flex items-center gap-2 px-3 py-1">
-            <TrompoLogo className="w-6 h-6 shrink-0 drop-shadow" />
+            <VentioLogo className="w-6 h-6 shrink-0 drop-shadow" variant="white" />
             <span className="font-black text-white text-base tracking-wider uppercase">
-              El Tizoncito
+              VENTIO
             </span>
           </div>
         </IonToolbar>
@@ -42,7 +42,7 @@ export const MenuLateral: React.FC = () => {
       <IonContent className="ion-padding-vertical">
         {isAuthenticated && user && (
           <div className="mx-3 mb-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#142642] text-white flex items-center justify-center font-black text-sm uppercase shrink-0">
+            <div className="w-10 h-10 rounded-full bg-[#010080] text-white flex items-center justify-center font-black text-sm uppercase shrink-0">
               {user.nombre ? user.nombre.charAt(0) : "U"}
             </div>
             <div className="overflow-hidden">
@@ -63,7 +63,7 @@ export const MenuLateral: React.FC = () => {
               routerDirection="none"
               className={`rounded-xl transition-colors cursor-pointer ${
                 location.pathname === "/home" || location.pathname === "/"
-                  ? "text-blue-600 font-bold bg-blue-50/80"
+                  ? "text-[#0b5ed7] font-bold bg-[#eef5ff]"
                   : "text-slate-700 hover:bg-slate-100"
               }`}
               detail={false}
@@ -73,7 +73,7 @@ export const MenuLateral: React.FC = () => {
                 icon={homeOutline}
                 className={
                   location.pathname === "/home" || location.pathname === "/"
-                    ? "text-blue-600"
+                    ? "text-[#0b5ed7]"
                     : "text-slate-500"
                 }
               />
@@ -88,7 +88,7 @@ export const MenuLateral: React.FC = () => {
                 routerDirection="none"
                 className={`rounded-xl transition-colors cursor-pointer ${
                   location.pathname === "/login"
-                    ? "text-blue-600 font-bold bg-blue-50/80"
+                    ? "text-[#0b5ed7] font-bold bg-[#eef5ff]"
                     : "text-slate-700 hover:bg-slate-100"
                 }`}
                 detail={false}
@@ -115,7 +115,7 @@ export const MenuLateral: React.FC = () => {
 
       <IonFooter className="p-4 border-t border-slate-100 text-center">
         <span className="text-xs text-slate-400 font-medium">
-          Facturación PWA v0.1.0
+          Facturación Ventio v0.1.0
         </span>
       </IonFooter>
     </IonMenu>

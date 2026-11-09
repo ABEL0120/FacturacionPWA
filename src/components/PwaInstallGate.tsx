@@ -12,7 +12,7 @@ import {
   phonePortraitOutline,
   ellipsisVerticalOutline,
 } from "ionicons/icons";
-import { TrompoLogo } from "./TrompoLogo";
+import { VentioLogo } from "./VentioLogo";
 
 interface PwaInstallGateProps {
   children: React.ReactNode;
@@ -94,8 +94,8 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
     return (
       <div className="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-6 overflow-y-auto select-none text-center">
         <div className="max-w-xs w-full bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700 space-y-6">
-          <div className="w-24 h-24 rounded-full bg-[#142642] flex items-center justify-center mx-auto shadow-inner border border-slate-700">
-            <TrompoLogo className="w-14 h-14" />
+          <div className="w-24 h-24 rounded-full bg-[#010080] flex items-center justify-center mx-auto shadow-inner border border-slate-700">
+            <VentioLogo className="w-14 h-14" variant="white" />
           </div>
           <div className="space-y-3">
             <h2 className="text-2xl font-black text-white tracking-wide">
@@ -103,7 +103,7 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
             </h2>
             <p className="text-slate-400 text-[13px] font-medium leading-relaxed">
               La aplicación se está instalando. Abre la aplicación{" "}
-              <strong>Facturación PWA</strong> directamente desde tu pantalla de
+              <strong>Ventio Facturación</strong> directamente desde tu pantalla de
               inicio.
             </p>
           </div>
@@ -116,11 +116,11 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
     <div className="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-6 overflow-y-auto select-none">
       <div className="max-w-sm w-full my-auto space-y-6">
         <div className="text-center space-y-3">
-          <div className="w-20 h-20 rounded-3xl bg-[#142642] flex items-center justify-center mx-auto shadow-xl border-4 border-slate-800">
-            <TrompoLogo className="w-12 h-12" />
+          <div className="w-20 h-20 rounded-3xl bg-[#010080] flex items-center justify-center mx-auto shadow-xl border-4 border-slate-800">
+            <VentioLogo className="w-12 h-12" variant="white" />
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">
-            Facturación PWA
+            Ventio Facturación
           </h1>
           <IonBadge
             color="primary"

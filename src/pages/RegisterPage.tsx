@@ -20,7 +20,7 @@ import {
   fingerPrintOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { TrompoLogo } from "../components/TrompoLogo";
+import { VentioLogo } from "../components/VentioLogo";
 import { useAuth } from "../context/AuthContext";
 import { passkeyService } from "../services/passkeyService";
 
@@ -195,7 +195,7 @@ export const RegisterPage: React.FC = () => {
         try {
           await passkeyService.registrarPasskey(
             email.trim(),
-            razonSocial.trim()
+            razonSocial.trim(),
           );
           present({
             message: "¡Registro completado y Passkey guardada con éxito!",
@@ -206,7 +206,8 @@ export const RegisterPage: React.FC = () => {
         } catch (passErr: any) {
           if (passErr.name !== "NotAllowedError") {
             present({
-              message: "¡Registro completado! Podrás configurar tu Passkey después.",
+              message:
+                "¡Registro completado! Podrás configurar tu Passkey después.",
               duration: 2500,
               color: "warning",
               position: "top",
@@ -257,9 +258,9 @@ export const RegisterPage: React.FC = () => {
               </button>
 
               <div className="flex items-center gap-2">
-                <TrompoLogo className="w-6 h-6" />
-                <span className="text-xs font-black tracking-wider uppercase text-[#142642]">
-                  El Tizoncito
+                <VentioLogo className="w-6 h-6" />
+                <span className="text-xs font-black tracking-wider uppercase text-[#010080]">
+                  VENTIO
                 </span>
               </div>
             </div>
@@ -277,10 +278,10 @@ export const RegisterPage: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#010080]">
                     <IonIcon
                       icon={businessOutline}
-                      className="text-lg text-[#f2720c]"
+                      className="text-lg text-[#0b5ed7]"
                     />
                     <span>Datos del Contribuyente</span>
                   </div>
@@ -296,7 +297,7 @@ export const RegisterPage: React.FC = () => {
                         value={rfc}
                         onChange={(e) => setRfc(e.target.value.toUpperCase())}
                         placeholder="XAXX010101000"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -309,17 +310,17 @@ export const RegisterPage: React.FC = () => {
                         value={razonSocial}
                         onChange={(e) => setRazonSocial(e.target.value)}
                         placeholder="Nombre o empresa tal como aparece en CSF"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#010080]">
                     <IonIcon
                       icon={locationOutline}
-                      className="text-lg text-[#f2720c]"
+                      className="text-lg text-[#0b5ed7]"
                     />
                     <span>Domicilio Fiscal</span>
                   </div>
@@ -334,7 +335,7 @@ export const RegisterPage: React.FC = () => {
                         value={direccion}
                         onChange={(e) => setDireccion(e.target.value)}
                         placeholder="Nombre de la calle"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -347,7 +348,7 @@ export const RegisterPage: React.FC = () => {
                         value={noExterior}
                         onChange={(e) => setNoExterior(e.target.value)}
                         placeholder="Ext."
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -360,7 +361,7 @@ export const RegisterPage: React.FC = () => {
                         value={noInterior}
                         onChange={(e) => setNoInterior(e.target.value)}
                         placeholder="Int."
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -373,7 +374,7 @@ export const RegisterPage: React.FC = () => {
                         value={colonia}
                         onChange={(e) => setColonia(e.target.value)}
                         placeholder="Colonia o Fraccionamiento"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -389,7 +390,7 @@ export const RegisterPage: React.FC = () => {
                           setCp(e.target.value.replace(/\D/g, ""))
                         }
                         placeholder="5 dígitos"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -402,7 +403,7 @@ export const RegisterPage: React.FC = () => {
                         value={municipio}
                         onChange={(e) => setMunicipio(e.target.value)}
                         placeholder="Municipio o Alcaldía"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -415,7 +416,7 @@ export const RegisterPage: React.FC = () => {
                         value={ciudad}
                         onChange={(e) => setCiudad(e.target.value)}
                         placeholder="Ciudad"
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                       />
                     </div>
 
@@ -426,7 +427,7 @@ export const RegisterPage: React.FC = () => {
                       <select
                         value={estado}
                         onChange={(e) => setEstado(e.target.value)}
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
                         <option value="Aguascalientes">Aguascalientes</option>
                         <option value="Baja California">Baja California</option>
@@ -472,10 +473,10 @@ export const RegisterPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#010080]">
                     <IonIcon
                       icon={receiptOutline}
-                      className="text-lg text-[#f2720c]"
+                      className="text-lg text-[#0b5ed7]"
                     />
                     <span>Datos Fiscales CFDI 4.0</span>
                   </div>
@@ -488,7 +489,7 @@ export const RegisterPage: React.FC = () => {
                       <select
                         value={regimenFiscal}
                         onChange={(e) => setRegimenFiscal(e.target.value)}
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
                         <option value="601">
                           601 - General de Ley Personas Morales
@@ -526,7 +527,7 @@ export const RegisterPage: React.FC = () => {
                       <select
                         value={usoCfdi}
                         onChange={(e) => setUsoCfdi(e.target.value)}
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
                         <option value="G01">
                           G01 - Adquisición de mercancías
@@ -561,7 +562,7 @@ export const RegisterPage: React.FC = () => {
                       <select
                         value={formaPago}
                         onChange={(e) => setFormaPago(e.target.value)}
-                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
                         <option value="01">01 - Efectivo</option>
                         <option value="02">02 - Cheque nominativo</option>
@@ -577,10 +578,10 @@ export const RegisterPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#010080]">
                     <IonIcon
                       icon={lockClosedOutline}
-                      className="text-lg text-[#f2720c]"
+                      className="text-lg text-[#0b5ed7]"
                     />
                     <span>Contacto y Acceso a la Cuenta</span>
                   </div>
@@ -602,7 +603,7 @@ export const RegisterPage: React.FC = () => {
                             setTelefono(e.target.value.replace(/\D/g, ""))
                           }
                           placeholder="10 dígitos"
-                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -620,7 +621,7 @@ export const RegisterPage: React.FC = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="ejemplo@correo.com"
-                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -641,7 +642,7 @@ export const RegisterPage: React.FC = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Mínimo 6 caracteres"
-                          className="w-full h-11 pl-11 pr-10 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-11 pl-11 pr-10 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                         <button
                           type="button"
@@ -671,7 +672,7 @@ export const RegisterPage: React.FC = () => {
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           placeholder="Repite la contraseña"
-                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -679,18 +680,18 @@ export const RegisterPage: React.FC = () => {
                 </div>
 
                 {supportsPasskey && (
-                  <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#142642]/5 via-amber-500/5 to-orange-500/10 border-2 border-[#f2720c]/30 shadow-sm flex items-start gap-3.5 transition-all">
-                    <div className="w-11 h-11 rounded-xl bg-[#142642] flex items-center justify-center shrink-0 shadow-md">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#010080]/5 via-blue-50/60 to-[#0b5ed7]/10 border-2 border-[#0b5ed7]/30 shadow-sm flex items-start gap-3.5 transition-all">
+                    <div className="w-11 h-11 rounded-xl bg-[#010080] flex items-center justify-center shrink-0 shadow-md">
                       <IonIcon
                         icon={fingerPrintOutline}
-                        className="text-2xl text-[#f2720c]"
+                        className="text-2xl text-[#38bdf8]"
                       />
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between gap-3">
                         <label
                           htmlFor="passkey-toggle"
-                          className="text-sm font-extrabold text-[#142642] cursor-pointer"
+                          className="text-sm font-extrabold text-[#010080] cursor-pointer"
                         >
                           Guardar contraseña con Passkey / Huella
                         </label>
@@ -699,13 +700,15 @@ export const RegisterPage: React.FC = () => {
                           type="checkbox"
                           checked={guardarPasskey}
                           onChange={(e) => setGuardarPasskey(e.target.checked)}
-                          className="w-5 h-5 accent-[#f2720c] rounded cursor-pointer"
+                          className="w-5 h-5 accent-[#0b5ed7] rounded cursor-pointer"
                         />
                       </div>
                       <p className="text-xs text-slate-600 leading-relaxed">
-                        Inicia sesión en tus próximos accesos sin contraseñas, usando la huella digital, Face ID o Windows Hello de tu celular o laptop.
+                        Inicia sesión en tus próximos accesos sin contraseñas,
+                        usando la huella digital, Face ID o Windows Hello de tu
+                        celular o laptop.
                       </p>
-                      <span className="inline-block text-[11px] font-bold text-[#f2720c]">
+                      <span className="inline-block text-[11px] font-bold text-[#0b5ed7]">
                         Recomendado • Opcional
                       </span>
                     </div>
@@ -716,7 +719,7 @@ export const RegisterPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 h-12 bg-[#142642] hover:bg-[#1a3258] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                    className="flex-1 h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                   >
                     {loading ? (
                       <IonSpinner name="dots" className="text-white h-5" />
@@ -734,7 +737,7 @@ export const RegisterPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.push("/login")}
-                    className="h-12 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors"
+                    className="h-12 px-6 bg-slate-100 hover:bg-slate-200 text-[#010080] font-bold text-sm rounded-xl transition-colors"
                   >
                     Regresar
                   </button>
