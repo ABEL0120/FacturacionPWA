@@ -1,0 +1,54 @@
+{
+  "short_name": "Facturación",
+  "name": "Facturación PWA",
+  "description": "Sistema de Facturación Móvil y PWA",
+  "icons": [
+    {
+      "src": "pwa-64x64-v3.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-128x128-v3.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-192x192-v3.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-256x256-v3.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-512x512-v3.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-192x192-v3.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "pwa-512x512-v3.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/?mode=pwa",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#2563eb",
+  "orientation": "portrait"
+}
