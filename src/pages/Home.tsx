@@ -35,8 +35,6 @@ export const Home: React.FC = () => {
         monto: monto.trim(),
       };
 
-      // Llamada preparada
-      // await facturacionApi.buscarTicket(params);
       setMensaje(`Buscando ticket folio: ${folio} con monto: $${monto}`);
     } catch (err: any) {
       setMensaje(err.message || "Error al buscar el ticket.");
@@ -47,7 +45,6 @@ export const Home: React.FC = () => {
 
   return (
     <IonPage>
-      {/* Barra superior estilo El Tizoncito */}
       <IonHeader className="ion-no-border">
         <IonToolbar className="tizoncito-toolbar px-2 py-1">
           <IonButtons slot="start">
@@ -58,7 +55,6 @@ export const Home: React.FC = () => {
             />
           </IonButtons>
           <div className="flex items-center gap-3">
-            {/* Logo de trompo oficial */}
             <TrompoLogo className="w-8 h-8 shrink-0 drop-shadow" />
             <div className="flex flex-col leading-tight">
               <span className="text-base sm:text-lg font-black tracking-wider uppercase text-white font-sans">
@@ -74,12 +70,10 @@ export const Home: React.FC = () => {
 
       <IonContent className="bg-white" style={{ "--background": "#ffffff" }}>
         <div className="max-w-5xl mx-auto px-4 py-6 sm:py-10 space-y-6">
-          {/* Título */}
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
             Facturación en línea
           </h1>
 
-          {/* Banner de aviso naranja */}
           <div className="bg-[#f2720c] text-white px-4 py-3 rounded-md flex items-center gap-3 shadow-sm">
             <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center font-bold text-xs shrink-0 select-none">
               !
@@ -89,15 +83,12 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          {/* Subtítulo del formulario */}
           <p className="text-xs sm:text-sm text-slate-700 font-medium">
             Introduce los datos de tu ticket para facturar:
           </p>
 
-          {/* Formulario de búsqueda de ticket */}
           <form onSubmit={handleBuscar}>
             <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3 sm:gap-4">
-              {/* Sucursal */}
               <div className="relative flex-1">
                 <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-slate-500 z-10">
                   Sucursal
@@ -119,7 +110,6 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Folio de Ticket */}
               <div className="relative flex-1">
                 <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-slate-500 z-10">
                   Folio de Ticket
@@ -133,7 +123,6 @@ export const Home: React.FC = () => {
                 />
               </div>
 
-              {/* Monto Total */}
               <div className="relative flex-1">
                 <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-slate-500 z-10">
                   Monto Total
@@ -147,7 +136,6 @@ export const Home: React.FC = () => {
                 />
               </div>
 
-              {/* Botón Buscar */}
               <div className="shrink-0">
                 <button
                   type="submit"
@@ -164,7 +152,6 @@ export const Home: React.FC = () => {
             </div>
           </form>
 
-          {/* Mensaje o feedback provisional */}
           {mensaje && (
             <div className="p-3 bg-slate-100 border border-slate-200 rounded-md text-xs text-slate-700">
               {mensaje}

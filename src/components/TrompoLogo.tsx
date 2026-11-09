@@ -17,16 +17,9 @@ export const TrompoLogo: React.FC<TrompoLogoProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Skewer top stick */}
       <rect x="48" y="2" width="4" height="14" rx="2" fill="#F2720C" />
-
-      {/* Top pineapple / onion */}
       <ellipse cx="50" cy="20" rx="15" ry="9" fill="#F2720C" />
-
-      {/* Skewer neck */}
       <rect x="47" y="27" width="6" height="6" rx="2" fill="#F2720C" />
-
-      {/* Main Trompo Body with Left Flame Wings */}
       <path
         d="M 28 34
            C 20 34, 15 40, 16 48
@@ -45,13 +38,8 @@ export const TrompoLogo: React.FC<TrompoLogoProps> = ({
            Z"
         fill="#F2720C"
       />
-
-      {/* Bottom bulb and skewer tip */}
       <circle cx="50" cy="122" r="7" fill="#F2720C" />
       <polygon points="48,128 52,128 50,146" fill="#F2720C" />
-
-      {/* Stylized White Flame Ribbons */}
-      {/* Top Flame Wave */}
       <path
         d="M 37 53
            C 42 45, 52 39, 61 43
@@ -60,8 +48,6 @@ export const TrompoLogo: React.FC<TrompoLogoProps> = ({
            Z"
         fill="#FFFFFF"
       />
-
-      {/* Middle Flame Wave */}
       <path
         d="M 28 71
            C 35 60, 52 49, 64 56
@@ -70,8 +56,6 @@ export const TrompoLogo: React.FC<TrompoLogoProps> = ({
            Z"
         fill="#FFFFFF"
       />
-
-      {/* Lower Flame Wave */}
       <path
         d="M 37 88
            C 43 77, 56 69, 68 76
@@ -85,4 +69,3 @@ export const TrompoLogo: React.FC<TrompoLogoProps> = ({
 };
 
 export default TrompoLogo;
-

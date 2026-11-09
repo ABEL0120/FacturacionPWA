@@ -38,7 +38,6 @@ html {
   text-size-adjust: 100%;
 }
 
-/* Evitar auto-zoom en iOS Safari */
 @media screen and (max-width: 768px) {
   input,
   textarea,
@@ -65,4 +64,3 @@ ion-toolbar.tizoncito-toolbar {
   background-color: #142642 !important;
   color: #ffffff !important;
 }
-

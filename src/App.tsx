@@ -13,7 +13,6 @@ import { PwaInstallGate } from "./components/PwaInstallGate";
 import { MenuLateral } from "./components/MenuLateral";
 import Home from "./pages/Home";
 
-/* Ionic Core CSS */
 import "@ionic/react/css/core.css";
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
