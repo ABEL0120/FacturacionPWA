@@ -87,11 +87,6 @@ function UpdatePrompt() {
   );
 }
 
-const RootRedirect: React.FC = () => {
-  const { isAuthenticated, token } = useAuth();
-  return <Redirect to={isAuthenticated && token ? "/home" : "/login"} />;
-};
-
 const App: React.FC = () => (
   <IonApp>
     <AuthProvider>
@@ -105,8 +100,9 @@ const App: React.FC = () => (
             <Route exact path="/registro" component={RegisterPage} />
             <Route exact path="/recuperar" component={ForgotPasswordPage} />
             <ProtectedRoute exact path="/home" component={Home} />
-            <Route exact path="/" component={RootRedirect} />
-            <Route render={() => <RootRedirect />} />
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
           </IonRouterOutlet>
         </IonReactRouter>
       </PwaInstallGate>

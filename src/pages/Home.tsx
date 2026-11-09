@@ -77,8 +77,8 @@ export const Home: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  logout();
                   history.replace("/login");
+                  logout();
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
               >

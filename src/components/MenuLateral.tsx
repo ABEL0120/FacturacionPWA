@@ -22,8 +22,8 @@ export const MenuLateral: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
-    logout();
     history.replace("/login");
+    logout();
   };
 
   return (

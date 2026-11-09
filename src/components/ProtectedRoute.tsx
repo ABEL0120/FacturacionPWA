@@ -15,18 +15,22 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   return (
     <Route
       {...rest}
-      render={(props) =>
-        isAuthenticated && token ? (
-          <Component {...props} />
-        ) : (
+      render={(props) => {
+        if (isAuthenticated && token) {
+          return <Component {...props} />;
+        }
+        if (props.location.pathname === "/login") {
+          return null;
+        }
+        return (
           <Redirect
             to={{
               pathname: "/login",
               state: { from: props.location },
             }}
           />
-        )
-      }
+        );
+      }}
     />
   );
 };
