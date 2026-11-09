@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonPage,
   IonContent,
@@ -13,20 +13,30 @@ import {
   eyeOffOutline,
   arrowForwardOutline,
   shieldCheckmarkOutline,
+  fingerPrintOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TrompoLogo } from "../components/TrompoLogo";
 import { useAuth } from "../context/AuthContext";
+import { passkeyService } from "../services/passkeyService";
 
 export const LoginPage: React.FC = () => {
   const history = useHistory();
-  const { login } = useAuth();
+  const { login, loginWithPasskey } = useAuth();
   const [present] = useIonToast();
 
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [supportsPasskey, setSupportsPasskey] = useState(false);
+
+  useEffect(() => {
+    passkeyService.isPlatformAvailable().then((available) => {
+      setSupportsPasskey(available || passkeyService.isSupported());
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +80,31 @@ export const LoginPage: React.FC = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasskeyLogin = async () => {
+    setPasskeyLoading(true);
+    try {
+      await loginWithPasskey();
+      present({
+        message: "¡Autenticación con Passkey exitosa!",
+        duration: 1800,
+        color: "success",
+        position: "top",
+      });
+      history.replace("/home");
+    } catch (err: any) {
+      if (err.name !== "NotAllowedError") {
+        present({
+          message: err.message || "No se pudo verificar la Passkey.",
+          duration: 2500,
+          color: "warning",
+          position: "top",
+        });
+      }
+    } finally {
+      setPasskeyLoading(false);
     }
   };
 
@@ -158,19 +193,47 @@ export const LoginPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || passkeyLoading}
                   className="w-full h-12 bg-[#142642] hover:bg-[#1a3258] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                 >
                   {loading ? (
                     <IonSpinner name="dots" className="text-white h-5" />
                   ) : (
                     <>
-                      <span>Ingresar</span>
+                      <span>Ingresar con Contraseña</span>
                       <IonIcon icon={arrowForwardOutline} className="text-base" />
                     </>
                   )}
                 </button>
               </form>
+
+              {supportsPasskey && (
+                <div className="space-y-3 pt-1">
+                  <div className="relative flex items-center justify-center">
+                    <div className="border-t border-slate-200 w-full" />
+                    <span className="bg-white px-2 text-[10px] uppercase font-bold text-slate-400 shrink-0">
+                      O accede al instante con
+                    </span>
+                    <div className="border-t border-slate-200 w-full" />
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={passkeyLoading || loading}
+                    onClick={handlePasskeyLogin}
+                    className="w-full h-12 bg-slate-50 hover:bg-slate-100 active:scale-[0.99] border-2 border-slate-200 hover:border-[#142642] text-[#142642] font-black text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {passkeyLoading ? (
+                      <IonSpinner name="dots" className="text-[#142642] h-5" />
+                    ) : (
+                      <>
+                        <IonIcon icon={fingerPrintOutline} className="text-xl text-[#f2720c]" />
+                        <span>Iniciar con Passkey / Huella</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
 
               <div className="pt-2 border-t border-slate-100 flex flex-col gap-3 text-center">
                 <div className="text-xs text-slate-500">
@@ -188,7 +251,7 @@ export const LoginPage: React.FC = () => {
 
             <div className="flex items-center justify-center gap-1.5 text-slate-400 text-[11px] font-medium">
               <IonIcon icon={shieldCheckmarkOutline} className="text-sm text-emerald-500" />
-              <span>Conexión segura SSL CFDI 4.0</span>
+              <span>Conexión segura SSL CFDI 4.0 con Passkey</span>
             </div>
           </div>
         </div>
@@ -198,4 +261,3 @@ export const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-

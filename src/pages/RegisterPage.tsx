@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonPage,
   IonContent,
@@ -17,10 +17,12 @@ import {
   checkmarkCircleOutline,
   callOutline,
   mailOutline,
+  fingerPrintOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TrompoLogo } from "../components/TrompoLogo";
 import { useAuth } from "../context/AuthContext";
+import { passkeyService } from "../services/passkeyService";
 
 export const RegisterPage: React.FC = () => {
   const history = useHistory();
@@ -46,6 +48,14 @@ export const RegisterPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [guardarPasskey, setGuardarPasskey] = useState(true);
+  const [supportsPasskey, setSupportsPasskey] = useState(false);
+
+  useEffect(() => {
+    passkeyService.isPlatformAvailable().then((available) => {
+      setSupportsPasskey(available || passkeyService.isSupported());
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,12 +191,43 @@ export const RegisterPage: React.FC = () => {
         password,
       });
 
-      present({
-        message: "¡Registro completado exitosamente!",
-        duration: 2000,
-        color: "success",
-        position: "top",
-      });
+      if (guardarPasskey && supportsPasskey) {
+        try {
+          await passkeyService.registrarPasskey(
+            email.trim(),
+            razonSocial.trim()
+          );
+          present({
+            message: "¡Registro completado y Passkey guardada con éxito!",
+            duration: 2500,
+            color: "success",
+            position: "top",
+          });
+        } catch (passErr: any) {
+          if (passErr.name !== "NotAllowedError") {
+            present({
+              message: "¡Registro completado! Podrás configurar tu Passkey después.",
+              duration: 2500,
+              color: "warning",
+              position: "top",
+            });
+          } else {
+            present({
+              message: "¡Registro completado exitosamente!",
+              duration: 2000,
+              color: "success",
+              position: "top",
+            });
+          }
+        }
+      } else {
+        present({
+          message: "¡Registro completado exitosamente!",
+          duration: 2000,
+          color: "success",
+          position: "top",
+        });
+      }
 
       history.replace("/home");
     } catch {
@@ -225,21 +266,22 @@ export const RegisterPage: React.FC = () => {
 
             <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-8">
               <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#f2720c]">
-                  CFDI 4.0
-                </span>
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
                   Registro de Datos Fiscales
                 </h1>
                 <p className="text-xs text-slate-500">
-                  Captura tu información fiscal y de facturación para la emisión de tus comprobantes
+                  Captura tu información fiscal y de facturación para la emisión
+                  de tus comprobantes
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
-                    <IonIcon icon={businessOutline} className="text-lg text-[#f2720c]" />
+                    <IonIcon
+                      icon={businessOutline}
+                      className="text-lg text-[#f2720c]"
+                    />
                     <span>Datos del Contribuyente</span>
                   </div>
 
@@ -275,7 +317,10 @@ export const RegisterPage: React.FC = () => {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
-                    <IonIcon icon={locationOutline} className="text-lg text-[#f2720c]" />
+                    <IonIcon
+                      icon={locationOutline}
+                      className="text-lg text-[#f2720c]"
+                    />
                     <span>Domicilio Fiscal</span>
                   </div>
 
@@ -340,7 +385,9 @@ export const RegisterPage: React.FC = () => {
                         type="text"
                         maxLength={5}
                         value={cp}
-                        onChange={(e) => setCp(e.target.value.replace(/\D/g, ""))}
+                        onChange={(e) =>
+                          setCp(e.target.value.replace(/\D/g, ""))
+                        }
                         placeholder="5 dígitos"
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
                       />
@@ -383,15 +430,21 @@ export const RegisterPage: React.FC = () => {
                       >
                         <option value="Aguascalientes">Aguascalientes</option>
                         <option value="Baja California">Baja California</option>
-                        <option value="Baja California Sur">Baja California Sur</option>
+                        <option value="Baja California Sur">
+                          Baja California Sur
+                        </option>
                         <option value="Campeche">Campeche</option>
                         <option value="Chiapas">Chiapas</option>
                         <option value="Chihuahua">Chihuahua</option>
-                        <option value="Ciudad de México">Ciudad de México</option>
+                        <option value="Ciudad de México">
+                          Ciudad de México
+                        </option>
                         <option value="Coahuila">Coahuila</option>
                         <option value="Colima">Colima</option>
                         <option value="Durango">Durango</option>
-                        <option value="Estado de México">Estado de México</option>
+                        <option value="Estado de México">
+                          Estado de México
+                        </option>
                         <option value="Guanajuato">Guanajuato</option>
                         <option value="Guerrero">Guerrero</option>
                         <option value="Hidalgo">Hidalgo</option>
@@ -420,7 +473,10 @@ export const RegisterPage: React.FC = () => {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
-                    <IonIcon icon={receiptOutline} className="text-lg text-[#f2720c]" />
+                    <IonIcon
+                      icon={receiptOutline}
+                      className="text-lg text-[#f2720c]"
+                    />
                     <span>Datos Fiscales CFDI 4.0</span>
                   </div>
 
@@ -434,15 +490,32 @@ export const RegisterPage: React.FC = () => {
                         onChange={(e) => setRegimenFiscal(e.target.value)}
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
                       >
-                        <option value="601">601 - General de Ley Personas Morales</option>
-                        <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
-                        <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                        <option value="601">
+                          601 - General de Ley Personas Morales
+                        </option>
+                        <option value="603">
+                          603 - Personas Morales con Fines no Lucrativos
+                        </option>
+                        <option value="605">
+                          605 - Sueldos y Salarios e Ingresos Asimilados a
+                          Salarios
+                        </option>
                         <option value="606">606 - Arrendamiento</option>
-                        <option value="612">612 - Personas Físicas con Actividades Empresariales y Profesionales</option>
+                        <option value="612">
+                          612 - Personas Físicas con Actividades Empresariales y
+                          Profesionales
+                        </option>
                         <option value="621">621 - Incorporación Fiscal</option>
-                        <option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
-                        <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
-                        <option value="616">616 - Sin obligaciones fiscales</option>
+                        <option value="625">
+                          625 - Régimen de las Actividades Empresariales con
+                          ingresos a través de Plataformas Tecnológicas
+                        </option>
+                        <option value="626">
+                          626 - Régimen Simplificado de Confianza (RESICO)
+                        </option>
+                        <option value="616">
+                          616 - Sin obligaciones fiscales
+                        </option>
                       </select>
                     </div>
 
@@ -455,14 +528,27 @@ export const RegisterPage: React.FC = () => {
                         onChange={(e) => setUsoCfdi(e.target.value)}
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
                       >
-                        <option value="G01">G01 - Adquisición de mercancías</option>
+                        <option value="G01">
+                          G01 - Adquisición de mercancías
+                        </option>
                         <option value="G03">G03 - Gastos en general</option>
-                        <option value="D01">D01 - Honorarios médicos, dentales y gastos hospitalarios</option>
-                        <option value="D02">D02 - Gastos médicos por incapacidad o discapacidad</option>
+                        <option value="D01">
+                          D01 - Honorarios médicos, dentales y gastos
+                          hospitalarios
+                        </option>
+                        <option value="D02">
+                          D02 - Gastos médicos por incapacidad o discapacidad
+                        </option>
                         <option value="D04">D04 - Donativos</option>
-                        <option value="D07">D07 - Primas por seguros de gastos médicos</option>
-                        <option value="D08">D08 - Gastos de transportación escolar obligatoria</option>
-                        <option value="D10">D10 - Pagos por servicios educativos (colegiaturas)</option>
+                        <option value="D07">
+                          D07 - Primas por seguros de gastos médicos
+                        </option>
+                        <option value="D08">
+                          D08 - Gastos de transportación escolar obligatoria
+                        </option>
+                        <option value="D10">
+                          D10 - Pagos por servicios educativos (colegiaturas)
+                        </option>
                         <option value="S01">S01 - Sin efectos fiscales</option>
                         <option value="CP01">CP01 - Pagos</option>
                       </select>
@@ -479,7 +565,9 @@ export const RegisterPage: React.FC = () => {
                       >
                         <option value="01">01 - Efectivo</option>
                         <option value="02">02 - Cheque nominativo</option>
-                        <option value="03">03 - Transferencia electrónica</option>
+                        <option value="03">
+                          03 - Transferencia electrónica
+                        </option>
                         <option value="04">04 - Tarjeta de crédito</option>
                         <option value="28">28 - Tarjeta de débito</option>
                         <option value="99">99 - Por definir</option>
@@ -490,7 +578,10 @@ export const RegisterPage: React.FC = () => {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
-                    <IonIcon icon={lockClosedOutline} className="text-lg text-[#f2720c]" />
+                    <IonIcon
+                      icon={lockClosedOutline}
+                      className="text-lg text-[#f2720c]"
+                    />
                     <span>Contacto y Acceso a la Cuenta</span>
                   </div>
 
@@ -507,7 +598,9 @@ export const RegisterPage: React.FC = () => {
                           type="tel"
                           maxLength={10}
                           value={telefono}
-                          onChange={(e) => setTelefono(e.target.value.replace(/\D/g, ""))}
+                          onChange={(e) =>
+                            setTelefono(e.target.value.replace(/\D/g, ""))
+                          }
                           placeholder="10 dígitos"
                           className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
                         />
@@ -538,7 +631,10 @@ export const RegisterPage: React.FC = () => {
                       </label>
                       <div className="relative flex items-center">
                         <span className="absolute left-3.5 text-slate-400">
-                          <IonIcon icon={lockClosedOutline} className="text-lg" />
+                          <IonIcon
+                            icon={lockClosedOutline}
+                            className="text-lg"
+                          />
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
@@ -552,7 +648,9 @@ export const RegisterPage: React.FC = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 text-slate-400 hover:text-slate-600 focus:outline-none"
                         >
-                          <IonIcon icon={showPassword ? eyeOffOutline : eyeOutline} />
+                          <IonIcon
+                            icon={showPassword ? eyeOffOutline : eyeOutline}
+                          />
                         </button>
                       </div>
                     </div>
@@ -563,7 +661,10 @@ export const RegisterPage: React.FC = () => {
                       </label>
                       <div className="relative flex items-center">
                         <span className="absolute left-3.5 text-slate-400">
-                          <IonIcon icon={lockClosedOutline} className="text-lg" />
+                          <IonIcon
+                            icon={lockClosedOutline}
+                            className="text-lg"
+                          />
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
@@ -577,6 +678,40 @@ export const RegisterPage: React.FC = () => {
                   </div>
                 </div>
 
+                {supportsPasskey && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#142642]/5 via-amber-500/5 to-orange-500/10 border-2 border-[#f2720c]/30 shadow-sm flex items-start gap-3.5 transition-all">
+                    <div className="w-11 h-11 rounded-xl bg-[#142642] flex items-center justify-center shrink-0 shadow-md">
+                      <IonIcon
+                        icon={fingerPrintOutline}
+                        className="text-2xl text-[#f2720c]"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <label
+                          htmlFor="passkey-toggle"
+                          className="text-sm font-extrabold text-[#142642] cursor-pointer"
+                        >
+                          Guardar contraseña con Passkey / Huella
+                        </label>
+                        <input
+                          id="passkey-toggle"
+                          type="checkbox"
+                          checked={guardarPasskey}
+                          onChange={(e) => setGuardarPasskey(e.target.checked)}
+                          className="w-5 h-5 accent-[#f2720c] rounded cursor-pointer"
+                        />
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        Inicia sesión en tus próximos accesos sin contraseñas, usando la huella digital, Face ID o Windows Hello de tu celular o laptop.
+                      </p>
+                      <span className="inline-block text-[11px] font-bold text-[#f2720c]">
+                        Recomendado • Opcional
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"
@@ -587,7 +722,10 @@ export const RegisterPage: React.FC = () => {
                       <IonSpinner name="dots" className="text-white h-5" />
                     ) : (
                       <>
-                        <IonIcon icon={checkmarkCircleOutline} className="text-lg" />
+                        <IonIcon
+                          icon={checkmarkCircleOutline}
+                          className="text-lg"
+                        />
                         <span>Guardar y Registrarse</span>
                       </>
                     )}

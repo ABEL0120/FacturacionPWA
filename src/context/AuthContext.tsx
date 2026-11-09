@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { passkeyService } from "../services/passkeyService";
 
 export interface UserSession {
   email: string;
@@ -23,6 +24,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   login: (email: string, password?: string) => Promise<boolean>;
+  loginWithPasskey: () => Promise<boolean>;
   register: (data: UserSession & { password?: string }) => Promise<boolean>;
   resetPassword: (emailOrRfc: string, newPass: string) => Promise<boolean>;
   logout: () => void;
@@ -33,6 +35,7 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   isAuthenticated: false,
   login: async () => false,
+  loginWithPasskey: async () => false,
   register: async () => false,
   resetPassword: async () => false,
   logout: () => {},
@@ -86,6 +89,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const session: UserSession = {
       email,
       nombre: email.split("@")[0].toUpperCase(),
+      rfc: "XAXX010101000",
+    };
+
+    setToken(jwt);
+    setUser(session);
+    return true;
+  };
+
+  const loginWithPasskey = async (): Promise<boolean> => {
+    const authResult = await passkeyService.autenticarPasskey();
+
+    const simulatedHeader = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+    const simulatedPayload = btoa(
+      JSON.stringify({
+        sub: authResult.usuario,
+        nombre: authResult.nombre,
+        auth_method: "passkey",
+        exp: Math.floor(Date.now() / 1000) + 86400,
+      })
+    );
+    const simulatedSignature = btoa("jwt_secret_tizoncito_token");
+    const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
+
+    const session: UserSession = {
+      email: authResult.usuario,
+      nombre: authResult.nombre,
       rfc: "XAXX010101000",
     };
 
@@ -151,6 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated,
         login,
+        loginWithPasskey,
         register,
         resetPassword,
         logout,
