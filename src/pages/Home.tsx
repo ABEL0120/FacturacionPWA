@@ -9,6 +9,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { facturacionApi, TicketBusquedaParams } from "../api/facturacionApi";
+import { TrompoLogo } from "../components/TrompoLogo";
 
 export const Home: React.FC = () => {
   const [sucursal, setSucursal] = useState<string>("1");
@@ -57,16 +58,8 @@ export const Home: React.FC = () => {
             />
           </IonButtons>
           <div className="flex items-center gap-3">
-            {/* Logo de trompo / flama */}
-            <div className="flex items-center justify-center w-8 h-8 rounded bg-gradient-to-br from-orange-500 to-amber-600 shadow-sm shrink-0">
-              <svg
-                viewBox="0 0 24 24"
-                className="w-5 h-5 fill-white text-white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M12 2C10.5 4 8 7 8 10c0 1.8.8 3.4 2 4.5V19c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-4.5c1.2-1.1 2-2.7 2-4.5 0-3-2.5-6-4-8zm-1 19h2v2h-2v-2z" />
-              </svg>
-            </div>
+            {/* Logo de trompo oficial */}
+            <TrompoLogo className="w-8 h-8 shrink-0 drop-shadow" />
             <div className="flex flex-col leading-tight">
               <span className="text-base sm:text-lg font-black tracking-wider uppercase text-white font-sans">
                 EL TIZONCITO

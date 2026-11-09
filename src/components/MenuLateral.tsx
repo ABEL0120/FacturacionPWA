@@ -14,6 +14,7 @@ import {
 } from "@ionic/react";
 import { homeOutline } from "ionicons/icons";
 import { useLocation } from "react-router-dom";
+import { TrompoLogo } from "./TrompoLogo";
 
 export const MenuLateral: React.FC = () => {
   const location = useLocation();
@@ -21,10 +22,13 @@ export const MenuLateral: React.FC = () => {
   return (
     <IonMenu contentId="main-content" type="overlay">
       <IonHeader className="ion-no-border">
-        <IonToolbar className="tizoncito-toolbar">
-          <IonTitle className="font-bold text-white text-base">
-            El Tizoncito
-          </IonTitle>
+        <IonToolbar className="tizoncito-toolbar px-2">
+          <div className="flex items-center gap-2 px-3 py-1">
+            <TrompoLogo className="w-6 h-6 shrink-0 drop-shadow" />
+            <span className="font-black text-white text-base tracking-wider uppercase">
+              El Tizoncito
+            </span>
+          </div>
         </IonToolbar>
       </IonHeader>
 

@@ -1,6 +1,65 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" rx="38.400000000000006" fill="#2563eb"/>
-  <path d="M96 42.24 L144 61.44 V105.60000000000001 C144 138.24 96 157.44 96 157.44 C96 157.44 48 138.24 48 105.60000000000001 V61.44 Z" fill="none" stroke="#ffffff" stroke-width="9.600000000000001" stroke-linejoin="round"/>
-  <path d="M80.64 97.92 L92.16 109.44 L111.35999999999999 86.4" fill="none" stroke="#ffffff" stroke-width="9.600000000000001" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" fill="#142642"/>
+  <g transform="translate(49, 25) scale(0.94)">
+    <!-- Skewer top stick -->
+    <rect x="48" y="2" width="4" height="14" rx="2" fill="#F2720C" />
+
+    <!-- Top pineapple / onion -->
+    <ellipse cx="50" cy="20" rx="15" ry="9" fill="#F2720C" />
+
+    <!-- Skewer neck -->
+    <rect x="47" y="27" width="6" height="6" rx="2" fill="#F2720C" />
+
+    <!-- Main Trompo Body with Left Flame Wings -->
+    <path
+      d="M 28 34
+         C 20 34, 15 40, 16 48
+         C 17 55, 21 61, 26 66
+         C 18 67, 10 70, 6 77
+         C 3 83, 6 88, 14 88
+         C 21 88, 26 83, 30 78
+         C 24 81, 18 86, 15 92
+         C 12 97, 15 102, 22 102
+         C 29 102, 34 96, 38 90
+         C 41 97, 45 106, 48 114
+         C 49 116, 51 116, 52 114
+         C 56 104, 65 86, 73 68
+         C 80 54, 84 43, 80 37
+         C 77 34, 70 34, 50 34
+         Z"
+      fill="#F2720C"
+    />
+
+    <!-- Bottom bulb and skewer tip -->
+    <circle cx="50" cy="122" r="7" fill="#F2720C" />
+    <polygon points="48,128 52,128 50,146" fill="#F2720C" />
+
+    <!-- Stylized White Flame Ribbons -->
+    <path
+      d="M 37 53
+         C 42 45, 52 39, 61 43
+         C 56 50, 48 59, 42 66
+         C 38 61, 36 57, 37 53
+         Z"
+      fill="#FFFFFF"
+    />
+
+    <path
+      d="M 28 71
+         C 35 60, 52 49, 64 56
+         C 57 67, 45 79, 36 84
+         C 30 79, 27 75, 28 71
+         Z"
+      fill="#FFFFFF"
+    />
+
+    <path
+      d="M 37 88
+         C 43 77, 56 69, 68 76
+         C 62 86, 51 98, 43 103
+         C 38 98, 35 93, 37 88
+         Z"
+      fill="#FFFFFF"
+    />
+  </g>
 </svg>
