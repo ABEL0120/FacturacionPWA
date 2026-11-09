@@ -7,11 +7,18 @@ import {
   IonButtons,
   IonMenuButton,
   IonSpinner,
+  IonIcon,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
+import { logOutOutline, logInOutline } from "ionicons/icons";
 import { facturacionApi, TicketBusquedaParams } from "../api/facturacionApi";
 import { TrompoLogo } from "../components/TrompoLogo";
+import { useAuth } from "../context/AuthContext";
 
 export const Home: React.FC = () => {
+  const history = useHistory();
+  const { user, isAuthenticated, logout } = useAuth();
+
   const [sucursal, setSucursal] = useState<string>("1");
   const [folio, setFolio] = useState<string>("");
   const [monto, setMonto] = useState<string>("");
@@ -65,11 +72,49 @@ export const Home: React.FC = () => {
               </span>
             </div>
           </div>
+          <IonButtons slot="end">
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  history.replace("/login");
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+              >
+                <IonIcon icon={logOutOutline} className="text-sm" />
+                <span className="hidden sm:inline">Salir</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => history.push("/login")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f2720c] hover:bg-[#d96508] text-white text-xs font-bold transition-colors shadow-sm"
+              >
+                <IonIcon icon={logInOutline} className="text-sm" />
+                <span>Acceder</span>
+              </button>
+            )}
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="bg-white" style={{ "--background": "#ffffff" }}>
         <div className="max-w-5xl mx-auto px-4 py-6 sm:py-10 space-y-6">
+          {isAuthenticated && user && (
+            <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Sesión iniciada como:</p>
+                <p className="text-sm font-black text-slate-800">{user.nombre || user.email}</p>
+              </div>
+              {user.rfc && (
+                <span className="px-2.5 py-1 bg-[#142642] text-white text-[11px] font-bold rounded-lg uppercase tracking-wider">
+                  RFC: {user.rfc}
+                </span>
+              )}
+            </div>
+          )}
+
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
             Facturación en línea
           </h1>

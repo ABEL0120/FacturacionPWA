@@ -3,7 +3,6 @@ import {
   IonMenu,
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonContent,
   IonList,
   IonItem,
@@ -12,12 +11,20 @@ import {
   IonMenuToggle,
   IonFooter,
 } from "@ionic/react";
-import { homeOutline } from "ionicons/icons";
-import { useLocation } from "react-router-dom";
+import { homeOutline, logInOutline, logOutOutline, personCircleOutline } from "ionicons/icons";
+import { useLocation, useHistory } from "react-router-dom";
 import { TrompoLogo } from "./TrompoLogo";
+import { useAuth } from "../context/AuthContext";
 
 export const MenuLateral: React.FC = () => {
   const location = useLocation();
+  const history = useHistory();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    history.replace("/login");
+  };
 
   return (
     <IonMenu contentId="main-content" type="overlay">
@@ -33,6 +40,22 @@ export const MenuLateral: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding-vertical">
+        {isAuthenticated && user && (
+          <div className="mx-3 mb-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#142642] text-white flex items-center justify-center font-black text-sm uppercase shrink-0">
+              {user.nombre ? user.nombre.charAt(0) : "U"}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-xs font-black text-slate-800 truncate">
+                {user.nombre || "Usuario"}
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">
+                {user.email}
+              </p>
+            </div>
+          </div>
+        )}
+
         <IonList lines="none" className="space-y-1 px-2">
           <IonMenuToggle autoHide={false}>
             <IonItem
@@ -54,9 +77,39 @@ export const MenuLateral: React.FC = () => {
                     : "text-slate-500"
                 }
               />
-              <IonLabel>Inicio</IonLabel>
+              <IonLabel>Inicio / Facturación</IonLabel>
             </IonItem>
           </IonMenuToggle>
+
+          {!isAuthenticated ? (
+            <IonMenuToggle autoHide={false}>
+              <IonItem
+                routerLink="/login"
+                routerDirection="none"
+                className={`rounded-xl transition-colors cursor-pointer ${
+                  location.pathname === "/login"
+                    ? "text-blue-600 font-bold bg-blue-50/80"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+                detail={false}
+              >
+                <IonIcon slot="start" icon={logInOutline} className="text-slate-500" />
+                <IonLabel>Iniciar Sesión</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+          ) : (
+            <IonMenuToggle autoHide={false}>
+              <IonItem
+                button
+                onClick={handleLogout}
+                className="rounded-xl transition-colors cursor-pointer text-rose-600 hover:bg-rose-50"
+                detail={false}
+              >
+                <IonIcon slot="start" icon={logOutOutline} className="text-rose-600" />
+                <IonLabel className="text-rose-600 font-bold">Cerrar Sesión</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+          )}
         </IonList>
       </IonContent>
 
@@ -70,4 +123,3 @@ export const MenuLateral: React.FC = () => {
 };
 
 export default MenuLateral;
-

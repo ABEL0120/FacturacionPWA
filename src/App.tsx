@@ -11,7 +11,11 @@ import { IonReactRouter } from "@ionic/react-router";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { PwaInstallGate } from "./components/PwaInstallGate";
 import { MenuLateral } from "./components/MenuLateral";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Home from "./pages/Home";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 import "@ionic/react/css/core.css";
 import "@ionic/react/css/normalize.css";
@@ -82,21 +86,29 @@ function UpdatePrompt() {
   );
 }
 
+const RootRedirect: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  return <Redirect to={isAuthenticated ? "/home" : "/login"} />;
+};
+
 const App: React.FC = () => (
   <IonApp>
-    <UpdatePrompt />
-    <OfflineBanner />
-    <PwaInstallGate>
-      <IonReactRouter>
-        <MenuLateral />
-        <IonRouterOutlet id="main-content">
-          <Route exact path="/home" component={Home} />
-          <Route exact path="/">
-            <Redirect to="/home" />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </PwaInstallGate>
+    <AuthProvider>
+      <UpdatePrompt />
+      <OfflineBanner />
+      <PwaInstallGate>
+        <IonReactRouter>
+          <MenuLateral />
+          <IonRouterOutlet id="main-content">
+            <Route exact path="/login" component={LoginPage} />
+            <Route exact path="/registro" component={RegisterPage} />
+            <Route exact path="/recuperar" component={ForgotPasswordPage} />
+            <Route exact path="/home" component={Home} />
+            <Route exact path="/" component={RootRedirect} />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </PwaInstallGate>
+    </AuthProvider>
   </IonApp>
 );
 
