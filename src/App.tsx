@@ -30,22 +30,20 @@ setupIonicReact();
 
 function UpdatePrompt() {
   const {
-    needRefresh: [needRefresh],
+    needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
+    immediate: true,
     onRegisteredSW(swUrl, r) {
       if (r) {
         const checkUpdate = () => {
           if (typeof navigator === "undefined" || !navigator.onLine) return;
-          if (!r.active || r.installing || r.waiting) return;
           try {
-            const p = r.update();
-            if (p && typeof p.catch === "function") {
-              p.catch(() => {});
-            }
+            r.update().catch(() => {});
           } catch {}
         };
-        const intervalId = setInterval(checkUpdate, 60000);
+        setTimeout(checkUpdate, 1500);
+        const intervalId = setInterval(checkUpdate, 10000);
         const handleVisibility = () => {
           if (document.visibilityState === "visible") checkUpdate();
         };
@@ -53,15 +51,23 @@ function UpdatePrompt() {
         window.addEventListener("online", checkUpdate);
       }
     },
-    onRegisterError() {},
+    onRegisterError(err) {
+      console.warn("[PWA] Error de registro:", err);
+    },
   });
+
+  React.useEffect(() => {
+    (window as any).__simularActualizacion = () => {
+      setNeedRefresh(true);
+    };
+  }, [setNeedRefresh]);
 
   return (
     <IonAlert
       isOpen={needRefresh}
       backdropDismiss={false}
       header="Actualización Disponible"
-      message="Hay una nueva versión de Facturación PWA disponible."
+      message="Hay una nueva versión de Facturación PWA disponible. Es necesario actualizar para continuar."
       buttons={[
         {
           text: "Actualizar Ahora",
