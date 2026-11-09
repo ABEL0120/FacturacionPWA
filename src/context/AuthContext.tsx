@@ -5,6 +5,17 @@ export interface UserSession {
   nombre?: string;
   rfc?: string;
   telefono?: string;
+  direccion?: string;
+  noExterior?: string;
+  noInterior?: string;
+  colonia?: string;
+  municipio?: string;
+  ciudad?: string;
+  estado?: string;
+  cp?: string;
+  regimenFiscal?: string;
+  formaPago?: string;
+  usoCfdi?: string;
 }
 
 interface AuthContextType {
@@ -103,6 +114,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       nombre: data.nombre || data.email.split("@")[0],
       rfc: data.rfc,
       telefono: data.telefono,
+      direccion: data.direccion,
+      noExterior: data.noExterior,
+      noInterior: data.noInterior,
+      colonia: data.colonia,
+      municipio: data.municipio,
+      ciudad: data.ciudad,
+      estado: data.estado,
+      cp: data.cp,
+      regimenFiscal: data.regimenFiscal,
+      formaPago: data.formaPago,
+      usoCfdi: data.usoCfdi,
     };
 
     setToken(jwt);

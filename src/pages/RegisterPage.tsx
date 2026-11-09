@@ -9,13 +9,14 @@ import {
 import {
   arrowBackOutline,
   businessOutline,
-  personOutline,
-  mailOutline,
-  callOutline,
+  locationOutline,
+  receiptOutline,
   lockClosedOutline,
   eyeOutline,
   eyeOffOutline,
   checkmarkCircleOutline,
+  callOutline,
+  mailOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TrompoLogo } from "../components/TrompoLogo";
@@ -28,8 +29,19 @@ export const RegisterPage: React.FC = () => {
 
   const [rfc, setRfc] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
-  const [email, setEmail] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const [noExterior, setNoExterior] = useState("");
+  const [noInterior, setNoInterior] = useState("");
+  const [colonia, setColonia] = useState("");
+  const [municipio, setMunicipio] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [estado, setEstado] = useState("Coahuila");
+  const [cp, setCp] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [email, setEmail] = useState("");
+  const [regimenFiscal, setRegimenFiscal] = useState("612");
+  const [formaPago, setFormaPago] = useState("01");
+  const [usoCfdi, setUsoCfdi] = useState("G01");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +52,7 @@ export const RegisterPage: React.FC = () => {
 
     if (!rfc.trim() || rfc.trim().length < 12) {
       present({
-        message: "Ingresa un RFC válido (mínimo 12 caracteres).",
+        message: "Ingresa un RFC válido de 12 o 13 caracteres.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -50,7 +62,67 @@ export const RegisterPage: React.FC = () => {
 
     if (!razonSocial.trim()) {
       present({
-        message: "Ingresa tu nombre o razón social.",
+        message: "Ingresa la Razón Social o Nombre Completo.",
+        duration: 2500,
+        color: "warning",
+        position: "top",
+      });
+      return;
+    }
+
+    if (!direccion.trim()) {
+      present({
+        message: "Ingresa la Calle / Dirección.",
+        duration: 2500,
+        color: "warning",
+        position: "top",
+      });
+      return;
+    }
+
+    if (!noExterior.trim()) {
+      present({
+        message: "Ingresa el Número Exterior.",
+        duration: 2500,
+        color: "warning",
+        position: "top",
+      });
+      return;
+    }
+
+    if (!colonia.trim()) {
+      present({
+        message: "Ingresa la Colonia.",
+        duration: 2500,
+        color: "warning",
+        position: "top",
+      });
+      return;
+    }
+
+    if (!municipio.trim()) {
+      present({
+        message: "Ingresa la Delegación o Municipio.",
+        duration: 2500,
+        color: "warning",
+        position: "top",
+      });
+      return;
+    }
+
+    if (!cp.trim() || cp.trim().length !== 5) {
+      present({
+        message: "Ingresa un Código Postal válido de 5 dígitos.",
+        duration: 2500,
+        color: "warning",
+        position: "top",
+      });
+      return;
+    }
+
+    if (!telefono.trim() || telefono.trim().length < 10) {
+      present({
+        message: "Ingresa un teléfono o celular a 10 dígitos.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -91,15 +163,26 @@ export const RegisterPage: React.FC = () => {
     setLoading(true);
     try {
       await register({
-        email: email.trim(),
-        nombre: razonSocial.trim(),
         rfc: rfc.trim().toUpperCase(),
+        nombre: razonSocial.trim(),
+        direccion: direccion.trim(),
+        noExterior: noExterior.trim(),
+        noInterior: noInterior.trim(),
+        colonia: colonia.trim(),
+        municipio: municipio.trim(),
+        ciudad: ciudad.trim(),
+        estado: estado.trim(),
+        cp: cp.trim(),
         telefono: telefono.trim(),
+        email: email.trim(),
+        regimenFiscal,
+        formaPago,
+        usoCfdi,
         password,
       });
 
       present({
-        message: "¡Cuenta creada exitosamente! Bienvenido a Facturación.",
+        message: "¡Registro completado exitosamente!",
         duration: 2000,
         color: "success",
         position: "top",
@@ -108,7 +191,7 @@ export const RegisterPage: React.FC = () => {
       history.replace("/home");
     } catch {
       present({
-        message: "No fue posible crear la cuenta. Intenta de nuevo.",
+        message: "No fue posible completar el registro. Intenta de nuevo.",
         duration: 3000,
         color: "danger",
         position: "top",
@@ -122,7 +205,7 @@ export const RegisterPage: React.FC = () => {
     <IonPage>
       <IonContent fullscreen className="bg-slate-100">
         <div className="min-h-full py-6 px-4 sm:px-6 lg:px-8">
-          <div className="w-full max-w-lg mx-auto space-y-6">
+          <div className="w-full max-w-3xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
               <button
                 type="button"
@@ -140,166 +223,385 @@ export const RegisterPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-6">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-8">
               <div className="space-y-1">
-                <h1 className="text-2xl font-black text-slate-800">
-                  Crear Cuenta
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#f2720c]">
+                  CFDI 4.0
+                </span>
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
+                  Registro de Datos Fiscales
                 </h1>
                 <p className="text-xs text-slate-500">
-                  Registra tus datos fiscales para emitir y consultar facturas
+                  Captura tu información fiscal y de facturación para la emisión de tus comprobantes
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">
-                    RFC *
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-3.5 text-slate-400">
-                      <IonIcon icon={businessOutline} className="text-lg" />
-                    </span>
-                    <input
-                      type="text"
-                      maxLength={13}
-                      value={rfc}
-                      onChange={(e) => setRfc(e.target.value.toUpperCase())}
-                      placeholder="XAXX010101000"
-                      className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm font-semibold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
-                    />
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                    <IonIcon icon={businessOutline} className="text-lg text-[#f2720c]" />
+                    <span>Datos del Contribuyente</span>
                   </div>
-                </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">
-                    Nombre Completo o Razón Social *
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-3.5 text-slate-400">
-                      <IonIcon icon={personOutline} className="text-lg" />
-                    </span>
-                    <input
-                      type="text"
-                      value={razonSocial}
-                      onChange={(e) => setRazonSocial(e.target.value)}
-                      placeholder="Nombre o empresa fiscal"
-                      className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">
-                      Correo Electrónico *
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3.5 text-slate-400">
-                        <IonIcon icon={mailOutline} className="text-lg" />
-                      </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5 sm:col-span-1">
+                      <label className="text-xs font-bold text-slate-700">
+                        RFC *
+                      </label>
                       <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="tu@correo.com"
-                        className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        type="text"
+                        maxLength={13}
+                        value={rfc}
+                        onChange={(e) => setRfc(e.target.value.toUpperCase())}
+                        placeholder="XAXX010101000"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
                       />
                     </div>
-                  </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">
-                      Teléfono Celular
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3.5 text-slate-400">
-                        <IonIcon icon={callOutline} className="text-lg" />
-                      </span>
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700">
+                        Razón Social / Nombre Completo *
+                      </label>
                       <input
-                        type="tel"
-                        maxLength={10}
-                        value={telefono}
-                        onChange={(e) => setTelefono(e.target.value.replace(/\D/g, ""))}
-                        placeholder="10 dígitos"
-                        className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        type="text"
+                        value={razonSocial}
+                        onChange={(e) => setRazonSocial(e.target.value)}
+                        placeholder="Nombre o empresa tal como aparece en CSF"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">
-                      Contraseña *
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3.5 text-slate-400">
-                        <IonIcon icon={lockClosedOutline} className="text-lg" />
-                      </span>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                    <IonIcon icon={locationOutline} className="text-lg text-[#f2720c]" />
+                    <span>Domicilio Fiscal</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+                    <div className="space-y-1.5 sm:col-span-4">
+                      <label className="text-xs font-bold text-slate-700">
+                        Dirección (Calle) *
+                      </label>
                       <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Mínimo 6 carácteres"
-                        className="w-full h-11 pl-11 pr-10 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        type="text"
+                        value={direccion}
+                        onChange={(e) => setDireccion(e.target.value)}
+                        placeholder="Nombre de la calle"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-1">
+                      <label className="text-xs font-bold text-slate-700">
+                        No. Ext. *
+                      </label>
+                      <input
+                        type="text"
+                        value={noExterior}
+                        onChange={(e) => setNoExterior(e.target.value)}
+                        placeholder="Ext."
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-1">
+                      <label className="text-xs font-bold text-slate-700">
+                        No. Int.
+                      </label>
+                      <input
+                        type="text"
+                        value={noInterior}
+                        onChange={(e) => setNoInterior(e.target.value)}
+                        placeholder="Int."
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-4">
+                      <label className="text-xs font-bold text-slate-700">
+                        Colonia *
+                      </label>
+                      <input
+                        type="text"
+                        value={colonia}
+                        onChange={(e) => setColonia(e.target.value)}
+                        placeholder="Colonia o Fraccionamiento"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700">
+                        Código Postal (CP) *
+                      </label>
+                      <input
+                        type="text"
+                        maxLength={5}
+                        value={cp}
+                        onChange={(e) => setCp(e.target.value.replace(/\D/g, ""))}
+                        placeholder="5 dígitos"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700">
+                        Deleg. / Municipio *
+                      </label>
+                      <input
+                        type="text"
+                        value={municipio}
+                        onChange={(e) => setMunicipio(e.target.value)}
+                        placeholder="Municipio o Alcaldía"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700">
+                        Ciudad
+                      </label>
+                      <input
+                        type="text"
+                        value={ciudad}
+                        onChange={(e) => setCiudad(e.target.value)}
+                        placeholder="Ciudad"
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700">
+                        Estado *
+                      </label>
+                      <select
+                        value={estado}
+                        onChange={(e) => setEstado(e.target.value)}
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
                       >
-                        <IonIcon icon={showPassword ? eyeOffOutline : eyeOutline} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">
-                      Confirmar Contraseña *
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3.5 text-slate-400">
-                        <IonIcon icon={lockClosedOutline} className="text-lg" />
-                      </span>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Repite la contraseña"
-                        className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
-                      />
+                        <option value="Aguascalientes">Aguascalientes</option>
+                        <option value="Baja California">Baja California</option>
+                        <option value="Baja California Sur">Baja California Sur</option>
+                        <option value="Campeche">Campeche</option>
+                        <option value="Chiapas">Chiapas</option>
+                        <option value="Chihuahua">Chihuahua</option>
+                        <option value="Ciudad de México">Ciudad de México</option>
+                        <option value="Coahuila">Coahuila</option>
+                        <option value="Colima">Colima</option>
+                        <option value="Durango">Durango</option>
+                        <option value="Estado de México">Estado de México</option>
+                        <option value="Guanajuato">Guanajuato</option>
+                        <option value="Guerrero">Guerrero</option>
+                        <option value="Hidalgo">Hidalgo</option>
+                        <option value="Jalisco">Jalisco</option>
+                        <option value="Michoacán">Michoacán</option>
+                        <option value="Morelos">Morelos</option>
+                        <option value="Nayarit">Nayarit</option>
+                        <option value="Nuevo León">Nuevo León</option>
+                        <option value="Oaxaca">Oaxaca</option>
+                        <option value="Puebla">Puebla</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <option value="Quintana Roo">Quintana Roo</option>
+                        <option value="San Luis Potosí">San Luis Potosí</option>
+                        <option value="Sinaloa">Sinaloa</option>
+                        <option value="Sonora">Sonora</option>
+                        <option value="Tabasco">Tabasco</option>
+                        <option value="Tamaulipas">Tamaulipas</option>
+                        <option value="Tlaxcala">Tlaxcala</option>
+                        <option value="Veracruz">Veracruz</option>
+                        <option value="Yucatán">Yucatán</option>
+                        <option value="Zacatecas">Zacatecas</option>
+                      </select>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                    <IonIcon icon={receiptOutline} className="text-lg text-[#f2720c]" />
+                    <span>Datos Fiscales CFDI 4.0</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5 sm:col-span-3">
+                      <label className="text-xs font-bold text-slate-700">
+                        Régimen Fiscal *
+                      </label>
+                      <select
+                        value={regimenFiscal}
+                        onChange={(e) => setRegimenFiscal(e.target.value)}
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                      >
+                        <option value="601">601 - General de Ley Personas Morales</option>
+                        <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+                        <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                        <option value="606">606 - Arrendamiento</option>
+                        <option value="612">612 - Personas Físicas con Actividades Empresariales y Profesionales</option>
+                        <option value="621">621 - Incorporación Fiscal</option>
+                        <option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+                        <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
+                        <option value="616">616 - Sin obligaciones fiscales</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700">
+                        Uso de CFDI *
+                      </label>
+                      <select
+                        value={usoCfdi}
+                        onChange={(e) => setUsoCfdi(e.target.value)}
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                      >
+                        <option value="G01">G01 - Adquisición de mercancías</option>
+                        <option value="G03">G03 - Gastos en general</option>
+                        <option value="D01">D01 - Honorarios médicos, dentales y gastos hospitalarios</option>
+                        <option value="D02">D02 - Gastos médicos por incapacidad o discapacidad</option>
+                        <option value="D04">D04 - Donativos</option>
+                        <option value="D07">D07 - Primas por seguros de gastos médicos</option>
+                        <option value="D08">D08 - Gastos de transportación escolar obligatoria</option>
+                        <option value="D10">D10 - Pagos por servicios educativos (colegiaturas)</option>
+                        <option value="S01">S01 - Sin efectos fiscales</option>
+                        <option value="CP01">CP01 - Pagos</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-1">
+                      <label className="text-xs font-bold text-slate-700">
+                        Forma de Pago
+                      </label>
+                      <select
+                        value={formaPago}
+                        onChange={(e) => setFormaPago(e.target.value)}
+                        className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all cursor-pointer"
+                      >
+                        <option value="01">01 - Efectivo</option>
+                        <option value="02">02 - Cheque nominativo</option>
+                        <option value="03">03 - Transferencia electrónica</option>
+                        <option value="04">04 - Tarjeta de crédito</option>
+                        <option value="28">28 - Tarjeta de débito</option>
+                        <option value="99">99 - Por definir</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-sm font-black text-[#142642]">
+                    <IonIcon icon={lockClosedOutline} className="text-lg text-[#f2720c]" />
+                    <span>Contacto y Acceso a la Cuenta</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">
+                        Teléfono / Celular *
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3.5 text-slate-400">
+                          <IonIcon icon={callOutline} className="text-lg" />
+                        </span>
+                        <input
+                          type="tel"
+                          maxLength={10}
+                          value={telefono}
+                          onChange={(e) => setTelefono(e.target.value.replace(/\D/g, ""))}
+                          placeholder="10 dígitos"
+                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">
+                        Correo Electrónico *
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3.5 text-slate-400">
+                          <IonIcon icon={mailOutline} className="text-lg" />
+                        </span>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="ejemplo@correo.com"
+                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">
+                        Contraseña *
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3.5 text-slate-400">
+                          <IonIcon icon={lockClosedOutline} className="text-lg" />
+                        </span>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Mínimo 6 caracteres"
+                          className="w-full h-11 pl-11 pr-10 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+                        >
+                          <IonIcon icon={showPassword ? eyeOffOutline : eyeOutline} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">
+                        Repita Contraseña *
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3.5 text-slate-400">
+                          <IonIcon icon={lockClosedOutline} className="text-lg" />
+                        </span>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Repite la contraseña"
+                          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#142642] focus:ring-2 focus:ring-[#142642]/10 transition-all placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-12 bg-[#142642] hover:bg-[#1a3258] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                    className="flex-1 h-12 bg-[#142642] hover:bg-[#1a3258] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#142642]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                   >
                     {loading ? (
                       <IonSpinner name="dots" className="text-white h-5" />
                     ) : (
                       <>
                         <IonIcon icon={checkmarkCircleOutline} className="text-lg" />
-                        <span>Completar Registro</span>
+                        <span>Guardar y Registrarse</span>
                       </>
                     )}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => history.push("/login")}
+                    className="h-12 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors"
+                  >
+                    Regresar
+                  </button>
                 </div>
               </form>
-
-              <div className="pt-2 border-t border-slate-100 text-center text-xs text-slate-500">
-                ¿Ya tienes una cuenta?{" "}
-                <button
-                  type="button"
-                  onClick={() => history.push("/login")}
-                  className="font-bold text-[#142642] hover:underline"
-                >
-                  Inicia sesión aquí
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -309,4 +611,3 @@ export const RegisterPage: React.FC = () => {
 };
 
 export default RegisterPage;
-
