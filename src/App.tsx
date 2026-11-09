@@ -10,6 +10,7 @@ import { useRegisterSW } from "virtual:pwa-register/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { PwaInstallGate } from "./components/PwaInstallGate";
+import { MenuLateral } from "./components/MenuLateral";
 import Home from "./pages/Home";
 
 /* Ionic Core CSS */
@@ -82,7 +83,8 @@ const App: React.FC = () => (
     <OfflineBanner />
     <PwaInstallGate>
       <IonReactRouter>
-        <IonRouterOutlet>
+        <MenuLateral />
+        <IonRouterOutlet id="main-content">
           <Route exact path="/home" component={Home} />
           <Route exact path="/">
             <Redirect to="/home" />

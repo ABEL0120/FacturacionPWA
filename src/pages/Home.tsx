@@ -4,6 +4,8 @@ import {
   IonHeader,
   IonToolbar,
   IonContent,
+  IonButtons,
+  IonMenuButton,
   IonSpinner,
 } from "@ionic/react";
 import { facturacionApi, TicketBusquedaParams } from "../api/facturacionApi";
@@ -47,7 +49,14 @@ export const Home: React.FC = () => {
     <IonPage>
       {/* Barra superior estilo El Tizoncito */}
       <IonHeader className="ion-no-border">
-        <IonToolbar style={{ "--background": "#142642", "--color": "#ffffff" }} className="px-4 py-1">
+        <IonToolbar className="tizoncito-toolbar px-2 py-1">
+          <IonButtons slot="start">
+            <IonMenuButton
+              autoHide={false}
+              style={{ color: "#ffffff", "--color": "#ffffff" }}
+              className="text-white mr-1"
+            />
+          </IonButtons>
           <div className="flex items-center gap-3">
             {/* Logo de trompo / flama */}
             <div className="flex items-center justify-center w-8 h-8 rounded bg-gradient-to-br from-orange-500 to-amber-600 shadow-sm shrink-0">

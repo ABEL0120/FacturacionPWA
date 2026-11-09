@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --host --port 4173",
+    "tunnel": "cloudflared tunnel --url http://localhost:4173",
+    "tunnel:quick": "npx untun tunnel http://localhost:4173",
     "lint": "eslint"
   },
   "dependencies": {
