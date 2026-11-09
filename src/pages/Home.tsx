@@ -11,7 +11,7 @@ import {
 import { facturacionApi, TicketBusquedaParams } from "../api/facturacionApi";
 
 export const Home: React.FC = () => {
-  const [sucursal, setSucursal] = useState<string>("NaN");
+  const [sucursal, setSucursal] = useState<string>("1");
   const [folio, setFolio] = useState<string>("");
   const [monto, setMonto] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -28,13 +28,12 @@ export const Home: React.FC = () => {
     setMensaje(null);
 
     try {
-      // Estructura lista para conectar con la API cuando esté disponible
       const params: TicketBusquedaParams = {
         sucursal,
         folio: folio.trim(),
         monto: monto.trim(),
       };
-      
+
       // Llamada preparada
       // await facturacionApi.buscarTicket(params);
       setMensaje(`Buscando ticket folio: ${folio} con monto: $${monto}`);
@@ -116,15 +115,11 @@ export const Home: React.FC = () => {
                     onChange={(e) => setSucursal(e.target.value)}
                     className="w-full h-11 px-3 border border-slate-300 rounded-md bg-white text-slate-800 text-sm focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
                   >
-                    <option value="NaN">NaN</option>
                     <option value="1">Sucursal 1</option>
                     <option value="2">Sucursal 2</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-600">
-                    <svg
-                      className="w-4 h-4 fill-current"
-                      viewBox="0 0 20 20"
-                    >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
                       <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                     </svg>
                   </div>
