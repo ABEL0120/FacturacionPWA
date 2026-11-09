@@ -1,11 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { authService, LoginResponse, RegistroClienteRequest } from "../services/authService";
 import { passkeyService } from "../services/passkeyService";
 
 export interface UserSession {
+  numeroCliente?: number;
   email: string;
   nombre?: string;
   rfc?: string;
   telefono?: string;
+  esAdmin?: boolean;
+  esBfmafb?: boolean;
+  esUsuario?: boolean;
   direccion?: string;
   noExterior?: string;
   noInterior?: string;
@@ -23,10 +28,10 @@ interface AuthContextType {
   user: UserSession | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (email: string, password?: string) => Promise<boolean>;
+  login: (usuario: string, contrasena: string) => Promise<boolean>;
   loginWithPasskey: () => Promise<boolean>;
-  register: (data: UserSession & { password?: string }) => Promise<boolean>;
-  resetPassword: (emailOrRfc: string, newPass: string) => Promise<boolean>;
+  register: (data: RegistroClienteRequest) => Promise<boolean>;
+  resetPassword: (rfc: string, mail: string, nuevaContrasena: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -71,15 +76,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user, token]);
 
-  const login = async (email: string): Promise<boolean> => {
-    await new Promise((res) => setTimeout(res, 600));
+  const login = async (usuario: string, contrasena: string): Promise<boolean> => {
+    const data: LoginResponse = await authService.login(usuario, contrasena);
 
     const simulatedHeader = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const simulatedPayload = btoa(
       JSON.stringify({
-        sub: email,
-        nombre: email.split("@")[0].toUpperCase(),
-        rfc: "XAXX010101000",
+        sub: data.mail,
+        numeroCliente: data.numeroCliente,
+        nombre: data.razonSocial,
+        esAdmin: data.esAdmin,
+        esBfmafb: data.esBfmafb,
+        esUsuario: data.esUsuario,
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
     );
@@ -87,9 +95,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
 
     const session: UserSession = {
-      email,
-      nombre: email.split("@")[0].toUpperCase(),
-      rfc: "XAXX010101000",
+      numeroCliente: data.numeroCliente,
+      email: data.mail,
+      nombre: data.razonSocial,
+      telefono: data.telefono,
+      esAdmin: data.esAdmin,
+      esBfmafb: data.esBfmafb,
+      esUsuario: data.esUsuario,
     };
 
     setToken(jwt);
@@ -115,7 +127,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const session: UserSession = {
       email: authResult.usuario,
       nombre: authResult.nombre,
-      rfc: "XAXX010101000",
     };
 
     setToken(jwt);
@@ -123,14 +134,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
-  const register = async (data: UserSession): Promise<boolean> => {
-    await new Promise((res) => setTimeout(res, 700));
+  const register = async (data: RegistroClienteRequest): Promise<boolean> => {
+    const res = await authService.registro(data);
 
     const simulatedHeader = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const simulatedPayload = btoa(
       JSON.stringify({
-        sub: data.email,
-        nombre: data.nombre,
+        sub: res.mail,
+        numeroCliente: res.numeroCliente,
+        nombre: res.razonSocial,
         rfc: data.rfc,
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
@@ -139,21 +151,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
 
     const session: UserSession = {
-      email: data.email,
-      nombre: data.nombre || data.email.split("@")[0],
+      numeroCliente: res.numeroCliente,
+      email: res.mail,
+      nombre: res.razonSocial,
       rfc: data.rfc,
-      telefono: data.telefono,
+      telefono: res.telefono || data.telefono,
       direccion: data.direccion,
-      noExterior: data.noExterior,
-      noInterior: data.noInterior,
+      noExterior: data.numeroExt,
+      noInterior: data.numeroInt,
       colonia: data.colonia,
-      municipio: data.municipio,
+      municipio: data.delegacion,
       ciudad: data.ciudad,
       estado: data.estado,
-      cp: data.cp,
+      cp: data.codigoPostal,
       regimenFiscal: data.regimenFiscal,
       formaPago: data.formaPago,
       usoCfdi: data.usoCfdi,
+      esUsuario: true,
     };
 
     setToken(jwt);
@@ -161,9 +175,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
-  const resetPassword = async (): Promise<boolean> => {
-    await new Promise((res) => setTimeout(res, 600));
-    return true;
+  const resetPassword = async (
+    rfc: string,
+    mail: string,
+    nuevaContrasena: string
+  ): Promise<boolean> => {
+    return await authService.recuperarContrasena({
+      rfc,
+      mail,
+      nuevaContrasena,
+      confirmarNuevaContrasena: nuevaContrasena,
+    });
   };
 
   const logout = () => {

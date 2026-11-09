@@ -19,11 +19,10 @@ import {
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { VentioLogo } from "../components/VentioLogo";
-import { useAuth } from "../context/AuthContext";
+import { authService } from "../services/authService";
 
 export const ForgotPasswordPage: React.FC = () => {
   const history = useHistory();
-  const { resetPassword } = useAuth();
   const [present] = useIonToast();
 
   const [paso, setPaso] = useState<1 | 2 | 3>(1);
@@ -58,23 +57,33 @@ export const ForgotPasswordPage: React.FC = () => {
     }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    setPaso(2);
-    present({
-      message: "Datos validados. Ahora ingresa tu nueva contraseña.",
-      duration: 2000,
-      color: "success",
-      position: "top",
-    });
+    try {
+      await authService.validarCuentaRecuperacion(rfc, contacto);
+      setPaso(2);
+      present({
+        message: "Cuenta validada. Ahora ingresa tu nueva contraseña.",
+        duration: 2500,
+        color: "success",
+        position: "top",
+      });
+    } catch (err: any) {
+      present({
+        message: err.message || "No se encontró una cuenta con esos datos.",
+        duration: 3500,
+        color: "danger",
+        position: "top",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCambiarPassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (nuevaPassword.length < 6) {
+    if (nuevaPassword.length < 3) {
       present({
-        message: "La nueva contraseña debe tener al menos 6 caracteres.",
+        message: "La nueva contraseña debe tener al menos 3 caracteres.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -94,12 +103,17 @@ export const ForgotPasswordPage: React.FC = () => {
 
     setLoading(true);
     try {
-      await resetPassword(rfc, nuevaPassword);
+      await authService.recuperarContrasena({
+        rfc: rfc.trim().toUpperCase(),
+        mail: contacto.trim(),
+        nuevaContrasena: nuevaPassword,
+        confirmarNuevaContrasena: confirmarPassword,
+      });
       setPaso(3);
-    } catch {
+    } catch (err: any) {
       present({
-        message: "No fue posible actualizar la contraseña.",
-        duration: 3000,
+        message: err.message || "No fue posible actualizar la contraseña.",
+        duration: 3500,
         color: "danger",
         position: "top",
       });

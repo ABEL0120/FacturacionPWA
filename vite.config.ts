@@ -130,7 +130,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       "/api": {
-        target: "https://localhost:7259",
+        target: "http://localhost:5121",
         changeOrigin: true,
         secure: false,
       },
@@ -144,7 +144,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       "/api": {
-        target: "https://localhost:7259",
+        target: "http://localhost:5121",
         changeOrigin: true,
         secure: false,
       },

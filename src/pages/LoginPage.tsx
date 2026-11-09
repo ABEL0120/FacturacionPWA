@@ -71,10 +71,10 @@ export const LoginPage: React.FC = () => {
         position: "top",
       });
       history.replace("/home");
-    } catch {
+    } catch (err: any) {
       present({
-        message: "Error al iniciar sesión. Verifica tus credenciales.",
-        duration: 3000,
+        message: err.message || "Error al iniciar sesión. Verifica tus credenciales.",
+        duration: 3500,
         color: "danger",
         position: "top",
       });
@@ -115,14 +115,14 @@ export const LoginPage: React.FC = () => {
           <div className="w-full max-w-md mx-auto my-auto space-y-6">
             <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#010080] shadow-xl shadow-[#010080]/20 border-4 border-white mb-2">
-                <VentioLogo className="w-12 h-12 drop-shadow-md" variant="white" />
+                <VentioLogo
+                  className="w-12 h-12 drop-shadow-md"
+                  variant="white"
+                />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-[#010080] tracking-tight uppercase">
                 VENTIO
               </h1>
-              <p className="text-xs font-bold tracking-widest text-[#0b5ed7] uppercase">
-                Facturación Electrónica CFDI 4.0
-              </p>
             </div>
 
             <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-6">
@@ -212,14 +212,6 @@ export const LoginPage: React.FC = () => {
 
               {supportsPasskey && (
                 <div className="space-y-3 pt-1">
-                  <div className="relative flex items-center justify-center">
-                    <div className="border-t border-slate-200 w-full" />
-                    <span className="bg-white px-2 text-[10px] uppercase font-bold text-slate-400 shrink-0">
-                      O accede al instante con
-                    </span>
-                    <div className="border-t border-slate-200 w-full" />
-                  </div>
-
                   <button
                     type="button"
                     disabled={passkeyLoading || loading}

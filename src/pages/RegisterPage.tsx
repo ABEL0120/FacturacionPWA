@@ -174,21 +174,22 @@ export const RegisterPage: React.FC = () => {
     try {
       await register({
         rfc: rfc.trim().toUpperCase(),
-        nombre: razonSocial.trim(),
-        direccion: direccion.trim(),
-        noExterior: noExterior.trim(),
-        noInterior: noInterior.trim(),
-        colonia: colonia.trim(),
-        municipio: municipio.trim(),
-        ciudad: ciudad.trim(),
-        estado: estado.trim(),
-        cp: cp.trim(),
+        razonSocial: razonSocial.trim().toUpperCase(),
+        mail: email.trim().toLowerCase(),
+        contraseña: password,
+        confirmarContraseña: confirmPassword,
         telefono: telefono.trim(),
-        email: email.trim(),
+        direccion: direccion.trim(),
+        numeroExt: noExterior.trim(),
+        numeroInt: noInterior.trim(),
+        colonia: colonia.trim(),
+        ciudad: ciudad.trim(),
+        delegacion: municipio.trim(),
+        estado: estado.trim(),
+        codigoPostal: cp.trim(),
         regimenFiscal,
         formaPago,
         usoCfdi,
-        password,
       });
 
       if (guardarPasskey && supportsPasskey) {
@@ -231,10 +232,10 @@ export const RegisterPage: React.FC = () => {
       }
 
       history.replace("/home");
-    } catch {
+    } catch (err: any) {
       present({
-        message: "No fue posible completar el registro. Intenta de nuevo.",
-        duration: 3000,
+        message: err.message || "No fue posible completar el registro. Intenta de nuevo.",
+        duration: 3500,
         color: "danger",
         position: "top",
       });
