@@ -73,7 +73,8 @@ export const LoginPage: React.FC = () => {
       history.replace("/home");
     } catch (err: any) {
       present({
-        message: err.message || "Error al iniciar sesión. Verifica tus credenciales.",
+        message:
+          err.message || "Error al iniciar sesión. Verifica tus credenciales.",
         duration: 3500,
         color: "danger",
         position: "top",
