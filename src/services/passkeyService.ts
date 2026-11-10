@@ -1,6 +1,8 @@
 import {
   browserSupportsWebAuthn,
   platformAuthenticatorIsAvailable,
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
   startRegistration,
   startAuthentication,
 } from "@simplewebauthn/browser";
@@ -77,7 +79,7 @@ export const passkeyService = {
     const userIdBytes = new TextEncoder().encode(usuario);
     const userIdBase64 = bufferToBase64Url(userIdBytes.buffer);
 
-    const optionsJSON: any = {
+    const optionsJSON: PublicKeyCredentialCreationOptionsJSON = {
       challenge: challengeBase64,
       rp: {
         name: "Facturación Ventio",
@@ -138,7 +140,7 @@ export const passkeyService = {
     crypto.getRandomValues(randomBuffer);
     const challengeBase64 = bufferToBase64Url(randomBuffer.buffer);
 
-    const optionsJSON: any = {
+    const optionsJSON: PublicKeyCredentialRequestOptionsJSON = {
       challenge: challengeBase64,
       timeout: 60000,
       userVerification: "preferred",

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ApiResponse } from "../types/auth.types";
 
 const baseURL = import.meta.env.VITE_API_URL || "/api";
 
@@ -10,8 +11,19 @@ export const apiClient = axios.create({
   timeout: 30000,
 });
 
-export function extractApiErrorMessage(err: any, fallback: string): string {
-  const data = err?.response?.data;
+interface ErrorPayload {
+  message?: unknown;
+  title?: unknown;
+  errors?: Record<string, unknown>;
+}
+
+export function extractApiErrorMessage(err: unknown, fallback: string): string {
+  const errObj =
+    typeof err === "object" && err !== null
+      ? (err as { response?: { data?: unknown }; message?: unknown })
+      : null;
+
+  const data = errObj?.response?.data;
   if (typeof data === "string") {
     const trimmed = data.trim();
     if (trimmed && !trimmed.startsWith("<")) {
@@ -19,25 +31,45 @@ export function extractApiErrorMessage(err: any, fallback: string): string {
     }
   }
   if (data && typeof data === "object") {
-    if (typeof data.message === "string" && data.message.trim()) {
-      return data.message.trim();
+    const payload = data as ErrorPayload;
+    if (typeof payload.message === "string" && payload.message.trim()) {
+      return payload.message.trim();
     }
-    if (data.errors && typeof data.errors === "object") {
-      const messages = Object.values(data.errors)
+    if (payload.errors && typeof payload.errors === "object") {
+      const messages = Object.values(payload.errors)
         .flat()
         .filter((v): v is string => typeof v === "string" && v.trim().length > 0);
       if (messages.length > 0) {
         return messages.join(" | ");
       }
     }
-    if (typeof data.title === "string" && data.title.trim()) {
-      return data.title.trim();
+    if (typeof payload.title === "string" && payload.title.trim()) {
+      return payload.title.trim();
     }
   }
-  if (typeof err?.message === "string" && err.message.trim()) {
-    return err.message.trim();
+  if (typeof errObj?.message === "string" && errObj.message.trim()) {
+    return errObj.message.trim();
   }
   return fallback;
+}
+
+export async function unwrapApiCall<T>(
+  request: () => Promise<ApiResponse<T>>,
+  fallbackMessage: string,
+  requireData = true,
+): Promise<T> {
+  try {
+    const response = await request();
+    if (
+      response?.success &&
+      (!requireData || (response.data !== null && response.data !== undefined))
+    ) {
+      return response.data as T;
+    }
+    throw new Error(response?.message || fallbackMessage);
+  } catch (err: unknown) {
+    throw new Error(extractApiErrorMessage(err, fallbackMessage));
+  }
 }
 
 apiClient.interceptors.request.use(
@@ -48,9 +80,7 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
@@ -64,5 +94,5 @@ apiClient.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );

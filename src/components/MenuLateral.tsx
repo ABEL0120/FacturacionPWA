@@ -11,7 +11,11 @@ import {
   IonMenuToggle,
   IonFooter,
 } from "@ionic/react";
-import { homeOutline, logInOutline, logOutOutline, personCircleOutline } from "ionicons/icons";
+import {
+  homeOutline,
+  logInOutline,
+  logOutOutline,
+} from "ionicons/icons";
 import { useLocation, useHistory } from "react-router-dom";
 import { VentioLogo } from "./VentioLogo";
 import { useAuth } from "../context/AuthContext";
@@ -31,7 +35,10 @@ export const MenuLateral: React.FC = () => {
       <IonHeader className="ion-no-border">
         <IonToolbar className="ventio-toolbar px-2">
           <div className="flex items-center gap-2 px-3 py-1">
-            <VentioLogo className="w-6 h-6 shrink-0 drop-shadow" variant="white" />
+            <VentioLogo
+              className="w-6 h-6 shrink-0 drop-shadow"
+              variant="white"
+            />
             <span className="font-black text-white text-base tracking-wider uppercase">
               VENTIO
             </span>
@@ -89,7 +96,7 @@ export const MenuLateral: React.FC = () => {
                     : "text-slate-500"
                 }
               />
-              <IonLabel>Inicio / Facturación</IonLabel>
+              <IonLabel>Inicio</IonLabel>
             </IonItem>
           </IonMenuToggle>
 
@@ -105,7 +112,11 @@ export const MenuLateral: React.FC = () => {
                 }`}
                 detail={false}
               >
-                <IonIcon slot="start" icon={logInOutline} className="text-slate-500" />
+                <IonIcon
+                  slot="start"
+                  icon={logInOutline}
+                  className="text-slate-500"
+                />
                 <IonLabel>Iniciar Sesión</IonLabel>
               </IonItem>
             </IonMenuToggle>
@@ -117,8 +128,14 @@ export const MenuLateral: React.FC = () => {
                 className="rounded-xl transition-colors cursor-pointer text-rose-600 hover:bg-rose-50"
                 detail={false}
               >
-                <IonIcon slot="start" icon={logOutOutline} className="text-rose-600" />
-                <IonLabel className="text-rose-600 font-bold">Cerrar Sesión</IonLabel>
+                <IonIcon
+                  slot="start"
+                  icon={logOutOutline}
+                  className="text-rose-600"
+                />
+                <IonLabel className="text-rose-600 font-bold">
+                  Cerrar Sesión
+                </IonLabel>
               </IonItem>
             </IonMenuToggle>
           )}

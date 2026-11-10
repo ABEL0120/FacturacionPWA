@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   IonIcon,
   IonBadge,
-  IonButton,
 } from "@ionic/react";
 import {
   downloadOutline,
@@ -14,6 +13,15 @@ import {
 } from "ionicons/icons";
 import { VentioLogo } from "./VentioLogo";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
+
+interface NavigatorStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 interface PwaInstallGateProps {
   children: React.ReactNode;
 }
@@ -22,7 +30,8 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isStandalone, setIsStandalone] = useState<boolean>(true);
   const [isIos, setIsIos] = useState<boolean>(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [installSuccess, setInstallSuccess] = useState<boolean>(false);
   const [dismissed, setDismissed] = useState<boolean>(false);
 
@@ -43,7 +52,8 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
       const minimalUiMatch = window.matchMedia(
         "(display-mode: minimal-ui)"
       ).matches;
-      const navigatorStandalone = (navigator as any).standalone === true;
+      const navigatorStandalone =
+        (navigator as NavigatorStandalone).standalone === true;
       const androidAppReferrer = document.referrer.includes("android-app://");
       const pwaParam =
         new URLSearchParams(window.location.search).get("mode") === "pwa";
@@ -62,7 +72,7 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);

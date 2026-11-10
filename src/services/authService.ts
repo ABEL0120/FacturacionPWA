@@ -1,140 +1,85 @@
-import { apiClient, extractApiErrorMessage } from "../api/apiClient";
+import { apiClient, unwrapApiCall } from "../api/apiClient";
+import {
+  ApiResponse,
+  CambiarContrasenaRequest,
+  CuentaRecuperacionValida,
+  LoginResponse,
+  RecuperarContrasenaRequest,
+  RegistroClienteRequest,
+} from "../types/auth.types";
 
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data?: T | null;
-}
-
-export interface LoginResponse {
-  numeroCliente: number;
-  razonSocial: string;
-  mail: string;
-  telefono: string;
-  esAdmin: boolean;
-  esBfmafb: boolean;
-  esUsuario: boolean;
-  moduloDestino: string;
-}
-
-export interface RegistroClienteRequest {
-  rfc: string;
-  razonSocial: string;
-  mail: string;
-  contraseña: string;
-  confirmarContraseña: string;
-  telefono: string;
-  direccion: string;
-  numeroExt: string;
-  numeroInt?: string;
-  colonia: string;
-  ciudad?: string;
-  delegacion: string;
-  estado: string;
-  codigoPostal: string;
-  regimenFiscal: string;
-  formaPago: string;
-  usoCfdi: string;
-}
-
-export interface CuentaRecuperacionValida {
-  numeroCliente: number;
-  rfc: string;
-  mail: string;
-  razonSocial: string;
-}
-
-export interface RecuperarContrasenaRequest {
-  rfc: string;
-  mail: string;
-  nuevaContrasena: string;
-  confirmarNuevaContrasena: string;
-}
-
-export interface CambiarContrasenaRequest {
-  mail: string;
-  contrasenaActual: string;
-  nuevaContrasena: string;
-  confirmarNuevaContrasena: string;
-}
+export * from "../types/auth.types";
 
 export const authService = {
-  login: async (usuario: string, contraseña: string): Promise<LoginResponse> => {
-    try {
-      const response = await apiClient.post<ApiResponse<LoginResponse>>("/auth/login", {
-        usuario: usuario.trim(),
-        contraseña: contraseña.trim(),
-      });
-      if (response.data && response.data.success && response.data.data) {
-        return response.data.data;
-      }
-      throw new Error(response.data?.message || "Credenciales incorrectas.");
-    } catch (err: any) {
-      throw new Error(extractApiErrorMessage(err, "No se pudo conectar con el servidor."));
-    }
-  },
+  login: async (usuario: string, contraseña: string): Promise<LoginResponse> =>
+    unwrapApiCall(
+      async () => {
+        const res = await apiClient.post<ApiResponse<LoginResponse>>("/auth/login", {
+          usuario: usuario.trim(),
+          contraseña: contraseña.trim(),
+        });
+        return res.data;
+      },
+      "Credenciales incorrectas.",
+    ),
 
-  registro: async (dto: RegistroClienteRequest): Promise<LoginResponse> => {
-    try {
-      const response = await apiClient.post<ApiResponse<LoginResponse>>("/auth/registro", dto);
-      if (response.data && response.data.success && response.data.data) {
-        return response.data.data;
-      }
-      throw new Error(response.data?.message || "No fue posible registrar al cliente.");
-    } catch (err: any) {
-      throw new Error(extractApiErrorMessage(err, "Error al procesar el registro."));
-    }
-  },
+  registro: async (dto: RegistroClienteRequest): Promise<LoginResponse> =>
+    unwrapApiCall(
+      async () => {
+        const res = await apiClient.post<ApiResponse<LoginResponse>>("/auth/registro", dto);
+        return res.data;
+      },
+      "No fue posible registrar al cliente.",
+    ),
 
   validarCuentaRecuperacion: async (
     rfc: string,
-    mail: string
-  ): Promise<CuentaRecuperacionValida> => {
-    try {
-      const response = await apiClient.post<ApiResponse<CuentaRecuperacionValida>>(
-        "/auth/validar-cuenta-recuperacion",
-        {
-          rfc: rfc.trim().toUpperCase(),
-          mail: mail.trim(),
-        }
-      );
-      if (response.data && response.data.success && response.data.data) {
-        return response.data.data;
-      }
-      throw new Error(response.data?.message || "No se encontró una cuenta con esos datos.");
-    } catch (err: any) {
-      throw new Error(extractApiErrorMessage(err, "No fue posible validar la cuenta."));
-    }
-  },
+    mail: string,
+  ): Promise<CuentaRecuperacionValida> =>
+    unwrapApiCall(
+      async () => {
+        const res = await apiClient.post<ApiResponse<CuentaRecuperacionValida>>(
+          "/auth/validar-cuenta-recuperacion",
+          {
+            rfc: rfc.trim().toUpperCase(),
+            mail: mail.trim(),
+          },
+        );
+        return res.data;
+      },
+      "No se encontró una cuenta con esos datos.",
+    ),
 
-  recuperarContrasena: async (dto: RecuperarContrasenaRequest): Promise<boolean> => {
-    try {
-      const response = await apiClient.post<ApiResponse<boolean>>(
-        "/auth/recuperar-contrasena",
-        dto
-      );
-      if (response.data && response.data.success) {
-        return true;
-      }
-      throw new Error(response.data?.message || "No fue posible actualizar la contraseña.");
-    } catch (err: any) {
-      throw new Error(extractApiErrorMessage(err, "Error al actualizar la contraseña."));
-    }
+  recuperarContrasena: async (
+    dto: RecuperarContrasenaRequest,
+  ): Promise<boolean> => {
+    await unwrapApiCall(
+      async () => {
+        const res = await apiClient.post<ApiResponse<boolean>>(
+          "/auth/recuperar-contrasena",
+          dto,
+        );
+        return res.data;
+      },
+      "No fue posible actualizar la contraseña.",
+      false,
+    );
+    return true;
   },
 
   cambiarContrasena: async (dto: CambiarContrasenaRequest): Promise<boolean> => {
-    try {
-      const response = await apiClient.post<ApiResponse<boolean>>(
-        "/auth/cambiar-contrasena",
-        dto
-      );
-      if (response.data && response.data.success) {
-        return true;
-      }
-      throw new Error(response.data?.message || "No fue posible cambiar la contraseña.");
-    } catch (err: any) {
-      throw new Error(extractApiErrorMessage(err, "Error al cambiar la contraseña."));
-    }
+    await unwrapApiCall(
+      async () => {
+        const res = await apiClient.post<ApiResponse<boolean>>(
+          "/auth/cambiar-contrasena",
+          dto,
+        );
+        return res.data;
+      },
+      "No fue posible cambiar la contraseña.",
+      false,
+    );
+    return true;
   },
 };
 

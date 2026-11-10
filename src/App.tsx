@@ -12,7 +12,8 @@ import { OfflineBanner } from "./components/OfflineBanner";
 import { PwaInstallGate } from "./components/PwaInstallGate";
 import { MenuLateral } from "./components/MenuLateral";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { NotificationProvider } from "./components/common/NotificationProvider";
+import { AuthProvider } from "./context/AuthContext";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -20,22 +21,24 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 setupIonicReact();
 
+interface WindowWithUpdateHook extends Window {
+  __simularActualizacion?: () => void;
+}
+
 function UpdatePrompt() {
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
     immediate: true,
-    onRegisteredSW(swUrl, r) {
+    onRegisteredSW(_swUrl, r) {
       if (r) {
         const checkUpdate = () => {
           if (typeof navigator === "undefined" || !navigator.onLine) return;
-          try {
-            r.update().catch(() => {});
-          } catch {}
+          r.update().catch(() => undefined);
         };
         setTimeout(checkUpdate, 1500);
-        const intervalId = setInterval(checkUpdate, 10000);
+        setInterval(checkUpdate, 10000);
         const handleVisibility = () => {
           if (document.visibilityState === "visible") checkUpdate();
         };
@@ -49,7 +52,7 @@ function UpdatePrompt() {
   });
 
   React.useEffect(() => {
-    (window as any).__simularActualizacion = () => {
+    (window as WindowWithUpdateHook).__simularActualizacion = () => {
       setNeedRefresh(true);
     };
   }, [setNeedRefresh]);
@@ -77,24 +80,26 @@ function UpdatePrompt() {
 
 const App: React.FC = () => (
   <IonApp>
-    <AuthProvider>
-      <UpdatePrompt />
-      <OfflineBanner />
-      <PwaInstallGate>
-        <IonReactRouter>
-          <MenuLateral />
-          <IonRouterOutlet id="main-content">
-            <Route exact path="/login" component={LoginPage} />
-            <Route exact path="/registro" component={RegisterPage} />
-            <Route exact path="/recuperar" component={ForgotPasswordPage} />
-            <ProtectedRoute exact path="/home" component={Home} />
-            <Route exact path="/">
-              <Redirect to="/home" />
-            </Route>
-          </IonRouterOutlet>
-        </IonReactRouter>
-      </PwaInstallGate>
-    </AuthProvider>
+    <NotificationProvider>
+      <AuthProvider>
+        <UpdatePrompt />
+        <OfflineBanner />
+        <PwaInstallGate>
+          <IonReactRouter>
+            <MenuLateral />
+            <IonRouterOutlet id="main-content">
+              <Route exact path="/login" component={LoginPage} />
+              <Route exact path="/registro" component={RegisterPage} />
+              <Route exact path="/recuperar" component={ForgotPasswordPage} />
+              <ProtectedRoute exact path="/home" component={Home} />
+              <Route exact path="/">
+                <Redirect to="/home" />
+              </Route>
+            </IonRouterOutlet>
+          </IonReactRouter>
+        </PwaInstallGate>
+      </AuthProvider>
+    </NotificationProvider>
   </IonApp>
 );
 
