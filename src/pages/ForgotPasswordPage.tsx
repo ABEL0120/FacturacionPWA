@@ -36,9 +36,9 @@ export const ForgotPasswordPage: React.FC = () => {
   const handleVerificarDatos = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!rfc.trim() || rfc.trim().length < 12) {
+    if (!rfc.trim() || rfc.trim().length < 12 || rfc.trim().length > 13) {
       present({
-        message: "Ingresa tu RFC registrado para continuar.",
+        message: "Ingresa tu RFC registrado de 12 o 13 caracteres.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -46,9 +46,10 @@ export const ForgotPasswordPage: React.FC = () => {
       return;
     }
 
-    if (!contacto.trim()) {
+    const emailTrim = contacto.trim().toLowerCase();
+    if (!emailTrim || !/^([\w.-]+)@([\w-]+)((\.(\w){2,3})+)$/.test(emailTrim)) {
       present({
-        message: "Ingresa tu correo o teléfono registrado.",
+        message: "Ingresa el correo electrónico registrado con formato válido.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -58,7 +59,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
     setLoading(true);
     try {
-      await authService.validarCuentaRecuperacion(rfc, contacto);
+      await authService.validarCuentaRecuperacion(rfc, emailTrim);
       setPaso(2);
       present({
         message: "Cuenta validada. Ahora ingresa tu nueva contraseña.",
@@ -81,9 +82,9 @@ export const ForgotPasswordPage: React.FC = () => {
   const handleCambiarPassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (nuevaPassword.length < 3) {
+    if (nuevaPassword.length < 3 || nuevaPassword.length > 13) {
       present({
-        message: "La nueva contraseña debe tener al menos 3 caracteres.",
+        message: "La nueva contraseña debe tener entre 3 y 13 caracteres.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -105,7 +106,7 @@ export const ForgotPasswordPage: React.FC = () => {
     try {
       await authService.recuperarContrasena({
         rfc: rfc.trim().toUpperCase(),
-        mail: contacto.trim(),
+        mail: contacto.trim().toLowerCase(),
         nuevaContrasena: nuevaPassword,
         confirmarNuevaContrasena: confirmarPassword,
       });
@@ -155,7 +156,7 @@ export const ForgotPasswordPage: React.FC = () => {
                       Recuperar Contraseña
                     </h1>
                     <p className="text-xs text-slate-500">
-                      Verificaremos tu identidad mediante tu RFC y tu medio de contacto registrado
+                      Verificaremos tu identidad mediante tu RFC y correo electrónico registrado
                     </p>
                   </div>
 
@@ -181,17 +182,18 @@ export const ForgotPasswordPage: React.FC = () => {
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700">
-                        Correo o Teléfono Registrado *
+                        Correo Electrónico Registrado *
                       </label>
                       <div className="relative flex items-center">
                         <span className="absolute left-3.5 text-slate-400">
                           <IonIcon icon={mailOutline} className="text-lg" />
                         </span>
                         <input
-                          type="text"
+                          type="email"
+                          maxLength={80}
                           value={contacto}
                           onChange={(e) => setContacto(e.target.value)}
-                          placeholder="tu@correo.com o teléfono"
+                          placeholder="tu@correo.com"
                           className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
@@ -242,9 +244,10 @@ export const ForgotPasswordPage: React.FC = () => {
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
+                          maxLength={13}
                           value={nuevaPassword}
                           onChange={(e) => setNuevaPassword(e.target.value)}
-                          placeholder="Mínimo 6 caracteres"
+                          placeholder="De 3 a 13 caracteres"
                           className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                         <button
@@ -270,6 +273,7 @@ export const ForgotPasswordPage: React.FC = () => {
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
+                          maxLength={13}
                           value={confirmarPassword}
                           onChange={(e) => setConfirmarPassword(e.target.value)}
                           placeholder="Repite la contraseña"

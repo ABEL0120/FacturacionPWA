@@ -1,4 +1,4 @@
-import { apiClient } from "../api/apiClient";
+import { apiClient, extractApiErrorMessage } from "../api/apiClient";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -69,11 +69,7 @@ export const authService = {
       }
       throw new Error(response.data?.message || "Credenciales incorrectas.");
     } catch (err: any) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "No se pudo conectar con el servidor.";
-      throw new Error(message);
+      throw new Error(extractApiErrorMessage(err, "No se pudo conectar con el servidor."));
     }
   },
 
@@ -85,11 +81,7 @@ export const authService = {
       }
       throw new Error(response.data?.message || "No fue posible registrar al cliente.");
     } catch (err: any) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "Error al procesar el registro.";
-      throw new Error(message);
+      throw new Error(extractApiErrorMessage(err, "Error al procesar el registro."));
     }
   },
 
@@ -110,11 +102,7 @@ export const authService = {
       }
       throw new Error(response.data?.message || "No se encontró una cuenta con esos datos.");
     } catch (err: any) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "No fue posible validar la cuenta.";
-      throw new Error(message);
+      throw new Error(extractApiErrorMessage(err, "No fue posible validar la cuenta."));
     }
   },
 
@@ -129,11 +117,7 @@ export const authService = {
       }
       throw new Error(response.data?.message || "No fue posible actualizar la contraseña.");
     } catch (err: any) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "Error al actualizar la contraseña.";
-      throw new Error(message);
+      throw new Error(extractApiErrorMessage(err, "Error al actualizar la contraseña."));
     }
   },
 
@@ -148,14 +132,9 @@ export const authService = {
       }
       throw new Error(response.data?.message || "No fue posible cambiar la contraseña.");
     } catch (err: any) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "Error al cambiar la contraseña.";
-      throw new Error(message);
+      throw new Error(extractApiErrorMessage(err, "Error al cambiar la contraseña."));
     }
   },
 };
 
 export default authService;
-

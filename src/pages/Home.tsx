@@ -39,11 +39,28 @@ import {
   ClienteFiscal,
   FacturaGenerada,
 } from "../services/facturacionService";
+import { CatalogoItemDto } from "../api/facturacionApi";
+import {
+  catalogosService,
+  DEFAULT_FORMAS_PAGO,
+  DEFAULT_REGIMENES_FISCALES,
+  DEFAULT_USOS_CFDI,
+} from "../services/catalogosService";
 
 export const Home: React.FC = () => {
   const history = useHistory();
   const { user, isAuthenticated, logout } = useAuth();
   const [present] = useIonToast();
+
+  const [regimenesCatalogo, setRegimenesCatalogo] = useState<CatalogoItemDto[]>(
+    DEFAULT_REGIMENES_FISCALES
+  );
+  const [usosCfdiCatalogo, setUsosCfdiCatalogo] = useState<CatalogoItemDto[]>(
+    DEFAULT_USOS_CFDI
+  );
+  const [formasPagoCatalogo, setFormasPagoCatalogo] = useState<CatalogoItemDto[]>(
+    DEFAULT_FORMAS_PAGO
+  );
 
   const [paso, setPaso] = useState<1 | 2 | 3 | 4>(1);
 
@@ -90,6 +107,14 @@ export const Home: React.FC = () => {
       setEmailEnvio(user.email);
     }
   }, [user]);
+
+  useEffect(() => {
+    catalogosService.obtenerCatalogosSat().then((data) => {
+      setRegimenesCatalogo(data.regimenes);
+      setUsosCfdiCatalogo(data.usosCfdi);
+      setFormasPagoCatalogo(data.formasPago);
+    });
+  }, []);
 
   const handleBuscarTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -908,15 +933,11 @@ export const Home: React.FC = () => {
                       onChange={(e) => setRegimenFiscal(e.target.value)}
                       className="w-full h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                     >
-                      <option value="601">601 - General de Ley Personas Morales</option>
-                      <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
-                      <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
-                      <option value="606">606 - Arrendamiento</option>
-                      <option value="612">612 - Personas Físicas con Actividades Empresariales y Profesionales</option>
-                      <option value="621">621 - Incorporación Fiscal</option>
-                      <option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
-                      <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
-                      <option value="616">616 - Sin obligaciones fiscales</option>
+                      {regimenesCatalogo.map((item) => (
+                        <option key={item.numero} value={item.numero}>
+                          {item.numero} - {item.descripcion}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -929,16 +950,11 @@ export const Home: React.FC = () => {
                       onChange={(e) => setUsoCfdi(e.target.value)}
                       className="w-full h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                     >
-                      <option value="G01">G01 - Adquisición de mercancías</option>
-                      <option value="G03">G03 - Gastos en general</option>
-                      <option value="D01">D01 - Honorarios médicos, dentales y gastos hospitalarios</option>
-                      <option value="D02">D02 - Gastos médicos por incapacidad o discapacidad</option>
-                      <option value="D04">D04 - Donativos</option>
-                      <option value="D07">D07 - Primas por seguros de gastos médicos</option>
-                      <option value="D08">D08 - Gastos de transportación escolar obligatoria</option>
-                      <option value="D10">D10 - Pagos por servicios educativos (colegiaturas)</option>
-                      <option value="S01">S01 - Sin efectos fiscales</option>
-                      <option value="CP01">CP01 - Pagos</option>
+                      {usosCfdiCatalogo.map((item) => (
+                        <option key={item.numero} value={item.numero}>
+                          {item.numero} - {item.descripcion}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -952,12 +968,11 @@ export const Home: React.FC = () => {
                         onChange={(e) => setFormaPago(e.target.value)}
                         className="w-full h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                       >
-                        <option value="01">01 - Efectivo</option>
-                        <option value="02">02 - Cheque nominativo</option>
-                        <option value="03">03 - Transferencia electrónica</option>
-                        <option value="04">04 - Tarjeta de crédito</option>
-                        <option value="28">28 - Tarjeta de débito</option>
-                        <option value="99">99 - Por definir</option>
+                        {formasPagoCatalogo.map((item) => (
+                          <option key={item.numero} value={item.numero}>
+                            {item.numero} - {item.descripcion}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -1250,15 +1265,11 @@ export const Home: React.FC = () => {
                     onChange={(e) => setNuevoRegimen(e.target.value)}
                     className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                   >
-                    <option value="601">601 - General de Ley Personas Morales</option>
-                    <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
-                    <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
-                    <option value="606">606 - Arrendamiento</option>
-                    <option value="612">612 - Personas Físicas con Actividades Empresariales y Profesionales</option>
-                    <option value="621">621 - Incorporación Fiscal</option>
-                    <option value="625">625 - Régimen de Plataformas Tecnológicas</option>
-                    <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
-                    <option value="616">616 - Sin obligaciones fiscales</option>
+                    {regimenesCatalogo.map((item) => (
+                      <option key={item.numero} value={item.numero}>
+                        {item.numero} - {item.descripcion}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

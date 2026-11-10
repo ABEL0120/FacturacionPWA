@@ -23,11 +23,24 @@ import { useHistory } from "react-router-dom";
 import { VentioLogo } from "../components/VentioLogo";
 import { useAuth } from "../context/AuthContext";
 import { passkeyService } from "../services/passkeyService";
+import { CatalogoItemDto } from "../api/facturacionApi";
+import {
+  catalogosService,
+  DEFAULT_ESTADOS,
+  DEFAULT_FORMAS_PAGO,
+  DEFAULT_REGIMENES_FISCALES,
+  DEFAULT_USOS_CFDI,
+} from "../services/catalogosService";
 
 export const RegisterPage: React.FC = () => {
   const history = useHistory();
   const { register } = useAuth();
   const [present] = useIonToast();
+
+  const [regimenes, setRegimenes] = useState<CatalogoItemDto[]>(DEFAULT_REGIMENES_FISCALES);
+  const [usosCfdi, setUsosCfdi] = useState<CatalogoItemDto[]>(DEFAULT_USOS_CFDI);
+  const [formasPago, setFormasPago] = useState<CatalogoItemDto[]>(DEFAULT_FORMAS_PAGO);
+  const [estadosCatalogo, setEstadosCatalogo] = useState<CatalogoItemDto[]>(DEFAULT_ESTADOS);
 
   const [rfc, setRfc] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
@@ -43,7 +56,7 @@ export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [regimenFiscal, setRegimenFiscal] = useState("612");
   const [formaPago, setFormaPago] = useState("01");
-  const [usoCfdi, setUsoCfdi] = useState("G01");
+  const [usoCfdi, setUsoCfdi] = useState("G03");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -55,12 +68,24 @@ export const RegisterPage: React.FC = () => {
     passkeyService.isPlatformAvailable().then((available) => {
       setSupportsPasskey(available || passkeyService.isSupported());
     });
+    catalogosService.obtenerCatalogosSat().then((data) => {
+      setRegimenes(data.regimenes);
+      setUsosCfdi(data.usosCfdi);
+      setFormasPago(data.formasPago);
+      setEstadosCatalogo(data.estados);
+    });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!rfc.trim() || rfc.trim().length < 12) {
+    const rfcTrim = rfc.trim().toUpperCase();
+    const razonTrim = razonSocial.trim();
+    const cpTrim = cp.trim();
+    const telTrim = telefono.trim();
+    const emailTrim = email.trim().toLowerCase();
+
+    if (!rfcTrim || rfcTrim.length < 12 || rfcTrim.length > 13) {
       present({
         message: "Ingresa un RFC válido de 12 o 13 caracteres.",
         duration: 2500,
@@ -70,7 +95,7 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (!razonSocial.trim()) {
+    if (!razonTrim) {
       present({
         message: "Ingresa la Razón Social o Nombre Completo.",
         duration: 2500,
@@ -80,47 +105,7 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (!direccion.trim()) {
-      present({
-        message: "Ingresa la Calle / Dirección.",
-        duration: 2500,
-        color: "warning",
-        position: "top",
-      });
-      return;
-    }
-
-    if (!noExterior.trim()) {
-      present({
-        message: "Ingresa el Número Exterior.",
-        duration: 2500,
-        color: "warning",
-        position: "top",
-      });
-      return;
-    }
-
-    if (!colonia.trim()) {
-      present({
-        message: "Ingresa la Colonia.",
-        duration: 2500,
-        color: "warning",
-        position: "top",
-      });
-      return;
-    }
-
-    if (!municipio.trim()) {
-      present({
-        message: "Ingresa la Delegación o Municipio.",
-        duration: 2500,
-        color: "warning",
-        position: "top",
-      });
-      return;
-    }
-
-    if (!cp.trim() || cp.trim().length !== 5) {
+    if (!cpTrim || cpTrim.length !== 5) {
       present({
         message: "Ingresa un Código Postal válido de 5 dígitos.",
         duration: 2500,
@@ -130,9 +115,9 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (!telefono.trim() || telefono.trim().length < 10) {
+    if (!telTrim || telTrim.length < 10) {
       present({
-        message: "Ingresa un teléfono o celular a 10 dígitos.",
+        message: "Ingresa un teléfono o celular de al menos 10 dígitos.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -140,9 +125,9 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (!email.trim() || !email.includes("@")) {
+    if (!emailTrim || !/^([\w.-]+)@([\w-]+)((\.(\w){2,3})+)$/.test(emailTrim)) {
       present({
-        message: "Ingresa un correo electrónico válido.",
+        message: "Ingresa un correo electrónico con formato válido.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -150,9 +135,9 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 3 || password.length > 13) {
       present({
-        message: "La contraseña debe tener al menos 6 caracteres.",
+        message: "La contraseña debe tener entre 3 y 13 caracteres.",
         duration: 2500,
         color: "warning",
         position: "top",
@@ -308,6 +293,7 @@ export const RegisterPage: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        maxLength={300}
                         value={razonSocial}
                         onChange={(e) => setRazonSocial(e.target.value)}
                         placeholder="Nombre o empresa tal como aparece en CSF"
@@ -329,10 +315,11 @@ export const RegisterPage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
                     <div className="space-y-1.5 sm:col-span-4">
                       <label className="text-xs font-bold text-slate-700">
-                        Dirección (Calle) *
+                        Dirección (Calle)
                       </label>
                       <input
                         type="text"
+                        maxLength={100}
                         value={direccion}
                         onChange={(e) => setDireccion(e.target.value)}
                         placeholder="Nombre de la calle"
@@ -342,10 +329,11 @@ export const RegisterPage: React.FC = () => {
 
                     <div className="space-y-1.5 sm:col-span-1">
                       <label className="text-xs font-bold text-slate-700">
-                        No. Ext. *
+                        No. Ext.
                       </label>
                       <input
                         type="text"
+                        maxLength={20}
                         value={noExterior}
                         onChange={(e) => setNoExterior(e.target.value)}
                         placeholder="Ext."
@@ -359,6 +347,7 @@ export const RegisterPage: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        maxLength={20}
                         value={noInterior}
                         onChange={(e) => setNoInterior(e.target.value)}
                         placeholder="Int."
@@ -368,10 +357,11 @@ export const RegisterPage: React.FC = () => {
 
                     <div className="space-y-1.5 sm:col-span-4">
                       <label className="text-xs font-bold text-slate-700">
-                        Colonia *
+                        Colonia
                       </label>
                       <input
                         type="text"
+                        maxLength={60}
                         value={colonia}
                         onChange={(e) => setColonia(e.target.value)}
                         placeholder="Colonia o Fraccionamiento"
@@ -397,10 +387,11 @@ export const RegisterPage: React.FC = () => {
 
                     <div className="space-y-1.5 sm:col-span-2">
                       <label className="text-xs font-bold text-slate-700">
-                        Deleg. / Municipio *
+                        Deleg. / Municipio
                       </label>
                       <input
                         type="text"
+                        maxLength={100}
                         value={municipio}
                         onChange={(e) => setMunicipio(e.target.value)}
                         placeholder="Municipio o Alcaldía"
@@ -414,6 +405,7 @@ export const RegisterPage: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        maxLength={50}
                         value={ciudad}
                         onChange={(e) => setCiudad(e.target.value)}
                         placeholder="Ciudad"
@@ -423,51 +415,18 @@ export const RegisterPage: React.FC = () => {
 
                     <div className="space-y-1.5 sm:col-span-2">
                       <label className="text-xs font-bold text-slate-700">
-                        Estado *
+                        Estado
                       </label>
                       <select
                         value={estado}
                         onChange={(e) => setEstado(e.target.value)}
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
-                        <option value="Aguascalientes">Aguascalientes</option>
-                        <option value="Baja California">Baja California</option>
-                        <option value="Baja California Sur">
-                          Baja California Sur
-                        </option>
-                        <option value="Campeche">Campeche</option>
-                        <option value="Chiapas">Chiapas</option>
-                        <option value="Chihuahua">Chihuahua</option>
-                        <option value="Ciudad de México">
-                          Ciudad de México
-                        </option>
-                        <option value="Coahuila">Coahuila</option>
-                        <option value="Colima">Colima</option>
-                        <option value="Durango">Durango</option>
-                        <option value="Estado de México">
-                          Estado de México
-                        </option>
-                        <option value="Guanajuato">Guanajuato</option>
-                        <option value="Guerrero">Guerrero</option>
-                        <option value="Hidalgo">Hidalgo</option>
-                        <option value="Jalisco">Jalisco</option>
-                        <option value="Michoacán">Michoacán</option>
-                        <option value="Morelos">Morelos</option>
-                        <option value="Nayarit">Nayarit</option>
-                        <option value="Nuevo León">Nuevo León</option>
-                        <option value="Oaxaca">Oaxaca</option>
-                        <option value="Puebla">Puebla</option>
-                        <option value="Querétaro">Querétaro</option>
-                        <option value="Quintana Roo">Quintana Roo</option>
-                        <option value="San Luis Potosí">San Luis Potosí</option>
-                        <option value="Sinaloa">Sinaloa</option>
-                        <option value="Sonora">Sonora</option>
-                        <option value="Tabasco">Tabasco</option>
-                        <option value="Tamaulipas">Tamaulipas</option>
-                        <option value="Tlaxcala">Tlaxcala</option>
-                        <option value="Veracruz">Veracruz</option>
-                        <option value="Yucatán">Yucatán</option>
-                        <option value="Zacatecas">Zacatecas</option>
+                        {estadosCatalogo.map((item) => (
+                          <option key={item.numero} value={item.descripcion}>
+                            {item.descripcion}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -492,32 +451,11 @@ export const RegisterPage: React.FC = () => {
                         onChange={(e) => setRegimenFiscal(e.target.value)}
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
-                        <option value="601">
-                          601 - General de Ley Personas Morales
-                        </option>
-                        <option value="603">
-                          603 - Personas Morales con Fines no Lucrativos
-                        </option>
-                        <option value="605">
-                          605 - Sueldos y Salarios e Ingresos Asimilados a
-                          Salarios
-                        </option>
-                        <option value="606">606 - Arrendamiento</option>
-                        <option value="612">
-                          612 - Personas Físicas con Actividades Empresariales y
-                          Profesionales
-                        </option>
-                        <option value="621">621 - Incorporación Fiscal</option>
-                        <option value="625">
-                          625 - Régimen de las Actividades Empresariales con
-                          ingresos a través de Plataformas Tecnológicas
-                        </option>
-                        <option value="626">
-                          626 - Régimen Simplificado de Confianza (RESICO)
-                        </option>
-                        <option value="616">
-                          616 - Sin obligaciones fiscales
-                        </option>
+                        {regimenes.map((item) => (
+                          <option key={item.numero} value={item.numero}>
+                            {item.numero} - {item.descripcion}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -530,29 +468,11 @@ export const RegisterPage: React.FC = () => {
                         onChange={(e) => setUsoCfdi(e.target.value)}
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
-                        <option value="G01">
-                          G01 - Adquisición de mercancías
-                        </option>
-                        <option value="G03">G03 - Gastos en general</option>
-                        <option value="D01">
-                          D01 - Honorarios médicos, dentales y gastos
-                          hospitalarios
-                        </option>
-                        <option value="D02">
-                          D02 - Gastos médicos por incapacidad o discapacidad
-                        </option>
-                        <option value="D04">D04 - Donativos</option>
-                        <option value="D07">
-                          D07 - Primas por seguros de gastos médicos
-                        </option>
-                        <option value="D08">
-                          D08 - Gastos de transportación escolar obligatoria
-                        </option>
-                        <option value="D10">
-                          D10 - Pagos por servicios educativos (colegiaturas)
-                        </option>
-                        <option value="S01">S01 - Sin efectos fiscales</option>
-                        <option value="CP01">CP01 - Pagos</option>
+                        {usosCfdi.map((item) => (
+                          <option key={item.numero} value={item.numero}>
+                            {item.numero} - {item.descripcion}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -565,14 +485,11 @@ export const RegisterPage: React.FC = () => {
                         onChange={(e) => setFormaPago(e.target.value)}
                         className="w-full h-11 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all cursor-pointer"
                       >
-                        <option value="01">01 - Efectivo</option>
-                        <option value="02">02 - Cheque nominativo</option>
-                        <option value="03">
-                          03 - Transferencia electrónica
-                        </option>
-                        <option value="04">04 - Tarjeta de crédito</option>
-                        <option value="28">28 - Tarjeta de débito</option>
-                        <option value="99">99 - Por definir</option>
+                        {formasPago.map((item) => (
+                          <option key={item.numero} value={item.numero}>
+                            {item.numero} - {item.descripcion}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -598,7 +515,7 @@ export const RegisterPage: React.FC = () => {
                         </span>
                         <input
                           type="tel"
-                          maxLength={10}
+                          maxLength={15}
                           value={telefono}
                           onChange={(e) =>
                             setTelefono(e.target.value.replace(/\D/g, ""))
@@ -619,6 +536,7 @@ export const RegisterPage: React.FC = () => {
                         </span>
                         <input
                           type="email"
+                          maxLength={80}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="ejemplo@correo.com"
@@ -640,9 +558,10 @@ export const RegisterPage: React.FC = () => {
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
+                          maxLength={13}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Mínimo 6 caracteres"
+                          placeholder="De 3 a 13 caracteres"
                           className="w-full h-11 pl-11 pr-10 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                         <button
@@ -670,6 +589,7 @@ export const RegisterPage: React.FC = () => {
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
+                          maxLength={13}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           placeholder="Repite la contraseña"
