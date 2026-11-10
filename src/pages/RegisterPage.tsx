@@ -73,6 +73,14 @@ export const RegisterPage: React.FC = () => {
       setUsosCfdi(data.usosCfdi);
       setFormasPago(data.formasPago);
       setEstadosCatalogo(data.estados);
+      const coahuilaMatch = data.estados.find(
+        (item) => item.descripcion.trim().toLowerCase() === "coahuila",
+      );
+      if (coahuilaMatch) {
+        setEstado(coahuilaMatch.descripcion);
+      } else if (data.estados.length > 0) {
+        setEstado(data.estados[0].descripcion);
+      }
     });
   }, []);
 
@@ -157,7 +165,7 @@ export const RegisterPage: React.FC = () => {
 
     setLoading(true);
     try {
-      await register({
+      const session = await register({
         rfc: rfc.trim().toUpperCase(),
         razonSocial: razonSocial.trim().toUpperCase(),
         mail: email.trim().toLowerCase(),
@@ -182,6 +190,12 @@ export const RegisterPage: React.FC = () => {
           await passkeyService.registrarPasskey(
             email.trim(),
             razonSocial.trim(),
+            {
+              numeroCliente: session.numeroCliente,
+              rfc: rfc.trim().toUpperCase(),
+              telefono: telefono.trim(),
+              moduloDestino: session.moduloDestino,
+            },
           );
           present({
             message: "¡Registro completado y Passkey guardada con éxito!",

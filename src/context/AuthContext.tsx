@@ -11,6 +11,7 @@ export interface UserSession {
   esAdmin?: boolean;
   esBfmafb?: boolean;
   esUsuario?: boolean;
+  moduloDestino?: string;
   direccion?: string;
   noExterior?: string;
   noInterior?: string;
@@ -28,9 +29,9 @@ interface AuthContextType {
   user: UserSession | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (usuario: string, contrasena: string) => Promise<boolean>;
-  loginWithPasskey: () => Promise<boolean>;
-  register: (data: RegistroClienteRequest) => Promise<boolean>;
+  login: (usuario: string, contrasena: string) => Promise<UserSession>;
+  loginWithPasskey: () => Promise<UserSession>;
+  register: (data: RegistroClienteRequest) => Promise<UserSession>;
   resetPassword: (rfc: string, mail: string, nuevaContrasena: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -39,9 +40,9 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
   isAuthenticated: false,
-  login: async () => false,
-  loginWithPasskey: async () => false,
-  register: async () => false,
+  login: async () => ({ email: "" }),
+  loginWithPasskey: async () => ({ email: "" }),
+  register: async () => ({ email: "" }),
   resetPassword: async () => false,
   logout: () => {},
 });
@@ -76,8 +77,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user, token]);
 
-  const login = async (usuario: string, contrasena: string): Promise<boolean> => {
+  const login = async (usuario: string, contrasena: string): Promise<UserSession> => {
     const data: LoginResponse = await authService.login(usuario, contrasena);
+    const moduloDestino = data.moduloDestino || (data.esUsuario ? "CFDI40_FactTicket" : "Menu");
 
     const simulatedHeader = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const simulatedPayload = btoa(
@@ -88,6 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         esAdmin: data.esAdmin,
         esBfmafb: data.esBfmafb,
         esUsuario: data.esUsuario,
+        moduloDestino,
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
     );
@@ -102,21 +105,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       esAdmin: data.esAdmin,
       esBfmafb: data.esBfmafb,
       esUsuario: data.esUsuario,
+      moduloDestino,
     };
 
     setToken(jwt);
     setUser(session);
-    return true;
+    return session;
   };
 
-  const loginWithPasskey = async (): Promise<boolean> => {
+  const loginWithPasskey = async (): Promise<UserSession> => {
     const authResult = await passkeyService.autenticarPasskey();
+    const moduloDestino = authResult.moduloDestino || "CFDI40_FactTicket";
 
     const simulatedHeader = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const simulatedPayload = btoa(
       JSON.stringify({
         sub: authResult.usuario,
+        numeroCliente: authResult.numeroCliente,
         nombre: authResult.nombre,
+        moduloDestino,
         auth_method: "passkey",
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
@@ -125,17 +132,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const jwt = `${simulatedHeader}.${simulatedPayload}.${simulatedSignature}`;
 
     const session: UserSession = {
+      numeroCliente: authResult.numeroCliente,
       email: authResult.usuario,
       nombre: authResult.nombre,
+      rfc: authResult.rfc,
+      telefono: authResult.telefono,
+      moduloDestino,
+      esUsuario: true,
     };
 
     setToken(jwt);
     setUser(session);
-    return true;
+    return session;
   };
 
-  const register = async (data: RegistroClienteRequest): Promise<boolean> => {
+  const register = async (data: RegistroClienteRequest): Promise<UserSession> => {
     const res = await authService.registro(data);
+    const moduloDestino = res.moduloDestino || "CFDI40_FactTicket";
 
     const simulatedHeader = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const simulatedPayload = btoa(
@@ -144,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         numeroCliente: res.numeroCliente,
         nombre: res.razonSocial,
         rfc: data.rfc,
+        moduloDestino,
         exp: Math.floor(Date.now() / 1000) + 86400,
       })
     );
@@ -156,6 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       nombre: res.razonSocial,
       rfc: data.rfc,
       telefono: res.telefono || data.telefono,
+      moduloDestino,
       direccion: data.direccion,
       noExterior: data.numeroExt,
       noInterior: data.numeroInt,
@@ -172,7 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setToken(jwt);
     setUser(session);
-    return true;
+    return session;
   };
 
   const resetPassword = async (

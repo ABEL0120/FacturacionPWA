@@ -52,6 +52,18 @@ export const MenuLateral: React.FC = () => {
               <p className="text-[11px] text-slate-500 truncate">
                 {user.email}
               </p>
+              <div className="flex flex-wrap items-center gap-1 mt-1">
+                {user.numeroCliente && user.numeroCliente > 0 ? (
+                  <span className="px-1.5 py-0.5 rounded bg-[#eef5ff] text-[#010080] text-[10px] font-bold">
+                    Cliente #{user.numeroCliente}
+                  </span>
+                ) : null}
+                {user.moduloDestino === "Menu" && (
+                  <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-bold">
+                    Admin / Menú
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         )}

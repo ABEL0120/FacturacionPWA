@@ -39,7 +39,15 @@ export const passkeyService = {
     }
   },
 
-  getSavedPasskeyData: (): { usuario: string; nombre: string; credentialId: string } | null => {
+  getSavedPasskeyData: (): {
+    usuario: string;
+    nombre: string;
+    credentialId: string;
+    numeroCliente?: number;
+    rfc?: string;
+    telefono?: string;
+    moduloDestino?: string;
+  } | null => {
     try {
       const data = localStorage.getItem("passkey_registered");
       return data ? JSON.parse(data) : null;
@@ -50,7 +58,13 @@ export const passkeyService = {
 
   registrarPasskey: async (
     usuario: string,
-    nombre: string
+    nombre: string,
+    extra?: {
+      numeroCliente?: number;
+      rfc?: string;
+      telefono?: string;
+      moduloDestino?: string;
+    },
   ): Promise<{ credentialId: string; publicKey?: string }> => {
     if (!browserSupportsWebAuthn()) {
       throw new Error("Tu navegador o dispositivo no soporta Passkeys o WebAuthn.");
@@ -92,6 +106,10 @@ export const passkeyService = {
       credentialId: registrationResponse.id,
       usuario,
       nombre,
+      numeroCliente: extra?.numeroCliente,
+      rfc: extra?.rfc,
+      telefono: extra?.telefono,
+      moduloDestino: extra?.moduloDestino,
       createdAt: new Date().toISOString(),
     };
 
@@ -103,7 +121,15 @@ export const passkeyService = {
     };
   },
 
-  autenticarPasskey: async (): Promise<{ credentialId: string; usuario: string; nombre: string }> => {
+  autenticarPasskey: async (): Promise<{
+    credentialId: string;
+    usuario: string;
+    nombre: string;
+    numeroCliente?: number;
+    rfc?: string;
+    telefono?: string;
+    moduloDestino?: string;
+  }> => {
     if (!browserSupportsWebAuthn()) {
       throw new Error("Tu dispositivo no soporta verificación mediante Passkeys.");
     }
@@ -129,6 +155,10 @@ export const passkeyService = {
       credentialId: authResponse.id,
       usuario,
       nombre,
+      numeroCliente: saved?.numeroCliente,
+      rfc: saved?.rfc,
+      telefono: saved?.telefono,
+      moduloDestino: saved?.moduloDestino,
     };
   },
 };

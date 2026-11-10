@@ -63,9 +63,12 @@ export const LoginPage: React.FC = () => {
 
     setLoading(true);
     try {
-      await login(usuario, password);
+      const session = await login(usuario, password);
+      const isMenuModulo = session.moduloDestino === "Menu";
       present({
-        message: "¡Bienvenido! Sesión iniciada correctamente.",
+        message: isMenuModulo
+          ? "Bienvenido. Sesión iniciada en Menú Principal."
+          : "¡Bienvenido! Sesión iniciada correctamente.",
         duration: 1800,
         color: "success",
         position: "top",

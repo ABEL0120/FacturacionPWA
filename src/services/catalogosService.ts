@@ -1,4 +1,4 @@
-import { facturacionApi, CatalogoItemDto } from "../api/facturacionApi";
+import { facturacionApi, CatalogoItemDto, MonedaCatalogoDto } from "../api/facturacionApi";
 
 export const DEFAULT_REGIMENES_FISCALES: CatalogoItemDto[] = [
   { numero: "601", descripcion: "General de Ley Personas Morales" },
@@ -73,11 +73,20 @@ export const DEFAULT_ESTADOS: CatalogoItemDto[] = [
   { numero: "ZAC", descripcion: "Zacatecas" },
 ];
 
+export const DEFAULT_MONEDAS: MonedaCatalogoDto[] = [
+  { numero: "MXN", descripcion: "Peso Mexicano", abreviatura: "MXN", decimales: 2 },
+  { numero: "USD", descripcion: "Dólar estadounidense", abreviatura: "USD", decimales: 2 },
+];
+
 export interface CatalogosSatData {
   regimenes: CatalogoItemDto[];
   usosCfdi: CatalogoItemDto[];
   formasPago: CatalogoItemDto[];
   estados: CatalogoItemDto[];
+}
+
+export interface CatalogosFactTicketData extends CatalogosSatData {
+  monedas: MonedaCatalogoDto[];
 }
 
 let cachedCatalogos: CatalogosSatData | null = null;
@@ -146,5 +155,62 @@ export const catalogosService = {
 
     return result;
   },
-};
 
+  obtenerCatalogosFactTicketFallback: async (): Promise<CatalogosFactTicketData> => {
+    const [regRes, usoRes, fpRes, estRes, monRes] = await Promise.allSettled([
+      facturacionApi.obtenerRegimenesFiscales(),
+      facturacionApi.obtenerUsosCfdi(),
+      facturacionApi.obtenerFormasPago(),
+      facturacionApi.obtenerEstados(),
+      facturacionApi.obtenerMonedas(),
+    ]);
+
+    const regimenes =
+      regRes.status === "fulfilled" &&
+      regRes.value?.success &&
+      Array.isArray(regRes.value.data) &&
+      regRes.value.data.length > 0
+        ? regRes.value.data
+        : DEFAULT_REGIMENES_FISCALES;
+
+    const usosCfdi =
+      usoRes.status === "fulfilled" &&
+      usoRes.value?.success &&
+      Array.isArray(usoRes.value.data) &&
+      usoRes.value.data.length > 0
+        ? usoRes.value.data
+        : DEFAULT_USOS_CFDI;
+
+    const formasPago =
+      fpRes.status === "fulfilled" &&
+      fpRes.value?.success &&
+      Array.isArray(fpRes.value.data) &&
+      fpRes.value.data.length > 0
+        ? fpRes.value.data
+        : DEFAULT_FORMAS_PAGO;
+
+    const estados =
+      estRes.status === "fulfilled" &&
+      estRes.value?.success &&
+      Array.isArray(estRes.value.data) &&
+      estRes.value.data.length > 0
+        ? estRes.value.data
+        : DEFAULT_ESTADOS;
+
+    const monedas =
+      monRes.status === "fulfilled" &&
+      monRes.value?.success &&
+      Array.isArray(monRes.value.data) &&
+      monRes.value.data.length > 0
+        ? monRes.value.data
+        : DEFAULT_MONEDAS;
+
+    return {
+      regimenes,
+      usosCfdi,
+      formasPago,
+      estados,
+      monedas,
+    };
+  },
+};

@@ -3,7 +3,7 @@ import { apiClient, extractApiErrorMessage } from "../api/apiClient";
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
-  data?: T;
+  data?: T | null;
 }
 
 export interface LoginResponse {
@@ -14,6 +14,7 @@ export interface LoginResponse {
   esAdmin: boolean;
   esBfmafb: boolean;
   esUsuario: boolean;
+  moduloDestino: string;
 }
 
 export interface RegistroClienteRequest {
