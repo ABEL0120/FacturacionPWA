@@ -186,11 +186,11 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
                   Instalación Android
                 </div>
                 <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-[13px] h-14 shadow-lg shadow-blue-500/20 rounded-2xl transition-all flex items-center justify-center uppercase tracking-widest active:scale-95"
+                  className="w-full min-h-14 py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white font-black text-[13px] leading-snug shadow-lg shadow-blue-500/20 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest active:scale-95 shrink-0"
                   onClick={handleAceptarInstalar}
                 >
-                  <IonIcon icon={downloadOutline} className="text-lg mr-2" />
-                  Instalar App
+                  <IonIcon icon={downloadOutline} className="text-lg shrink-0" />
+                  <span>Instalar App</span>
                 </button>
               </div>
             ) : (
@@ -234,7 +234,7 @@ export const PwaInstallGate: React.FC<PwaInstallGateProps> = ({ children }) => {
               <button
                 type="button"
                 onClick={() => setDismissed(true)}
-                className="text-xs text-slate-400 hover:text-white underline underline-offset-4"
+                className="min-h-10 py-2 px-4 rounded-xl text-xs text-slate-400 hover:text-white underline underline-offset-4 inline-flex items-center justify-center"
               >
                 Continuar en el navegador
               </button>

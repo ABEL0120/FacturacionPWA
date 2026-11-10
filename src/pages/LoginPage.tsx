@@ -126,7 +126,7 @@ export const LoginPage: React.FC = () => {
               </h1>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-6">
+            <div className="bg-white rounded-3xl p-5 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-6">
               <div className="space-y-1">
                 <h2 className="text-xl font-black text-slate-800">
                   Iniciar Sesión
@@ -142,7 +142,7 @@ export const LoginPage: React.FC = () => {
                     Correo Electrónico o Teléfono
                   </label>
                   <div className="relative flex items-center">
-                    <span className="absolute left-3.5 text-slate-400">
+                    <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                       <IonIcon icon={mailOutline} className="text-lg" />
                     </span>
                     <input
@@ -150,26 +150,26 @@ export const LoginPage: React.FC = () => {
                       value={usuario}
                       onChange={(e) => setUsuario(e.target.value)}
                       placeholder="ejemplo@correo.com"
-                      className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                      className="w-full min-h-12 h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
                     <label className="text-xs font-bold text-slate-700">
                       Contraseña
                     </label>
                     <button
                       type="button"
                       onClick={() => history.push("/recuperar")}
-                      className="text-[11px] font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline transition-colors"
+                      className="inline-flex items-center py-1 px-1 text-[11px] font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline transition-colors shrink-0"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
                   </div>
                   <div className="relative flex items-center">
-                    <span className="absolute left-3.5 text-slate-400">
+                    <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                       <IonIcon icon={lockClosedOutline} className="text-lg" />
                     </span>
                     <input
@@ -177,12 +177,12 @@ export const LoginPage: React.FC = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                      className="w-full min-h-12 h-12 pl-11 pr-12 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 focus:outline-none"
                     >
                       <IonIcon
                         icon={showPassword ? eyeOffOutline : eyeOutline}
@@ -195,7 +195,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading || passkeyLoading}
-                  className="w-full h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                  className="w-full min-h-12 py-3 px-5 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider shrink-0 disabled:opacity-50"
                 >
                   {loading ? (
                     <IonSpinner name="dots" className="text-white h-5" />
@@ -204,7 +204,7 @@ export const LoginPage: React.FC = () => {
                       <span>Ingresar con Contraseña</span>
                       <IonIcon
                         icon={arrowForwardOutline}
-                        className="text-base"
+                        className="text-base shrink-0"
                       />
                     </>
                   )}
@@ -217,7 +217,7 @@ export const LoginPage: React.FC = () => {
                     type="button"
                     disabled={passkeyLoading || loading}
                     onClick={handlePasskeyLogin}
-                    className="w-full h-12 bg-slate-50 hover:bg-[#eef5ff] active:scale-[0.99] border-2 border-slate-200 hover:border-[#0b5ed7] text-[#010080] font-black text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full min-h-12 py-3 px-5 bg-slate-50 hover:bg-[#eef5ff] active:scale-[0.99] border-2 border-slate-200 hover:border-[#0b5ed7] text-[#010080] font-black text-xs sm:text-sm leading-snug rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
                   >
                     {passkeyLoading ? (
                       <IonSpinner name="dots" className="text-[#010080] h-5" />
@@ -225,7 +225,7 @@ export const LoginPage: React.FC = () => {
                       <>
                         <IonIcon
                           icon={fingerPrintOutline}
-                          className="text-xl text-[#0b5ed7]"
+                          className="text-xl text-[#0b5ed7] shrink-0"
                         />
                         <span>Iniciar con Passkey</span>
                       </>
@@ -240,20 +240,12 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.push("/registro")}
-                    className="font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline"
+                    className="inline-flex items-center py-1 px-1.5 font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline"
                   >
                     Regístrate aquí
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-1.5 text-slate-400 text-[11px] font-medium">
-              <IonIcon
-                icon={shieldCheckmarkOutline}
-                className="text-sm text-[#0b5ed7]"
-              />
-              <span>Conexión segura Ventio SSL CFDI 4.0</span>
             </div>
           </div>
         </div>

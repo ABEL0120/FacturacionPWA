@@ -53,14 +53,12 @@ export const Home: React.FC = () => {
   const [present] = useIonToast();
 
   const [regimenesCatalogo, setRegimenesCatalogo] = useState<CatalogoItemDto[]>(
-    DEFAULT_REGIMENES_FISCALES
+    DEFAULT_REGIMENES_FISCALES,
   );
-  const [usosCfdiCatalogo, setUsosCfdiCatalogo] = useState<CatalogoItemDto[]>(
-    DEFAULT_USOS_CFDI
-  );
-  const [formasPagoCatalogo, setFormasPagoCatalogo] = useState<CatalogoItemDto[]>(
-    DEFAULT_FORMAS_PAGO
-  );
+  const [usosCfdiCatalogo, setUsosCfdiCatalogo] =
+    useState<CatalogoItemDto[]>(DEFAULT_USOS_CFDI);
+  const [formasPagoCatalogo, setFormasPagoCatalogo] =
+    useState<CatalogoItemDto[]>(DEFAULT_FORMAS_PAGO);
 
   const [paso, setPaso] = useState<1 | 2 | 3 | 4>(1);
 
@@ -97,7 +95,9 @@ export const Home: React.FC = () => {
   const [emailEnvio, setEmailEnvio] = useState<string>("");
   const [loadingGenerar, setLoadingGenerar] = useState<boolean>(false);
 
-  const [facturaEmitida, setFacturaEmitida] = useState<FacturaGenerada | null>(null);
+  const [facturaEmitida, setFacturaEmitida] = useState<FacturaGenerada | null>(
+    null,
+  );
 
   useEffect(() => {
     if (user?.rfc) {
@@ -143,7 +143,7 @@ export const Home: React.FC = () => {
       const ticketInfo = await facturacionService.buscarTicket(
         serie,
         folio,
-        Number(monto)
+        Number(monto),
       );
       setTicket(ticketInfo);
       present({
@@ -336,7 +336,7 @@ export const Home: React.FC = () => {
         cliente,
         regimenFiscal,
         usoCfdi,
-        formaPago
+        formaPago,
       );
       setFacturaEmitida(factura);
       setPaso(4);
@@ -371,7 +371,7 @@ export const Home: React.FC = () => {
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar className="ventio-toolbar px-2 py-1">
+        <IonToolbar className="ventio-toolbar px-1 sm:px-2 py-1">
           <IonButtons slot="start">
             <IonMenuButton
               autoHide={false}
@@ -379,16 +379,16 @@ export const Home: React.FC = () => {
               className="text-white mr-1"
             />
           </IonButtons>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
             <VentioLogo
               className="w-8 h-8 shrink-0 drop-shadow"
               variant="white"
             />
-            <div className="flex flex-col leading-tight">
-              <span className="text-base sm:text-lg font-black tracking-wider uppercase text-white font-sans">
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-base sm:text-lg font-black tracking-wider uppercase text-white font-sans truncate">
                 VENTIO
               </span>
-              <span className="text-[9px] sm:text-[10px] tracking-wider text-[#38bdf8] font-bold uppercase">
+              <span className="text-[9px] sm:text-[10px] tracking-wide sm:tracking-wider text-[#38bdf8] font-bold uppercase truncate">
                 FACTURACIÓN ELECTRÓNICA CFDI 4.0
               </span>
             </div>
@@ -401,18 +401,25 @@ export const Home: React.FC = () => {
                   history.replace("/login");
                   logout();
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+                aria-label="Salir"
+                className="min-h-10 min-w-10 px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0"
               >
-                <IonIcon icon={logOutOutline} className="text-sm" />
+                <IonIcon
+                  icon={logOutOutline}
+                  className="text-base sm:text-sm shrink-0"
+                />
                 <span className="hidden sm:inline">Salir</span>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => history.push("/login")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0b5ed7] hover:bg-[#0a58ca] text-white text-xs font-bold transition-colors shadow-sm"
+                className="min-h-10 px-3.5 py-2 rounded-xl bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-95 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 shrink-0"
               >
-                <IonIcon icon={logInOutline} className="text-sm" />
+                <IonIcon
+                  icon={logInOutline}
+                  className="text-base sm:text-sm shrink-0"
+                />
                 <span>Acceder</span>
               </button>
             )}
@@ -423,17 +430,17 @@ export const Home: React.FC = () => {
       <IonContent className="bg-white" style={{ "--background": "#ffffff" }}>
         <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
           {isAuthenticated && user && (
-            <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl">
-              <div>
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl">
+              <div className="min-w-0 flex-1">
                 <p className="text-xs text-slate-500 font-medium">
                   Sesión iniciada como:
                 </p>
-                <p className="text-sm font-black text-slate-800">
+                <p className="text-sm font-black text-slate-800 truncate">
                   {user.nombre || user.email}
                 </p>
               </div>
               {user.rfc && (
-                <span className="px-2.5 py-1 bg-[#010080] text-white text-[11px] font-bold rounded-lg uppercase tracking-wider">
+                <span className="px-2.5 py-1 bg-[#010080] text-white text-[11px] font-bold rounded-lg uppercase tracking-wider shrink-0">
                   RFC: {user.rfc}
                 </span>
               )}
@@ -446,8 +453,8 @@ export const Home: React.FC = () => {
                 paso === 1
                   ? "text-[#010080]"
                   : paso > 1
-                  ? "text-emerald-600"
-                  : "text-slate-400"
+                    ? "text-emerald-600"
+                    : "text-slate-400"
               }`}
             >
               <div
@@ -455,8 +462,8 @@ export const Home: React.FC = () => {
                   paso === 1
                     ? "bg-[#010080] text-white"
                     : paso > 1
-                    ? "bg-emerald-500 text-white"
-                    : "bg-slate-200 text-slate-500"
+                      ? "bg-emerald-500 text-white"
+                      : "bg-slate-200 text-slate-500"
                 }`}
               >
                 {paso > 1 ? (
@@ -475,8 +482,8 @@ export const Home: React.FC = () => {
                 paso === 2
                   ? "text-[#010080]"
                   : paso > 2
-                  ? "text-emerald-600"
-                  : "text-slate-400"
+                    ? "text-emerald-600"
+                    : "text-slate-400"
               }`}
             >
               <div
@@ -484,8 +491,8 @@ export const Home: React.FC = () => {
                   paso === 2
                     ? "bg-[#010080] text-white"
                     : paso > 2
-                    ? "bg-emerald-500 text-white"
-                    : "bg-slate-200 text-slate-500"
+                      ? "bg-emerald-500 text-white"
+                      : "bg-slate-200 text-slate-500"
                 }`}
               >
                 {paso > 2 ? (
@@ -504,8 +511,8 @@ export const Home: React.FC = () => {
                 paso === 3
                   ? "text-[#010080]"
                   : paso > 3
-                  ? "text-emerald-600"
-                  : "text-slate-400"
+                    ? "text-emerald-600"
+                    : "text-slate-400"
               }`}
             >
               <div
@@ -513,8 +520,8 @@ export const Home: React.FC = () => {
                   paso === 3
                     ? "bg-[#010080] text-white"
                     : paso > 3
-                    ? "bg-emerald-500 text-white"
-                    : "bg-slate-200 text-slate-500"
+                      ? "bg-emerald-500 text-white"
+                      : "bg-slate-200 text-slate-500"
                 }`}
               >
                 {paso > 3 ? (
@@ -534,16 +541,18 @@ export const Home: React.FC = () => {
                   Paso 1: Búsqueda del Ticket
                 </h1>
                 <p className="text-xs text-slate-500">
-                  Ingresa la serie, folio y monto total tal como aparece en tu comprobante de compra
+                  Ingresa la serie, folio y monto total tal como aparece en tu
+                  comprobante de compra
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-[#010080] to-[#0b5ed7] text-white px-4 py-3 rounded-xl flex items-center gap-3 shadow-md shadow-[#010080]/15">
+              <div className=" bg-[#010080] text-white px-4 py-3 rounded-xl flex items-center gap-3 shadow-md shadow-[#010080]/15">
                 <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center font-bold text-xs shrink-0 select-none">
                   !
                 </div>
                 <p className="text-xs sm:text-sm font-medium leading-snug">
-                  Solo cuentas con el mes en el que realizaste tu consumo para emitir tu factura.
+                  Solo cuentas con el mes en el que realizaste tu consumo para
+                  emitir tu factura.
                 </p>
               </div>
 
@@ -596,13 +605,16 @@ export const Home: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loadingTicket}
-                  className="w-full h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide disabled:opacity-50"
+                  className="w-full min-h-12 py-3 px-5 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide shrink-0 disabled:opacity-50"
                 >
                   {loadingTicket ? (
                     <IonSpinner name="dots" className="text-white h-5" />
                   ) : (
                     <>
-                      <IonIcon icon={searchOutline} className="text-lg" />
+                      <IonIcon
+                        icon={searchOutline}
+                        className="text-lg shrink-0"
+                      />
                       <span>Cargar Información del Ticket</span>
                     </>
                   )}
@@ -610,25 +622,33 @@ export const Home: React.FC = () => {
               </form>
 
               {ticket && (
-                <div className="bg-[#eef5ff] border-2 border-[#b6d4fe] rounded-3xl p-6 sm:p-8 space-y-5 animate-fade-in">
+                <div className="bg-[#eef5ff] border-2 border-[#b6d4fe] rounded-3xl p-5 sm:p-8 space-y-5 animate-fade-in">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#b6d4fe]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-[#010080] text-white flex items-center justify-center shadow-md">
-                        <IonIcon icon={receiptOutline} className="text-2xl text-[#38bdf8]" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-12 h-12 rounded-2xl bg-[#010080] text-white flex items-center justify-center shadow-md shrink-0">
+                        <IonIcon
+                          icon={receiptOutline}
+                          className="text-2xl text-[#38bdf8]"
+                        />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <span className="text-xs font-black text-[#010080] uppercase tracking-wider">
                           Ticket Encontrado
                         </span>
                         <h3 className="text-lg font-black text-slate-800">
                           {ticket.serie}-{ticket.folio}
                         </h3>
-                        <p className="text-xs text-slate-500">{ticket.sucursal} • {ticket.fecha}</p>
+                        <p className="text-xs text-slate-500">
+                          {ticket.sucursal} • {ticket.fecha}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black self-start sm:self-auto flex items-center gap-1.5 border border-emerald-200">
-                      <IonIcon icon={checkmarkCircleOutline} className="text-sm text-emerald-600" />
+                    <div className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black self-start sm:self-auto flex items-center gap-1.5 border border-emerald-200 shrink-0">
+                      <IonIcon
+                        icon={checkmarkCircleOutline}
+                        className="text-sm text-emerald-600 shrink-0"
+                      />
                       <span>Ticket Válido para Facturar</span>
                     </div>
                   </div>
@@ -641,9 +661,9 @@ export const Home: React.FC = () => {
                       {ticket.conceptos.map((item) => (
                         <div
                           key={item.numero}
-                          className="bg-white rounded-xl p-3 border border-slate-200 flex items-center justify-between text-xs"
+                          className="bg-white rounded-xl p-3 border border-slate-200 flex items-center justify-between gap-3 text-xs"
                         >
-                          <div>
+                          <div className="min-w-0 flex-1">
                             <span className="font-bold text-slate-800 block">
                               {item.descripcion}
                             </span>
@@ -651,7 +671,7 @@ export const Home: React.FC = () => {
                               Clave SAT: {item.claveSat} • Cant: {item.cantidad}
                             </span>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right shrink-0">
                             <span className="font-black text-slate-800 block">
                               ${item.importe.toFixed(2)}
                             </span>
@@ -664,14 +684,18 @@ export const Home: React.FC = () => {
                     </div>
 
                     <div className="flex justify-end pt-2">
-                      <div className="w-60 bg-white rounded-xl p-3 border border-slate-200 space-y-1 text-xs">
+                      <div className="w-full sm:w-64 bg-white rounded-xl p-3 border border-slate-200 space-y-1 text-xs">
                         <div className="flex justify-between text-slate-600">
                           <span>Subtotal:</span>
-                          <span className="font-bold">${ticket.subtotal.toFixed(2)}</span>
+                          <span className="font-bold">
+                            ${ticket.subtotal.toFixed(2)}
+                          </span>
                         </div>
                         <div className="flex justify-between text-slate-600">
                           <span>IVA (16%):</span>
-                          <span className="font-bold">${ticket.iva.toFixed(2)}</span>
+                          <span className="font-bold">
+                            ${ticket.iva.toFixed(2)}
+                          </span>
                         </div>
                         <div className="flex justify-between font-black text-sm text-[#010080] pt-1 border-t border-slate-100">
                           <span>TOTAL:</span>
@@ -685,10 +709,13 @@ export const Home: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setPaso(2)}
-                      className="w-full sm:w-auto h-12 px-8 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-md shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider"
+                      className="w-full sm:w-auto min-h-12 py-3 px-8 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider shrink-0"
                     >
                       <span>Continuar a Datos Fiscales</span>
-                      <IonIcon icon={arrowForwardOutline} className="text-base" />
+                      <IonIcon
+                        icon={arrowForwardOutline}
+                        className="text-base shrink-0"
+                      />
                     </button>
                   </div>
                 </div>
@@ -698,18 +725,22 @@ export const Home: React.FC = () => {
 
           {paso === 2 && ticket && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={() => setPaso(1)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#010080] transition-colors"
+                  className="inline-flex items-center gap-1.5 min-h-9 py-1.5 px-2.5 -ml-2.5 rounded-lg text-xs font-bold text-slate-500 hover:text-[#010080] hover:bg-slate-100 transition-colors"
                 >
-                  <IonIcon icon={arrowBackOutline} className="text-base" />
+                  <IonIcon
+                    icon={arrowBackOutline}
+                    className="text-base shrink-0"
+                  />
                   <span>Volver a datos del Ticket</span>
                 </button>
 
                 <span className="text-xs font-black text-[#010080]">
-                  Ticket: {ticket.serie}-{ticket.folio} (${ticket.monto.toFixed(2)})
+                  Ticket: {ticket.serie}-{ticket.folio} ($
+                  {ticket.monto.toFixed(2)})
                 </span>
               </div>
 
@@ -718,13 +749,14 @@ export const Home: React.FC = () => {
                   Paso 2: Asociación del RFC Receptor
                 </h1>
                 <p className="text-xs text-slate-500">
-                  Ingresa tu RFC. Si ya está registrado se cargarán tus datos, o podrás registrarlo fácilmente.
+                  Ingresa tu RFC. Si ya está registrado se cargarán tus datos, o
+                  podrás registrarlo fácilmente.
                 </p>
               </div>
 
               <form
                 onSubmit={handleBuscarRfc}
-                className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
+                className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6"
               >
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700">
@@ -735,21 +767,26 @@ export const Home: React.FC = () => {
                       type="text"
                       maxLength={13}
                       value={rfcBusqueda}
-                      onChange={(e) => setRfcBusqueda(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setRfcBusqueda(e.target.value.toUpperCase())
+                      }
                       placeholder="XAXX010101000"
-                      className="flex-1 h-12 px-4 rounded-xl border border-slate-300 text-sm font-bold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                      className="w-full sm:w-auto sm:flex-1 shrink-0 min-h-12 h-12 px-4 rounded-xl border border-slate-300 text-sm font-bold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                     />
 
                     <button
                       type="submit"
                       disabled={loadingRfc}
-                      className="h-12 px-8 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide disabled:opacity-50"
+                      className="w-full sm:w-auto shrink-0 min-h-12 py-3 px-8 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide whitespace-nowrap disabled:opacity-50"
                     >
                       {loadingRfc ? (
                         <IonSpinner name="dots" className="text-white h-5" />
                       ) : (
                         <>
-                          <IonIcon icon={searchOutline} className="text-base" />
+                          <IonIcon
+                            icon={searchOutline}
+                            className="text-base shrink-0"
+                          />
                           <span>Buscar RFC</span>
                         </>
                       )}
@@ -764,9 +801,12 @@ export const Home: React.FC = () => {
                       onClick={() => {
                         setRfcBusqueda(user.rfc || "");
                       }}
-                      className="text-xs font-bold text-[#0b5ed7] hover:underline flex items-center gap-1.5"
+                      className="min-h-9 py-1.5 px-3 rounded-lg bg-[#eef5ff] hover:bg-[#dceafe] text-xs font-bold text-[#0b5ed7] transition-colors inline-flex items-center gap-1.5"
                     >
-                      <IonIcon icon={businessOutline} className="text-sm" />
+                      <IonIcon
+                        icon={businessOutline}
+                        className="text-sm shrink-0"
+                      />
                       <span>Usar mi RFC de perfil: {user.rfc}</span>
                     </button>
                   </div>
@@ -774,46 +814,63 @@ export const Home: React.FC = () => {
               </form>
 
               {cliente && (
-                <div className="bg-[#eef5ff] border-2 border-[#b6d4fe] rounded-3xl p-6 sm:p-8 space-y-5 animate-fade-in">
-                  <div className="flex items-center justify-between pb-4 border-b border-[#b6d4fe]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-[#010080] text-white flex items-center justify-center shadow-md">
-                        <IonIcon icon={businessOutline} className="text-2xl text-[#38bdf8]" />
+                <div className="bg-[#eef5ff] border-2 border-[#b6d4fe] rounded-3xl p-5 sm:p-8 space-y-5 animate-fade-in">
+                  <div className="flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-3 pb-4 border-b border-[#b6d4fe]">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-12 h-12 rounded-2xl bg-[#010080] text-white flex items-center justify-center shadow-md shrink-0">
+                        <IonIcon
+                          icon={businessOutline}
+                          className="text-2xl text-[#38bdf8]"
+                        />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <span className="text-xs font-black text-[#010080] uppercase tracking-wider">
                           Contribuyente Encontrado
                         </span>
-                        <h3 className="text-base sm:text-lg font-black text-slate-800">
+                        <h3 className="text-base sm:text-lg font-black text-slate-800 break-words">
                           {cliente.razonSocial}
                         </h3>
-                        <p className="text-xs text-slate-600 font-bold">RFC: {cliente.rfc}</p>
+                        <p className="text-xs text-slate-600 font-bold">
+                          RFC: {cliente.rfc}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1.5 border border-emerald-200">
-                      <IonIcon icon={checkmarkCircleOutline} className="text-sm text-emerald-600" />
+                    <div className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1.5 border border-emerald-200 shrink-0">
+                      <IonIcon
+                        icon={checkmarkCircleOutline}
+                        className="text-sm text-emerald-600 shrink-0"
+                      />
                       <span className="hidden sm:inline">RFC Activo</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div className="bg-white p-3 rounded-xl border border-slate-200">
-                      <span className="text-slate-500 block">Domicilio Fiscal (CP):</span>
-                      <span className="font-bold text-slate-800">{cliente.cp} • {cliente.colonia}, {cliente.municipio}, {cliente.estado}</span>
+                      <span className="text-slate-500 block">
+                        Domicilio Fiscal (CP):
+                      </span>
+                      <span className="font-bold text-slate-800">
+                        {cliente.cp} • {cliente.colonia}, {cliente.municipio},{" "}
+                        {cliente.estado}
+                      </span>
                     </div>
 
                     <div className="bg-white p-3 rounded-xl border border-slate-200">
-                      <span className="text-slate-500 block">Régimen Fiscal Asignado:</span>
-                      <span className="font-bold text-slate-800">{cliente.regimenFiscal}</span>
+                      <span className="text-slate-500 block">
+                        Régimen Fiscal Asignado:
+                      </span>
+                      <span className="font-bold text-slate-800">
+                        {cliente.regimenFiscal}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#b6d4fe] flex flex-col sm:flex-row justify-between items-center gap-3">
+                  <div className="pt-3 border-t border-[#b6d4fe] flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3">
                     <button
                       type="button"
                       onClick={() => setCliente(null)}
-                      className="text-xs font-bold text-slate-500 hover:text-slate-700"
+                      className="w-full sm:w-auto shrink-0 min-h-11 py-2.5 px-5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 transition-colors flex items-center justify-center"
                     >
                       Buscar otro RFC
                     </button>
@@ -821,25 +878,34 @@ export const Home: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setPaso(3)}
-                      className="w-full sm:w-auto h-12 px-8 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-md shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider"
+                      className="w-full sm:w-auto shrink-0 min-h-12 py-3 px-8 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider"
                     >
                       <span>Confirmar RFC y Continuar</span>
-                      <IonIcon icon={arrowForwardOutline} className="text-base" />
+                      <IonIcon
+                        icon={arrowForwardOutline}
+                        className="text-base shrink-0"
+                      />
                     </button>
                   </div>
                 </div>
               )}
 
               {rfcNoRegistrado && (
-                <div className="bg-amber-50 border-2 border-amber-300 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in">
+                <div className="bg-amber-50 border-2 border-amber-300 rounded-3xl p-5 sm:p-8 space-y-4 animate-fade-in">
                   <div className="flex items-start gap-3">
-                    <IonIcon icon={alertCircleOutline} className="text-3xl text-amber-600 shrink-0 mt-0.5" />
-                    <div className="space-y-1">
+                    <IonIcon
+                      icon={alertCircleOutline}
+                      className="text-3xl text-amber-600 shrink-0 mt-0.5"
+                    />
+                    <div className="space-y-1 min-w-0 flex-1">
                       <h3 className="text-base font-black text-amber-900">
                         RFC no registrado en el sistema
                       </h3>
                       <p className="text-xs text-amber-800 leading-relaxed">
-                        El RFC <strong>{rfcBusqueda}</strong> no se encuentra en el catálogo. Para poder emitir tu comprobante CFDI 4.0 es necesario darlo de alta con tus datos fiscales oficiales.
+                        El RFC <strong>{rfcBusqueda}</strong> no se encuentra en
+                        el catálogo. Para poder emitir tu comprobante CFDI 4.0
+                        es necesario darlo de alta con tus datos fiscales
+                        oficiales.
                       </p>
                     </div>
                   </div>
@@ -848,16 +914,19 @@ export const Home: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setModalRegistro(true)}
-                      className="h-12 px-6 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-black text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide"
+                      className="w-full sm:w-auto shrink-0 min-h-12 py-3 px-6 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-black text-xs sm:text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide"
                     >
-                      <IonIcon icon={addCircleOutline} className="text-lg text-[#38bdf8]" />
+                      <IonIcon
+                        icon={addCircleOutline}
+                        className="text-lg text-[#38bdf8] shrink-0"
+                      />
                       <span>Registrar este RFC Ahora</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setRfcNoRegistrado(false)}
-                      className="h-12 px-6 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition-colors border border-slate-200"
+                      className="w-full sm:w-auto shrink-0 min-h-12 py-3 px-6 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm leading-snug rounded-xl transition-colors border border-slate-200 flex items-center justify-center"
                     >
                       Intentar con otro RFC
                     </button>
@@ -869,13 +938,16 @@ export const Home: React.FC = () => {
 
           {paso === 3 && ticket && cliente && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={() => setPaso(2)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#010080] transition-colors"
+                  className="inline-flex items-center gap-1.5 min-h-9 py-1.5 px-2.5 -ml-2.5 rounded-lg text-xs font-bold text-slate-500 hover:text-[#010080] hover:bg-slate-100 transition-colors"
                 >
-                  <IonIcon icon={arrowBackOutline} className="text-base" />
+                  <IonIcon
+                    icon={arrowBackOutline}
+                    className="text-base shrink-0"
+                  />
                   <span>Cambiar RFC Receptor</span>
                 </button>
 
@@ -889,7 +961,8 @@ export const Home: React.FC = () => {
                   Paso 3: Régimen Fiscal y Tipo de Gasto
                 </h1>
                 <p className="text-xs text-slate-500">
-                  Configura el régimen fiscal del receptor y el uso que tendrá el comprobante para emitir tu factura
+                  Configura el régimen fiscal del receptor y el uso que tendrá
+                  el comprobante para emitir tu factura
                 </p>
               </div>
 
@@ -899,10 +972,12 @@ export const Home: React.FC = () => {
                     Ticket a Facturar
                   </span>
                   <p className="font-bold text-slate-800 text-sm">
-                    {ticket.serie}-{ticket.folio} • ${ticket.monto.toFixed(2)} MXN
+                    {ticket.serie}-{ticket.folio} • ${ticket.monto.toFixed(2)}{" "}
+                    MXN
                   </p>
                   <p className="text-slate-500">
-                    Subtotal: ${ticket.subtotal.toFixed(2)} • IVA: ${ticket.iva.toFixed(2)}
+                    Subtotal: ${ticket.subtotal.toFixed(2)} • IVA: $
+                    {ticket.iva.toFixed(2)}
                   </p>
                 </div>
 
@@ -921,7 +996,7 @@ export const Home: React.FC = () => {
 
               <form
                 onSubmit={handleGenerarFactura}
-                className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
+                className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6"
               >
                 <div className="space-y-4">
                   <div className="space-y-1.5">
@@ -931,7 +1006,7 @@ export const Home: React.FC = () => {
                     <select
                       value={regimenFiscal}
                       onChange={(e) => setRegimenFiscal(e.target.value)}
-                      className="w-full h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
+                      className="w-full min-h-12 h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                     >
                       {regimenesCatalogo.map((item) => (
                         <option key={item.numero} value={item.numero}>
@@ -948,7 +1023,7 @@ export const Home: React.FC = () => {
                     <select
                       value={usoCfdi}
                       onChange={(e) => setUsoCfdi(e.target.value)}
-                      className="w-full h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
+                      className="w-full min-h-12 h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                     >
                       {usosCfdiCatalogo.map((item) => (
                         <option key={item.numero} value={item.numero}>
@@ -966,7 +1041,7 @@ export const Home: React.FC = () => {
                       <select
                         value={formaPago}
                         onChange={(e) => setFormaPago(e.target.value)}
-                        className="w-full h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
+                        className="w-full min-h-12 h-12 px-3 border border-slate-300 rounded-xl bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                       >
                         {formasPagoCatalogo.map((item) => (
                           <option key={item.numero} value={item.numero}>
@@ -981,7 +1056,7 @@ export const Home: React.FC = () => {
                         Correo de Envío (PDF y XML)
                       </label>
                       <div className="relative flex items-center">
-                        <span className="absolute left-3.5 text-slate-400">
+                        <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                           <IonIcon icon={mailOutline} className="text-lg" />
                         </span>
                         <input
@@ -989,7 +1064,7 @@ export const Home: React.FC = () => {
                           value={emailEnvio}
                           onChange={(e) => setEmailEnvio(e.target.value)}
                           placeholder="factura@cliente.com"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-300 text-sm text-slate-800 bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 placeholder:text-slate-400"
+                          className="w-full min-h-12 h-12 pl-11 pr-4 rounded-xl border border-slate-300 text-sm text-slate-800 bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -1000,13 +1075,16 @@ export const Home: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loadingGenerar}
-                    className="flex-1 h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#010080]/25 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                    className="w-full sm:w-auto sm:flex-1 shrink-0 min-h-12 py-3 px-6 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-lg shadow-[#010080]/25 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
                   >
                     {loadingGenerar ? (
                       <IonSpinner name="dots" className="text-white h-5" />
                     ) : (
                       <>
-                        <IonIcon icon={shieldCheckmarkOutline} className="text-lg text-[#38bdf8]" />
+                        <IonIcon
+                          icon={shieldCheckmarkOutline}
+                          className="text-lg text-[#38bdf8] shrink-0"
+                        />
                         <span>Generar Factura CFDI 4.0</span>
                       </>
                     )}
@@ -1015,7 +1093,7 @@ export const Home: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setPaso(2)}
-                    className="h-12 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors"
+                    className="w-full sm:w-auto shrink-0 min-h-12 py-3 px-6 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-700 font-bold text-sm leading-snug rounded-xl transition-colors flex items-center justify-center whitespace-nowrap"
                   >
                     Atrás
                   </button>
@@ -1025,7 +1103,7 @@ export const Home: React.FC = () => {
           )}
 
           {paso === 4 && facturaEmitida && (
-            <div className="bg-white border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-xl shadow-emerald-500/5 space-y-8 animate-fade-in text-center">
+            <div className="bg-white border-2 border-emerald-500/40 rounded-3xl p-5 sm:p-10 shadow-xl shadow-emerald-500/5 space-y-8 animate-fade-in text-center">
               <div className="w-20 h-20 rounded-3xl bg-emerald-50 text-emerald-600 border-2 border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
                 <IonIcon icon={checkmarkCircleOutline} className="text-5xl" />
               </div>
@@ -1038,34 +1116,39 @@ export const Home: React.FC = () => {
                   ¡Tu Factura ha sido Generada!
                 </h1>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  Comprobante fiscal digital por internet generado conforme a las disposiciones del SAT
+                  Comprobante fiscal digital por internet generado conforme a
+                  las disposiciones del SAT
                 </p>
               </div>
 
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 max-w-lg mx-auto text-left space-y-3 text-xs">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                  <span className="text-slate-500">Folio y Serie:</span>
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 max-w-lg mx-auto text-left space-y-3 text-xs">
+                <div className="flex justify-between items-center gap-3 pb-2 border-b border-slate-200">
+                  <span className="text-slate-500 shrink-0">
+                    Folio y Serie:
+                  </span>
                   <span className="font-black text-slate-800 text-sm">
                     {facturaEmitida.serie}-{facturaEmitida.folioFactura}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                  <span className="text-slate-500">Folio Fiscal (UUID):</span>
-                  <span className="font-bold text-[#010080] text-[11px] select-all">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-3 pb-2 border-b border-slate-200">
+                  <span className="text-slate-500 shrink-0">
+                    Folio Fiscal (UUID):
+                  </span>
+                  <span className="font-bold text-[#010080] text-[11px] select-all break-all sm:text-right">
                     {facturaEmitida.uuid}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                  <span className="text-slate-500">Receptor:</span>
-                  <span className="font-bold text-slate-800 truncate max-w-[240px]">
+                <div className="flex justify-between items-center gap-3 pb-2 border-b border-slate-200">
+                  <span className="text-slate-500 shrink-0">Receptor:</span>
+                  <span className="font-bold text-slate-800 truncate max-w-[200px] sm:max-w-[240px]">
                     {facturaEmitida.receptor.razonSocial}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                  <span className="text-slate-500">RFC:</span>
+                <div className="flex justify-between items-center gap-3 pb-2 border-b border-slate-200">
+                  <span className="text-slate-500 shrink-0">RFC:</span>
                   <span className="font-black text-slate-800">
                     {facturaEmitida.receptor.rfc}
                   </span>
@@ -1077,27 +1160,37 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto w-full">
                 <button
                   type="button"
-                  onClick={() => facturacionService.descargarPdf(facturaEmitida)}
-                  className="flex-1 h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide"
+                  onClick={() =>
+                    facturacionService.descargarPdf(facturaEmitida)
+                  }
+                  className="w-full sm:w-auto sm:flex-1 shrink-0 min-h-12 py-3 px-6 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide"
                 >
-                  <IonIcon icon={downloadOutline} className="text-lg text-[#38bdf8]" />
+                  <IonIcon
+                    icon={downloadOutline}
+                    className="text-lg text-[#38bdf8] shrink-0"
+                  />
                   <span>Descargar PDF</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => facturacionService.descargarXml(facturaEmitida)}
-                  className="flex-1 h-12 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wide"
+                  onClick={() =>
+                    facturacionService.descargarXml(facturaEmitida)
+                  }
+                  className="w-full sm:w-auto sm:flex-1 shrink-0 min-h-12 py-3 px-6 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wide"
                 >
-                  <IonIcon icon={documentTextOutline} className="text-lg text-white" />
+                  <IonIcon
+                    icon={documentTextOutline}
+                    className="text-lg text-white shrink-0"
+                  />
                   <span>Descargar XML</span>
                 </button>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto">
+              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto w-full">
                 <button
                   type="button"
                   onClick={() => {
@@ -1108,18 +1201,21 @@ export const Home: React.FC = () => {
                       position: "top",
                     });
                   }}
-                  className="h-11 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full sm:w-auto shrink-0 min-h-11 py-2.5 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs leading-snug rounded-xl transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <IonIcon icon={mailOutline} className="text-sm text-[#0b5ed7]" />
+                  <IonIcon
+                    icon={mailOutline}
+                    className="text-sm text-[#0b5ed7] shrink-0"
+                  />
                   <span>Reenviar a Correo</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleReiniciar}
-                  className="h-11 px-6 bg-slate-100 hover:bg-slate-200 text-[#010080] font-black text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full sm:w-auto shrink-0 min-h-11 py-2.5 px-6 bg-slate-100 hover:bg-slate-200 text-[#010080] font-black text-xs leading-snug rounded-xl transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <IonIcon icon={refreshOutline} className="text-sm" />
+                  <IonIcon icon={refreshOutline} className="text-sm shrink-0" />
                   <span>Facturar Otro Ticket</span>
                 </button>
               </div>
@@ -1133,18 +1229,22 @@ export const Home: React.FC = () => {
           className="ion-modal-custom"
         >
           <div className="h-full bg-slate-100 overflow-y-auto p-4 sm:p-6">
-            <div className="max-w-2xl mx-auto bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 space-y-6">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-xl bg-[#010080] text-white flex items-center justify-center">
-                    <IonIcon icon={businessOutline} className="text-lg text-[#38bdf8]" />
+            <div className="max-w-2xl mx-auto bg-white rounded-3xl p-5 sm:p-8 shadow-xl border border-slate-200 space-y-6">
+              <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-10 h-10 rounded-xl bg-[#010080] text-white flex items-center justify-center shrink-0">
+                    <IonIcon
+                      icon={businessOutline}
+                      className="text-lg text-[#38bdf8]"
+                    />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h2 className="text-lg font-black text-slate-800">
                       Alta de Cliente Fiscal
                     </h2>
                     <p className="text-[11px] text-slate-500">
-                      Captura los datos fiscales para emitir la factura del ticket
+                      Captura los datos fiscales para emitir la factura del
+                      ticket
                     </p>
                   </div>
                 </div>
@@ -1152,7 +1252,8 @@ export const Home: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setModalRegistro(false)}
-                  className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
+                  aria-label="Cerrar"
+                  className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors shrink-0"
                 >
                   <IonIcon icon={closeOutline} className="text-xl" />
                 </button>
@@ -1161,13 +1262,17 @@ export const Home: React.FC = () => {
               <form onSubmit={handleGuardarNuevoCliente} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs font-bold text-slate-700">RFC *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      RFC *
+                    </label>
                     <input
                       type="text"
                       maxLength={13}
                       value={nuevoRfc}
-                      onChange={(e) => setNuevoRfc(e.target.value.toUpperCase())}
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs font-bold uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      onChange={(e) =>
+                        setNuevoRfc(e.target.value.toUpperCase())
+                      }
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs font-bold uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
 
@@ -1180,90 +1285,106 @@ export const Home: React.FC = () => {
                       value={nuevoRazonSocial}
                       onChange={(e) => setNuevoRazonSocial(e.target.value)}
                       placeholder="Tal como aparece en Constancia de Situación Fiscal"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="space-y-1 sm:col-span-3">
-                    <label className="text-xs font-bold text-slate-700">Calle / Dirección *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Calle / Dirección *
+                    </label>
                     <input
                       type="text"
                       value={nuevoDireccion}
                       onChange={(e) => setNuevoDireccion(e.target.value)}
                       placeholder="Calle o avenida"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
 
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs font-bold text-slate-700">No. Ext *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      No. Ext *
+                    </label>
                     <input
                       type="text"
                       value={nuevoNoExt}
                       onChange={(e) => setNuevoNoExt(e.target.value)}
                       placeholder="100"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Colonia *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Colonia *
+                    </label>
                     <input
                       type="text"
                       value={nuevoColonia}
                       onChange={(e) => setNuevoColonia(e.target.value)}
                       placeholder="Colonia"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
 
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="text-xs font-bold text-slate-700">Código Postal (CP) *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Código Postal (CP) *
+                    </label>
                     <input
                       type="text"
                       maxLength={5}
                       value={nuevoCp}
-                      onChange={(e) => setNuevoCp(e.target.value.replace(/\D/g, ""))}
+                      onChange={(e) =>
+                        setNuevoCp(e.target.value.replace(/\D/g, ""))
+                      }
                       placeholder="5 dígitos"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Delegación / Municipio *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Delegación / Municipio *
+                    </label>
                     <input
                       type="text"
                       value={nuevoMunicipio}
                       onChange={(e) => setNuevoMunicipio(e.target.value)}
                       placeholder="Municipio"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Estado *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Estado *
+                    </label>
                     <input
                       type="text"
                       value={nuevoEstado}
                       onChange={(e) => setNuevoEstado(e.target.value)}
                       placeholder="Estado"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Régimen Fiscal *</label>
+                  <label className="text-xs font-bold text-slate-700">
+                    Régimen Fiscal *
+                  </label>
                   <select
                     value={nuevoRegimen}
                     onChange={(e) => setNuevoRegimen(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
+                    className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 cursor-pointer"
                   >
                     {regimenesCatalogo.map((item) => (
                       <option key={item.numero} value={item.numero}>
@@ -1275,39 +1396,46 @@ export const Home: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Correo Electrónico *</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Correo Electrónico *
+                    </label>
                     <input
                       type="email"
                       value={nuevoEmail}
                       onChange={(e) => setNuevoEmail(e.target.value)}
                       placeholder="factura@correo.com"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Teléfono / Celular</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Teléfono / Celular
+                    </label>
                     <input
                       type="tel"
                       value={nuevoTelefono}
                       onChange={(e) => setNuevoTelefono(e.target.value)}
                       placeholder="10 dígitos"
-                      className="w-full h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
+                      className="w-full min-h-11 h-11 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15"
                     />
                   </div>
                 </div>
 
-                <div className="pt-3 flex flex-col sm:flex-row gap-3">
+                <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"
                     disabled={loadingGuardarRfc}
-                    className="flex-1 h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-black text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide disabled:opacity-50"
+                    className="w-full sm:w-auto sm:flex-1 shrink-0 min-h-12 py-3 px-6 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-black text-xs sm:text-sm leading-snug rounded-xl transition-all shadow-md shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wide disabled:opacity-50"
                   >
                     {loadingGuardarRfc ? (
                       <IonSpinner name="dots" className="text-white h-5" />
                     ) : (
                       <>
-                        <IonIcon icon={checkmarkCircleOutline} className="text-base" />
+                        <IonIcon
+                          icon={checkmarkCircleOutline}
+                          className="text-base shrink-0"
+                        />
                         <span>Guardar RFC y Continuar</span>
                       </>
                     )}
@@ -1316,7 +1444,7 @@ export const Home: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setModalRegistro(false)}
-                    className="h-12 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition-colors"
+                    className="w-full sm:w-auto shrink-0 min-h-12 py-3 px-6 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-700 font-bold text-xs sm:text-sm leading-snug rounded-xl transition-colors flex items-center justify-center whitespace-nowrap"
                   >
                     Cancelar
                   </button>

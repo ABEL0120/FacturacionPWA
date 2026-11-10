@@ -1,4 +1,32 @@
+@layer ionic, theme, base, components, utilities;
+
+@import "@ionic/react/css/core.css" layer(ionic);
+@import "@ionic/react/css/normalize.css" layer(ionic);
+@import "@ionic/react/css/structure.css" layer(ionic);
+@import "@ionic/react/css/typography.css" layer(ionic);
+@import "@ionic/react/css/padding.css" layer(ionic);
+@import "@ionic/react/css/float-elements.css" layer(ionic);
+@import "@ionic/react/css/text-alignment.css" layer(ionic);
+@import "@ionic/react/css/text-transformation.css" layer(ionic);
+@import "@ionic/react/css/flex-utils.css" layer(ionic);
+@import "@ionic/react/css/display.css" layer(ionic);
+@import "./theme/variables.css" layer(ionic);
+
 @import "tailwindcss";
+
+@layer base {
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"] {
+    cursor: pointer;
+    line-height: 1.35;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
 
 :root,
 :root[mode="ios"],

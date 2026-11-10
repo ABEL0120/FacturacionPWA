@@ -132,20 +132,20 @@ export const ForgotPasswordPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => history.push("/login")}
-                className="w-10 h-10 rounded-xl bg-white shadow-sm border border-slate-200/80 flex items-center justify-center text-slate-700 hover:bg-slate-50 transition-colors"
+                className="w-11 h-11 rounded-xl bg-white shadow-sm border border-slate-200/80 flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-95 transition-all shrink-0"
               >
                 <IonIcon icon={arrowBackOutline} className="text-xl" />
               </button>
 
               <div className="flex items-center gap-2">
-                <VentioLogo className="w-6 h-6" />
+                <VentioLogo className="w-6 h-6 shrink-0" />
                 <span className="text-xs font-black tracking-wider uppercase text-[#010080]">
                   VENTIO
                 </span>
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-6">
+            <div className="bg-white rounded-3xl p-5 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-100 space-y-6">
               {paso === 1 && (
                 <>
                   <div className="space-y-1">
@@ -166,7 +166,7 @@ export const ForgotPasswordPage: React.FC = () => {
                         RFC Registrado *
                       </label>
                       <div className="relative flex items-center">
-                        <span className="absolute left-3.5 text-slate-400">
+                        <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                           <IonIcon icon={businessOutline} className="text-lg" />
                         </span>
                         <input
@@ -175,7 +175,7 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={rfc}
                           onChange={(e) => setRfc(e.target.value.toUpperCase())}
                           placeholder="XAXX010101000"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm font-semibold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                          className="w-full min-h-12 h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm font-semibold tracking-wider text-slate-800 uppercase bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -185,7 +185,7 @@ export const ForgotPasswordPage: React.FC = () => {
                         Correo Electrónico Registrado *
                       </label>
                       <div className="relative flex items-center">
-                        <span className="absolute left-3.5 text-slate-400">
+                        <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                           <IonIcon icon={mailOutline} className="text-lg" />
                         </span>
                         <input
@@ -194,7 +194,7 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={contacto}
                           onChange={(e) => setContacto(e.target.value)}
                           placeholder="tu@correo.com"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                          className="w-full min-h-12 h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -203,13 +203,13 @@ export const ForgotPasswordPage: React.FC = () => {
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-12 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                        className="w-full min-h-12 py-3 px-5 bg-[#010080] hover:bg-[#000066] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider shrink-0 disabled:opacity-50"
                       >
                         {loading ? (
                           <IonSpinner name="dots" className="text-white h-5" />
                         ) : (
                           <>
-                            <IonIcon icon={shieldCheckmarkOutline} className="text-lg" />
+                            <IonIcon icon={shieldCheckmarkOutline} className="text-lg shrink-0" />
                             <span>Validar y Continuar</span>
                           </>
                         )}
@@ -239,7 +239,7 @@ export const ForgotPasswordPage: React.FC = () => {
                         Nueva Contraseña *
                       </label>
                       <div className="relative flex items-center">
-                        <span className="absolute left-3.5 text-slate-400">
+                        <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                           <IonIcon icon={lockClosedOutline} className="text-lg" />
                         </span>
                         <input
@@ -248,12 +248,12 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={nuevaPassword}
                           onChange={(e) => setNuevaPassword(e.target.value)}
                           placeholder="De 3 a 13 caracteres"
-                          className="w-full h-12 pl-11 pr-11 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                          className="w-full min-h-12 h-12 pl-11 pr-12 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 focus:outline-none"
                         >
                           <IonIcon
                             icon={showPassword ? eyeOffOutline : eyeOutline}
@@ -268,7 +268,7 @@ export const ForgotPasswordPage: React.FC = () => {
                         Repite la Contraseña *
                       </label>
                       <div className="relative flex items-center">
-                        <span className="absolute left-3.5 text-slate-400">
+                        <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
                           <IonIcon icon={lockClosedOutline} className="text-lg" />
                         </span>
                         <input
@@ -277,22 +277,22 @@ export const ForgotPasswordPage: React.FC = () => {
                           value={confirmarPassword}
                           onChange={(e) => setConfirmarPassword(e.target.value)}
                           placeholder="Repite la contraseña"
-                          className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
+                          className="w-full min-h-12 h-12 pl-11 pr-4 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50/50 focus:bg-white focus:outline-none focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/15 transition-all placeholder:text-slate-400"
                         />
                       </div>
                     </div>
 
-                    <div className="pt-2 space-y-2">
+                    <div className="pt-2 space-y-2.5">
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-12 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider disabled:opacity-50"
+                        className="w-full min-h-12 py-3 px-5 bg-[#0b5ed7] hover:bg-[#0a58ca] active:scale-[0.99] text-white font-extrabold text-sm leading-snug rounded-xl transition-all shadow-lg shadow-[#0b5ed7]/25 flex items-center justify-center gap-2 uppercase tracking-wider shrink-0 disabled:opacity-50"
                       >
                         {loading ? (
                           <IonSpinner name="dots" className="text-white h-5" />
                         ) : (
                           <>
-                            <IonIcon icon={keyOutline} className="text-lg" />
+                            <IonIcon icon={keyOutline} className="text-lg shrink-0" />
                             <span>Actualizar Contraseña</span>
                           </>
                         )}
@@ -301,7 +301,7 @@ export const ForgotPasswordPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setPaso(1)}
-                        className="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-700"
+                        className="w-full min-h-11 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 hover:text-slate-800 transition-colors flex items-center justify-center"
                       >
                         Volver al paso anterior
                       </button>
@@ -328,7 +328,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.replace("/login")}
-                    className="w-full h-12 bg-[#010080] hover:bg-[#000066] text-white font-extrabold text-sm rounded-xl shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider"
+                    className="w-full min-h-12 py-3 px-5 bg-[#010080] hover:bg-[#000066] text-white font-extrabold text-sm leading-snug rounded-xl shadow-lg shadow-[#010080]/20 flex items-center justify-center gap-2 uppercase tracking-wider shrink-0"
                   >
                     <span>Ir a Iniciar Sesión</span>
                   </button>
@@ -341,7 +341,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => history.push("/login")}
-                    className="font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline"
+                    className="inline-flex items-center py-1 px-1.5 font-bold text-[#0b5ed7] hover:text-[#010080] hover:underline"
                   >
                     Inicia sesión
                   </button>

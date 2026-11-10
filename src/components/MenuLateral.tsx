@@ -45,7 +45,7 @@ export const MenuLateral: React.FC = () => {
             <div className="w-10 h-10 rounded-full bg-[#010080] text-white flex items-center justify-center font-black text-sm uppercase shrink-0">
               {user.nombre ? user.nombre.charAt(0) : "U"}
             </div>
-            <div className="overflow-hidden">
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-black text-slate-800 truncate">
                 {user.nombre || "Usuario"}
               </p>
