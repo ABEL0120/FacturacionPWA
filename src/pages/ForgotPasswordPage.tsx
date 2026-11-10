@@ -24,7 +24,7 @@ import { FormInput, PasswordInput } from "../components/common/FormField";
 
 export const ForgotPasswordPage: React.FC = () => {
   const history = useHistory();
-  const { showSuccess, showWarning, showError } = useToast();
+  const { showWarning, showError } = useToast();
   const { showErrorAlert } = useAlert();
 
   const [paso, setPaso] = useState<1 | 2 | 3>(1);
@@ -59,7 +59,6 @@ export const ForgotPasswordPage: React.FC = () => {
         emailTrim,
       );
       setPaso(2);
-      showSuccess("Cuenta validada. Ahora ingresa tu nueva contraseña.");
     } catch (err: unknown) {
       errorMsg = getErrorMessage(
         err,

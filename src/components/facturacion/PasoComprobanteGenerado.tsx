@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { IonIcon } from "@ionic/react";
 import {
   arrowBackOutline,
+  checkmarkCircleOutline,
+  chevronDownOutline,
   documentTextOutline,
   downloadOutline,
   eyeOutline,
+  informationCircleOutline,
   refreshOutline,
-  warningOutline,
 } from "ionicons/icons";
 import { FacturaTicketResponseDto } from "../../types/facturacion.types";
 import { facturacionService } from "../../services/facturacionService";
 import { useAlert } from "../../hooks/useAlert";
-import { formatMoney, getErrorMessage } from "../../utils/formatters";
+import { useToast } from "../../hooks/useToast";
+import {
+  formatFechaComprobante,
+  formatMoney,
+  getErrorMessage,
+} from "../../utils/formatters";
 import { ActionButton } from "../common/ActionButton";
+import { ModalVistaPreviaPdf } from "./ModalVistaPreviaPdf";
 
 interface PasoComprobanteGeneradoProps {
   factura: FacturaTicketResponseDto;
@@ -29,8 +37,14 @@ export const PasoComprobanteGenerado: React.FC<PasoComprobanteGeneradoProps> = (
   onVolverEditar,
   onReiniciar,
 }) => {
-  const { showErrorAlert, showWarningAlert } = useAlert();
+  const { showErrorAlert } = useAlert();
+  const { showSuccess } = useToast();
+  const [mostrarDetalles, setMostrarDetalles] = useState(false);
+  const [modalPdfOpen, setModalPdfOpen] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
   const esVistaPrevia = factura.estadoTimbrado === "VISTA_PREVIA";
+  const folioCompleto = `${factura.serie}-${factura.folioTentativo}`;
 
   const handleDescargarXml = async (xml: string, nombreArchivo: string) => {
     try {
@@ -44,222 +58,439 @@ export const PasoComprobanteGenerado: React.FC<PasoComprobanteGeneradoProps> = (
   };
 
   const handleDescargarPdf = async () => {
+    setDownloadingPdf(true);
+    let errorMsg: string | null = null;
     try {
-      facturacionService.descargarPdf(factura);
+      await facturacionService.descargarPdf(factura);
+      showSuccess("PDF descargado correctamente.");
     } catch (err: unknown) {
-      await showWarningAlert({
-        title: "No se pudo abrir la vista PDF",
-        message: getErrorMessage(
-          err,
-          "No fue posible generar la vista de impresión PDF.",
-        ),
+      errorMsg = getErrorMessage(
+        err,
+        "No fue posible generar el archivo PDF.",
+      );
+    } finally {
+      setDownloadingPdf(false);
+    }
+
+    if (errorMsg) {
+      await showErrorAlert({
+        title: "No se pudo descargar el PDF",
+        message: errorMsg,
       });
     }
   };
 
-  return (
-    <div className="bg-white border-2 border-[#b6d4fe] rounded-3xl p-5 sm:p-8 shadow-xl shadow-slate-200/50 space-y-6 animate-fade-in">
-      <div className="text-center space-y-3">
-        <div
-          className={`w-16 h-16 rounded-3xl flex items-center justify-center mx-auto shadow-sm border-2 ${
-            esVistaPrevia
-              ? "bg-[#eef5ff] text-[#0b5ed7] border-[#b6d4fe]"
-              : "bg-amber-50 text-amber-600 border-amber-300"
-          }`}
-        >
-          <IonIcon
-            icon={esVistaPrevia ? eyeOutline : documentTextOutline}
-            className="text-4xl"
-          />
-        </div>
+  const handleAbrirVistaPreviaPdf = () => {
+    setModalPdfOpen(true);
+  };
 
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span
-              className={`px-3 py-1 text-[11px] font-black rounded-full uppercase tracking-wider border inline-block ${
-                esVistaPrevia
-                  ? "bg-[#eef5ff] text-[#010080] border-[#b6d4fe]"
-                  : "bg-amber-100 text-amber-900 border-amber-300"
-              }`}
-            >
-              {esVistaPrevia
-                ? "Vista Previa CFDI 4.0 — Solo lectura"
-                : "Pre-factura CFDI 4.0 generada — Pendiente de firma y timbrado (en espera de datos del timbrador)"}
-            </span>
-            {factura.esPrueba && (
-              <span className="px-3 py-1 bg-amber-200 text-amber-950 text-[11px] font-black rounded-full uppercase tracking-wider border border-amber-400">
-                PROCESO DE PRUEBA
+  const handleConfirmar = () => {
+    setMostrarDetalles(false);
+    onConfirmarGenerar();
+  };
+
+  return (
+    <>
+      <div className="bg-white border border-slate-200 rounded-3xl p-4 sm:p-7 shadow-lg shadow-slate-200/50 space-y-5 animate-fade-in">
+        <div className="space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+                  esVistaPrevia
+                    ? "bg-[#eef5ff] text-[#0b5ed7] border-[#b6d4fe]"
+                    : "bg-emerald-50 text-emerald-600 border-emerald-200"
+                }`}
+              >
+                <IonIcon
+                  icon={esVistaPrevia ? eyeOutline : checkmarkCircleOutline}
+                  className="text-xl"
+                />
+              </div>
+              <span
+                className={`text-[11px] font-black uppercase tracking-wider ${
+                  esVistaPrevia ? "text-[#0b5ed7]" : "text-emerald-700"
+                }`}
+              >
+                {esVistaPrevia
+                  ? "Vista Previa CFDI 4.0"
+                  : "Pre-factura CFDI 4.0"}
               </span>
-            )}
+            </div>
+
+            <span className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-black text-slate-800 whitespace-nowrap shrink-0">
+              Folio {folioCompleto}
+            </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
-            {esVistaPrevia
-              ? "Vista Previa de Comprobante"
-              : "Estructura CFDI 4.0 Lista"}
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
+            {esVistaPrevia ? "Revisa tu comprobante" : "Comprobante listo"}
           </h1>
-          <p className="text-xs text-slate-500 max-w-lg mx-auto">
+          <p className="text-xs text-slate-500 leading-snug mt-1">
             {esVistaPrevia
-              ? "Verifica todos los datos antes de confirmar y actualizar tu perfil fiscal."
-              : "El XML se ha construido correctamente conforme a CFDI 4.0 y queda pendiente de firma digital y timbrado PAC."}
+              ? "Confirma que los datos fiscales y el importe sean correctos antes de emitir."
+              : "Pendiente de firma y timbrado PAC. Ya puedes descargar tu XML o PDF."}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
-          <span className="text-[10px] font-black uppercase text-[#010080] tracking-wider block">
-            Comprobante
-          </span>
-          <div className="flex justify-between gap-2">
-            <span className="text-slate-500">Folio Tentativo:</span>
-            <span className="font-black text-slate-800">
-              {factura.serie}-{factura.folioTentativo}
-            </span>
-          </div>
-          <div className="flex justify-between gap-2">
-            <span className="text-slate-500">Fecha de Emisión:</span>
-            <span className="font-semibold text-slate-800">
-              {factura.fechaEmision}
-            </span>
-          </div>
-          <div className="flex justify-between gap-2">
-            <span className="text-slate-500">Forma de Pago:</span>
-            <span className="font-semibold text-slate-800 text-right">
-              {factura.formaPago} - {factura.formaPagoDescripcion}
-            </span>
-          </div>
-          <div className="flex justify-between gap-2">
-            <span className="text-slate-500">Método / Moneda:</span>
-            <span className="font-semibold text-slate-800">
-              {factura.metodoPago} • {factura.moneda} (TC{" "}
-              {Number(factura.tipoCambio).toFixed(2)})
-            </span>
-          </div>
-          <div className="flex justify-between gap-2">
-            <span className="text-slate-500">Estado Timbrado:</span>
-            <span className="font-bold text-amber-800">
-              {factura.estadoTimbrado}
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
-          <span className="text-[10px] font-black uppercase text-[#010080] tracking-wider block">
-            Emisor y Receptor
-          </span>
+      <div className="rounded-2xl border border-[#b6d4fe]/80 bg-white overflow-hidden divide-y divide-slate-200/80">
+        <div className="p-4 sm:p-5 bg-gradient-to-b from-[#f5f9ff] to-white flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
-            <span className="text-slate-500 block">Emisor:</span>
-            <span className="font-bold text-slate-800 block">
-              {factura.emisor.nombre} ({factura.emisor.rfc})
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+              {esVistaPrevia ? "Total a facturar" : "Total del comprobante"}
             </span>
-            <span className="text-slate-500 text-[11px]">
-              Régimen: {factura.emisor.regimenFiscal} • Lugar Exp.:{" "}
-              {factura.lugarExpedicion}
-            </span>
-          </div>
-          <div className="pt-2 border-t border-slate-200">
-            <span className="text-slate-500 block">Receptor:</span>
-            <span className="font-bold text-slate-800 block">
-              {factura.receptor.nombre} ({factura.receptor.rfc})
-            </span>
-            <span className="text-slate-500 text-[11px] block">
-              CP: {factura.receptor.domicilioFiscalReceptor} • Régimen:{" "}
-              {factura.receptor.regimenFiscalReceptor} -{" "}
-              {factura.receptor.regimenFiscalReceptorDesc}
-            </span>
-            <span className="text-slate-500 text-[11px] block">
-              Uso CFDI: {factura.receptor.usoCfdi} -{" "}
-              {factura.receptor.usoCfdiDesc}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 text-xs">
-        <span className="text-[10px] font-black uppercase text-[#010080] tracking-wider block">
-          Conceptos ({factura.conceptos.length})
-        </span>
-        <div className="space-y-2">
-          {factura.conceptos.map((c) => (
-            <div
-              key={c.secuencia}
-              className="bg-white rounded-xl p-3 border border-slate-200 flex items-center justify-between gap-3"
-            >
-              <div className="min-w-0 flex-1">
-                <span className="font-bold text-slate-800 block">
-                  {c.descripcion}
-                </span>
-                <span className="text-slate-500">
-                  SAT: {c.claveProdServ} • Cant: {c.cantidad} {c.unidad} (
-                  {c.claveUnidad}) • P.U.: {formatMoney(c.valorUnitario)}
-                </span>
-              </div>
-              <span className="font-black text-slate-800 shrink-0">
-                {formatMoney(c.importe)}
+            <div className="text-2xl sm:text-3xl font-black text-[#010080] tracking-tight leading-none mt-1 tabular-nums">
+              {formatMoney(factura.total)}{" "}
+              <span className="text-sm font-extrabold text-slate-500">
+                {factura.moneda}
               </span>
             </div>
-          ))}
+            <p className="text-xs text-slate-500 mt-2">
+              Subtotal {formatMoney(factura.subtotal)}
+              {factura.descuento > 0
+                ? ` · Descuento -${formatMoney(factura.descuento)}`
+                : ""}{" "}
+              · IVA {formatMoney(factura.iva)}
+            </p>
+          </div>
+
+          <div className="sm:text-right text-xs text-slate-600 space-y-0.5">
+            <div className="font-bold text-slate-800">
+              {factura.formaPago} - {factura.formaPagoDescripcion}
+            </div>
+            <div className="text-[11px] text-slate-500">
+              {formatFechaComprobante(factura.fechaEmision)}
+            </div>
+          </div>
         </div>
 
-        <div className="pt-2 border-t border-slate-200 flex flex-col sm:flex-row justify-between gap-3">
-          <div className="text-slate-600">
-            <span className="text-[10px] uppercase font-bold block text-slate-500">
-              Importe con Letra:
+        <div className="p-4 sm:p-5 space-y-1.5">
+          <span className="text-[11px] font-black uppercase tracking-wider text-[#010080] block">
+            Receptor
+          </span>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+            <span className="text-sm font-black text-slate-800 break-words">
+              {factura.receptor.nombre}
             </span>
-            <span className="font-bold text-slate-800">
-              {factura.importeConLetra}
+            <span className="text-xs font-extrabold text-[#0b5ed7] shrink-0">
+              {factura.receptor.rfc}
             </span>
           </div>
-          <div className="sm:text-right space-y-0.5 shrink-0">
-            <div className="text-slate-600">
-              Subtotal: <strong>{formatMoney(factura.subtotal)}</strong>
-            </div>
-            {factura.descuento > 0 && (
-              <div className="text-slate-600">
-                Descuento: <strong>-{formatMoney(factura.descuento)}</strong>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Uso CFDI: {factura.receptor.usoCfdi} -{" "}
+            {factura.receptor.usoCfdiDesc} · Régimen{" "}
+            {factura.receptor.regimenFiscalReceptor} · CP{" "}
+            {factura.receptor.domicilioFiscalReceptor}
+          </p>
+        </div>
+
+        <div className="p-4 sm:p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#010080]">
+              Conceptos ({factura.conceptos.length})
+            </span>
+            <span className="text-[11px] font-semibold text-slate-400">
+              Importe
+            </span>
+          </div>
+
+          <div className="space-y-2.5">
+            {factura.conceptos.map((c) => (
+              <div
+                key={c.secuencia}
+                className="flex items-start justify-between gap-3 text-xs"
+              >
+                <div className="min-w-0 flex-1">
+                  <span className="font-bold text-slate-800 block leading-snug">
+                    {c.descripcion}
+                  </span>
+                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                    {c.cantidad} {c.unidad} · P.U.{" "}
+                    {formatMoney(c.valorUnitario)}
+                  </span>
+                </div>
+                <span className="font-black text-slate-800 shrink-0 tabular-nums text-right">
+                  {formatMoney(c.importe)}
+                </span>
               </div>
-            )}
-            <div className="text-slate-600">
-              IVA: <strong>{formatMoney(factura.iva)}</strong>
-            </div>
-            <div className="text-sm font-black text-[#010080]">
-              Total: {formatMoney(factura.total)} {factura.moneda}
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
       {factura.notaCreditoPrevia && (
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 space-y-2.5 text-xs">
-          <div className="flex items-start gap-2.5">
-            <IonIcon
-              icon={warningOutline}
-              className="text-xl text-amber-600 shrink-0 mt-0.5"
-            />
-            <div className="min-w-0 flex-1 space-y-1">
-              <span className="font-black text-amber-950 uppercase tracking-wide block">
-                Nota de Crédito Previa (Ticket proveniente de Factura Global)
+        <div className="bg-[#f5f9ff] border border-[#b6d4fe] rounded-2xl px-4 py-3 flex items-start gap-2.5 text-xs">
+          <IonIcon
+            icon={informationCircleOutline}
+            className="text-lg text-[#0b5ed7] shrink-0 mt-0.5"
+          />
+          <div className="min-w-0 flex-1">
+            <span className="font-bold text-[#010080] block leading-snug">
+              Incluye Nota de Crédito ({factura.notaCreditoPrevia.serie}-
+              {factura.notaCreditoPrevia.folioTentativo})
+            </span>
+            <span className="text-[11px] text-slate-600 block mt-0.5">
+              Ticket incluido previamente en Factura Global · Total{" "}
+              {formatMoney(factura.notaCreditoPrevia.total)} {factura.moneda}
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/70">
+        <button
+          type="button"
+          onClick={() => setMostrarDetalles((prev) => !prev)}
+          aria-expanded={mostrarDetalles}
+          className="w-full px-4 py-3.5 flex items-center justify-between gap-3 text-left hover:bg-slate-100/70 transition-colors"
+        >
+          <div className="min-w-0">
+            <span className="text-xs font-extrabold text-[#010080] block">
+              Detalles fiscales y datos SAT
+            </span>
+            <span className="text-[11px] text-slate-500 block mt-0.5">
+              Emisor, claves SAT, importe con letra y cadena original
+            </span>
+          </div>
+          <IonIcon
+            icon={chevronDownOutline}
+            className={`text-lg text-slate-500 shrink-0 transition-transform duration-200 ${
+              mostrarDetalles ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {mostrarDetalles && (
+          <div className="px-4 pb-4 pt-3.5 border-t border-slate-200 bg-white space-y-4 text-xs animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                  Emisor
+                </span>
+                <p className="font-bold text-slate-800">
+                  {factura.emisor.nombre}
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  RFC: {factura.emisor.rfc} · Régimen{" "}
+                  {factura.emisor.regimenFiscal}
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  Lugar de Expedición: CP {factura.lugarExpedicion}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                  Parámetros CFDI 4.0
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Método / Moneda:{" "}
+                  <strong className="text-slate-800">
+                    {factura.metodoPago} · {factura.moneda} (TC{" "}
+                    {Number(factura.tipoCambio).toFixed(2)})
+                  </strong>
+                </p>
+                <p className="text-[11px] text-slate-600">
+                  Estado:{" "}
+                  <strong className="text-slate-800">
+                    {factura.estadoTimbrado}
+                  </strong>
+                </p>
+                {factura.receptor.mail && (
+                  <p className="text-[11px] text-slate-500 truncate">
+                    Envío: {factura.receptor.mail}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                Importe con Letra
               </span>
-              <p className="text-amber-900">
-                Folio Tentativo:{" "}
-                <strong>
-                  {factura.notaCreditoPrevia.serie}-
-                  {factura.notaCreditoPrevia.folioTentativo}
-                </strong>{" "}
-                • Relación SAT: {factura.notaCreditoPrevia.tipoRelacion} •
-                Total: {formatMoney(factura.notaCreditoPrevia.total)}
-              </p>
-              <p className="text-amber-800 break-all">
-                UUIDs Relacionados:{" "}
-                {factura.notaCreditoPrevia.uuidsRelacionados}
+              <p className="font-bold text-slate-700">
+                {factura.importeConLetra}
               </p>
             </div>
+
+            <div className="pt-3 border-t border-slate-100 space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                Claves SAT de Conceptos
+              </span>
+              {factura.conceptos.map((c) => (
+                <div
+                  key={`sat-${c.secuencia}`}
+                  className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/80 text-[11px] text-slate-600"
+                >
+                  <span className="font-bold text-slate-800 block">
+                    {c.descripcion}
+                  </span>
+                  <span>
+                    ProdServ: {c.claveProdServ} · Unidad: {c.claveUnidad} · Obj.
+                    Impuesto: {c.objetoImp}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {factura.notaCreditoPrevia && (
+              <div className="pt-3 border-t border-slate-100 space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#010080] block">
+                  Nota de Crédito Relacionada
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Folio:{" "}
+                  <strong className="text-slate-800">
+                    {factura.notaCreditoPrevia.serie}-
+                    {factura.notaCreditoPrevia.folioTentativo}
+                  </strong>{" "}
+                  · Relación SAT {factura.notaCreditoPrevia.tipoRelacion}
+                </p>
+                <p className="text-[11px] text-slate-500 break-all">
+                  UUID Global: {factura.notaCreditoPrevia.uuidsRelacionados}
+                </p>
+                {esVistaPrevia && factura.notaCreditoPrevia.xmlSinTimbrar && (
+                  <ActionButton
+                    variant="outline"
+                    size="xs"
+                    onClick={() =>
+                      handleDescargarXml(
+                        factura.notaCreditoPrevia!.xmlSinTimbrar,
+                        `PreNotaCredito_${factura.notaCreditoPrevia!.serie}_${factura.notaCreditoPrevia!.folioTentativo}.xml`,
+                      )
+                    }
+                    icon={documentTextOutline}
+                    iconClassName="text-sm shrink-0"
+                  >
+                    Descargar XML Nota de Crédito Previa
+                  </ActionButton>
+                )}
+              </div>
+            )}
+
+            <div className="pt-3 border-t border-slate-100 space-y-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                Cadena Original CFDI 4.0
+              </span>
+              <pre className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-mono text-slate-700 whitespace-pre-wrap break-all max-h-36 overflow-y-auto">
+                {factura.cadenaOriginal}
+              </pre>
+            </div>
           </div>
-          {factura.notaCreditoPrevia.xmlSinTimbrar && (
+        )}
+      </div>
+
+      {esVistaPrevia ? (
+        <div className="pt-1 space-y-3">
+          <ActionButton
+            variant="primary"
+            loading={loadingGenerar}
+            onClick={handleConfirmar}
+            className="w-full px-4 text-xs sm:text-sm"
+          >
+            Confirmar y Generar Pre-Factura
+          </ActionButton>
+
+          <div className="grid grid-cols-2 gap-2.5">
             <ActionButton
-              variant="amber"
-              size="xs"
+              variant="outlineAccent"
+              size="sm"
+              onClick={handleAbrirVistaPreviaPdf}
+              icon={eyeOutline}
+              iconClassName="text-base shrink-0"
+              className="w-full px-3"
+            >
+              PDF Previo
+            </ActionButton>
+
+            <ActionButton
+              variant="outlineAccent"
+              size="sm"
+              onClick={() =>
+                handleDescargarXml(
+                  factura.xmlSinTimbrar,
+                  `PreFactura_${factura.serie}_${factura.folioTentativo}_${factura.receptor.rfc}.xml`,
+                )
+              }
+              icon={documentTextOutline}
+              iconClassName="text-base shrink-0"
+              className="w-full px-3"
+            >
+              XML Previo
+            </ActionButton>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2.5">
+            <ActionButton
+              variant="neutral"
+              size="sm"
+              onClick={onVolverEditar}
+              icon={arrowBackOutline}
+              iconClassName="text-base shrink-0"
+              className="w-full px-3"
+            >
+              Volver a Editar
+            </ActionButton>
+
+            <ActionButton
+              variant="neutral"
+              size="sm"
+              onClick={onReiniciar}
+              icon={refreshOutline}
+              iconClassName="text-base shrink-0"
+              className="w-full px-3"
+            >
+              Otro Ticket
+            </ActionButton>
+          </div>
+        </div>
+      ) : (
+        <div className="pt-1 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <ActionButton
+              variant="primary"
+              loading={downloadingPdf}
+              onClick={handleDescargarPdf}
+              icon={downloadOutline}
+              iconClassName="text-lg text-[#38bdf8] shrink-0"
+              className="w-full"
+            >
+              Descargar PDF
+            </ActionButton>
+
+            <ActionButton
+              variant="accent"
+              onClick={() =>
+                handleDescargarXml(
+                  factura.xmlSinTimbrar,
+                  `PreFactura_${factura.serie}_${factura.folioTentativo}_${factura.receptor.rfc}.xml`,
+                )
+              }
+              icon={documentTextOutline}
+              iconClassName="text-lg text-white shrink-0"
+              className="w-full"
+            >
+              Descargar XML
+            </ActionButton>
+          </div>
+
+          <ActionButton
+            variant="outlineAccent"
+            size="sm"
+            onClick={handleAbrirVistaPreviaPdf}
+            icon={eyeOutline}
+            iconClassName="text-base shrink-0"
+            className="w-full"
+          >
+            Vista Previa e Impresión PDF
+          </ActionButton>
+
+          {factura.notaCreditoPrevia?.xmlSinTimbrar && (
+            <ActionButton
+              variant="outlineAccent"
+              size="sm"
               onClick={() =>
                 handleDescargarXml(
                   factura.notaCreditoPrevia!.xmlSinTimbrar,
@@ -267,85 +498,35 @@ export const PasoComprobanteGenerado: React.FC<PasoComprobanteGeneradoProps> = (
                 )
               }
               icon={documentTextOutline}
-              iconClassName="text-sm shrink-0"
+              iconClassName="text-base shrink-0"
+              className="w-full"
             >
-              Descargar XML Nota de Crédito Previa
+              Descargar XML Nota de Crédito ({factura.notaCreditoPrevia.serie}-
+              {factura.notaCreditoPrevia.folioTentativo})
             </ActionButton>
           )}
+
+          <div className="pt-2 border-t border-slate-100">
+            <ActionButton
+              variant="neutralPrimary"
+              size="sm"
+              onClick={onReiniciar}
+              icon={refreshOutline}
+              iconClassName="text-base shrink-0"
+              className="w-full"
+            >
+              Facturar Otro Ticket
+            </ActionButton>
+          </div>
         </div>
       )}
-
-      <details className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs">
-        <summary className="font-black text-[#010080] cursor-pointer select-none">
-          Ver Cadena Original CFDI 4.0
-        </summary>
-        <pre className="mt-3 p-3 bg-white border border-slate-200 rounded-xl text-[11px] font-mono text-slate-700 whitespace-pre-wrap break-all max-h-40 overflow-y-auto">
-          {factura.cadenaOriginal}
-        </pre>
-      </details>
-
-      {esVistaPrevia && (
-        <div className="flex flex-col sm:flex-row gap-3">
-          <ActionButton
-            variant="primary"
-            loading={loadingGenerar}
-            onClick={onConfirmarGenerar}
-            className="w-full sm:w-auto sm:flex-1 shadow-[#010080]/25"
-          >
-            Confirmar y Generar Pre-Factura
-          </ActionButton>
-
-          <ActionButton
-            variant="neutral"
-            onClick={onVolverEditar}
-            icon={arrowBackOutline}
-            iconClassName="text-base shrink-0"
-            className="w-full sm:w-auto"
-          >
-            Volver a Editar
-          </ActionButton>
-        </div>
-      )}
-
-      <div className="flex flex-col sm:flex-row gap-3 justify-center w-full">
-        <ActionButton
-          variant="accent"
-          onClick={() =>
-            handleDescargarXml(
-              factura.xmlSinTimbrar,
-              `PreFactura_${factura.serie}_${factura.folioTentativo}_${factura.receptor.rfc}.xml`,
-            )
-          }
-          icon={documentTextOutline}
-          iconClassName="text-lg text-white shrink-0"
-          className="w-full sm:w-auto sm:flex-1 text-xs sm:text-sm tracking-wide"
-        >
-          Descargar XML
-        </ActionButton>
-
-        <ActionButton
-          variant="primary"
-          onClick={handleDescargarPdf}
-          icon={downloadOutline}
-          iconClassName="text-lg text-[#38bdf8] shrink-0"
-          className="w-full sm:w-auto sm:flex-1 text-xs sm:text-sm tracking-wide"
-        >
-          PDF
-        </ActionButton>
-      </div>
-
-      <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3 justify-center w-full">
-        <ActionButton
-          variant="neutralPrimary"
-          size="sm"
-          onClick={onReiniciar}
-          icon={refreshOutline}
-          iconClassName="text-sm shrink-0"
-          className="w-full sm:w-auto"
-        >
-          Facturar Otro Ticket
-        </ActionButton>
-      </div>
     </div>
+
+    <ModalVistaPreviaPdf
+      isOpen={modalPdfOpen}
+      factura={factura}
+      onClose={() => setModalPdfOpen(false)}
+    />
+  </>
   );
 };

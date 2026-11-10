@@ -28,7 +28,7 @@ export const StepperProgress: React.FC<StepperProgressProps> = ({ paso }) => {
                 isCurrent
                   ? "text-[#010080]"
                   : isCompleted
-                    ? "text-emerald-600"
+                    ? "text-[#0b5ed7]"
                     : "text-slate-400"
               }`}
             >
@@ -37,7 +37,7 @@ export const StepperProgress: React.FC<StepperProgressProps> = ({ paso }) => {
                   isCurrent
                     ? "bg-[#010080] text-white"
                     : isCompleted
-                      ? "bg-emerald-500 text-white"
+                      ? "bg-[#0b5ed7] text-white"
                       : "bg-slate-200 text-slate-500"
                 }`}
               >

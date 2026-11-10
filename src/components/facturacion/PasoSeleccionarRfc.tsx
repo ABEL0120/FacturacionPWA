@@ -2,7 +2,6 @@ import React from "react";
 import { IonIcon } from "@ionic/react";
 import {
   addCircleOutline,
-  alertCircleOutline,
   arrowBackOutline,
   arrowForwardOutline,
   businessOutline,
@@ -16,7 +15,6 @@ import {
 import { formatMoney } from "../../utils/formatters";
 import { normalizarRfc } from "../../utils/validators";
 import { ActionButton } from "../common/ActionButton";
-import { AlertBanner } from "../common/AlertBanner";
 
 interface PasoSeleccionarRfcProps {
   ticketsSeleccionados: TicketConsultaResponseDto[];
@@ -26,13 +24,10 @@ interface PasoSeleccionarRfcProps {
   onRfcBusquedaChange: (value: string) => void;
   cliente: ClienteFiscalDto | null;
   loadingRfc: boolean;
-  rfcNoRegistrado: boolean;
-  rfcError: string;
   puedeRegistrarRfc: boolean;
   onBuscarRfc: (rfc?: string) => void;
   onAbrirRegistroRfc: (rfcInicial?: string) => void;
   onLimpiarCliente: () => void;
-  onOcultarNoRegistrado: () => void;
   onVolverPaso1: () => void;
   onContinuarPaso3: () => void;
 }
@@ -45,13 +40,10 @@ export const PasoSeleccionarRfc: React.FC<PasoSeleccionarRfcProps> = ({
   onRfcBusquedaChange,
   cliente,
   loadingRfc,
-  rfcNoRegistrado,
-  rfcError,
   puedeRegistrarRfc,
   onBuscarRfc,
   onAbrirRegistroRfc,
   onLimpiarCliente,
-  onOcultarNoRegistrado,
   onVolverPaso1,
   onContinuarPaso3,
 }) => {
@@ -159,8 +151,6 @@ export const PasoSeleccionarRfc: React.FC<PasoSeleccionarRfcProps> = ({
           </div>
         </div>
 
-        {rfcError && <AlertBanner variant="error" message={rfcError} />}
-
         {puedeRegistrarRfc && (
           <div className="pt-1 flex justify-end">
             <button
@@ -252,46 +242,6 @@ export const PasoSeleccionarRfc: React.FC<PasoSeleccionarRfcProps> = ({
               className="w-full sm:w-auto px-8"
             >
               Confirmar RFC y Continuar
-            </ActionButton>
-          </div>
-        </div>
-      )}
-
-      {rfcNoRegistrado && !cliente && (
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-3xl p-5 sm:p-8 space-y-4 animate-fade-in">
-          <div className="flex items-start gap-3">
-            <IonIcon
-              icon={alertCircleOutline}
-              className="text-3xl text-amber-600 shrink-0 mt-0.5"
-            />
-            <div className="space-y-1 min-w-0 flex-1">
-              <h3 className="text-base font-black text-amber-900">
-                RFC no registrado en el catálogo
-              </h3>
-              <p className="text-xs text-amber-800 leading-relaxed">
-                El RFC <strong>{rfcBusqueda}</strong> requiere registro previo
-                para emitir el comprobante CFDI 4.0.
-              </p>
-            </div>
-          </div>
-
-          <div className="pt-2 flex flex-col sm:flex-row gap-3">
-            <ActionButton
-              variant="primary"
-              onClick={() => onAbrirRegistroRfc(rfcBusqueda)}
-              icon={addCircleOutline}
-              iconClassName="text-lg text-[#38bdf8] shrink-0"
-              className="w-full sm:w-auto text-xs sm:text-sm"
-            >
-              Abrir Formulario de Registro
-            </ActionButton>
-
-            <ActionButton
-              variant="outline"
-              onClick={onOcultarNoRegistrado}
-              className="w-full sm:w-auto text-xs sm:text-sm"
-            >
-              Intentar con otro RFC
             </ActionButton>
           </div>
         </div>

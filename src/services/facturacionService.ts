@@ -13,7 +13,11 @@ import {
   ValidarTicketsRequestDto,
   ValidarTicketsResponseDto,
 } from "../types/facturacion.types";
-import { buildFacturaPdfHtml } from "../utils/facturaPdfTemplate";
+import { descargarFacturaPdfReal } from "../utils/facturaPdfGenerator";
+import {
+  buildFacturaPdfHtml,
+  imprimirHtmlEnPagina,
+} from "../utils/facturaPdfTemplate";
 
 export const facturacionService = {
   inicializar: (
@@ -93,16 +97,11 @@ export const facturacionService = {
     URL.revokeObjectURL(url);
   },
 
-  descargarPdf: (factura: FacturaTicketResponseDto) => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      throw new Error(
-        "El navegador bloqueó la ventana emergente para generar el PDF. Habilita las ventanas emergentes e intenta nuevamente.",
-      );
-    }
+  descargarPdf: (factura: FacturaTicketResponseDto): Promise<void> =>
+    descargarFacturaPdfReal(factura),
 
-    printWindow.document.write(buildFacturaPdfHtml(factura));
-    printWindow.document.close();
+  imprimirPdf: (factura: FacturaTicketResponseDto): void => {
+    imprimirHtmlEnPagina(buildFacturaPdfHtml(factura));
   },
 };
 

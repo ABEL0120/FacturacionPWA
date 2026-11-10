@@ -34,8 +34,6 @@ const VARIANT_META: Record<
     icon: string;
     eyebrow: string;
     eyebrowColor: string;
-    topBar: string;
-    toastBorder: string;
     iconBadge: string;
   }
 > = {
@@ -43,32 +41,24 @@ const VARIANT_META: Record<
     icon: checkmarkCircleOutline,
     eyebrow: "Confirmación",
     eyebrowColor: "text-emerald-700",
-    topBar: "bg-emerald-500",
-    toastBorder: "border-slate-200",
     iconBadge: "bg-emerald-50 border-emerald-200 text-emerald-600",
   },
   info: {
     icon: informationCircleOutline,
     eyebrow: "Información",
     eyebrowColor: "text-[#0b5ed7]",
-    topBar: "bg-[#0b5ed7]",
-    toastBorder: "border-l-4 border-l-[#0b5ed7]",
     iconBadge: "bg-[#eef5ff] border-[#b6d4fe] text-[#0b5ed7]",
   },
   warning: {
     icon: warningOutline,
     eyebrow: "Aviso Importante",
     eyebrowColor: "text-amber-700",
-    topBar: "bg-amber-500",
-    toastBorder: "border-l-4 border-l-amber-500",
     iconBadge: "bg-amber-50 border-amber-200 text-amber-600",
   },
   error: {
     icon: alertCircleOutline,
     eyebrow: "Atención",
     eyebrowColor: "text-rose-700",
-    topBar: "bg-rose-500",
-    toastBorder: "border-l-4 border-l-rose-500",
     iconBadge: "bg-rose-50 border-rose-200 text-rose-600",
   },
 };
@@ -80,6 +70,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [dialogQueue, setDialogQueue] = useState<PendingDialog[]>([]);
   const nextIdRef = useRef(1);
   const timersRef = useRef<Map<number, number>>(new Map());
+  const resolvedIdsRef = useRef<Set<number>>(new Set());
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   const activeDialog = dialogQueue[0] ?? null;
@@ -152,12 +143,18 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     [enqueueDialog],
   );
 
-  const closeCurrentDialog = useCallback((accepted: boolean) => {
+  const closeDialogById = useCallback((dialogId: number, accepted: boolean) => {
     setDialogQueue((prev) => {
-      if (prev.length === 0) return prev;
-      const [current, ...rest] = prev;
-      current.resolve(accepted);
-      return rest;
+      const target = prev.find((item) => item.id === dialogId);
+      if (!target) return prev;
+      if (!resolvedIdsRef.current.has(dialogId)) {
+        resolvedIdsRef.current.add(dialogId);
+        window.queueMicrotask(() => {
+          resolvedIdsRef.current.delete(dialogId);
+          target.resolve(accepted);
+        });
+      }
+      return prev.filter((item) => item.id !== dialogId);
     });
   }, []);
 
@@ -179,7 +176,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        closeCurrentDialog(!activeDialog.isConfirm);
+        closeDialogById(activeDialog.id, !activeDialog.isConfirm);
       }
     };
 
@@ -188,7 +185,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       window.cancelAnimationFrame(frame);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeDialog, closeCurrentDialog]);
+  }, [activeDialog, closeDialogById]);
 
   const portalContent = (
     <>
@@ -204,16 +201,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
               <div
                 key={toast.id}
                 role="status"
-                className={`w-full max-w-sm bg-white border ${meta.toastBorder} rounded-2xl px-3 py-2.5 shadow-2xl shadow-slate-900/15 flex items-center gap-2.5 pointer-events-auto animate-toast-in`}
+                className="w-full max-w-sm bg-white border border-slate-200 rounded-2xl px-3.5 py-3 shadow-2xl shadow-slate-900/15 flex items-center gap-3 pointer-events-auto animate-toast-in"
               >
-                <span
-                  className={`w-1 self-stretch min-h-6 rounded-full ${meta.topBar} shrink-0`}
-                />
-
                 <div
-                  className={`w-8 h-8 rounded-xl border ${meta.iconBadge} flex items-center justify-center shrink-0`}
+                  className={`w-9 h-9 rounded-xl border ${meta.iconBadge} flex items-center justify-center shrink-0`}
                 >
-                  <IonIcon icon={meta.icon} className="text-lg" />
+                  <IonIcon icon={meta.icon} className="text-xl" />
                 </div>
 
                 <p className="text-xs sm:text-[13px] font-bold text-slate-800 leading-snug flex-1 min-w-0">
@@ -242,69 +235,63 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
           aria-describedby="ventio-alert-message"
           className="fixed inset-0 z-[100000] bg-slate-950/55 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
         >
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-dialog-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-7 space-y-5 max-h-[85dvh] overflow-y-auto animate-dialog-in">
             <div
-              className={`h-1.5 w-full ${VARIANT_META[activeDialog.variant].topBar}`}
-            />
+              className={`w-14 h-14 rounded-2xl ${VARIANT_META[activeDialog.variant].iconBadge} border flex items-center justify-center mx-auto shadow-xs`}
+            >
+              <IonIcon
+                icon={VARIANT_META[activeDialog.variant].icon}
+                className="text-3xl"
+              />
+            </div>
 
-            <div className="p-6 sm:p-7 space-y-5">
-              <div
-                className={`w-14 h-14 rounded-2xl ${VARIANT_META[activeDialog.variant].iconBadge} border-2 flex items-center justify-center mx-auto shadow-xs`}
+            <div className="text-center space-y-2">
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest block ${VARIANT_META[activeDialog.variant].eyebrowColor}`}
               >
-                <IonIcon
-                  icon={VARIANT_META[activeDialog.variant].icon}
-                  className="text-3xl"
-                />
-              </div>
-
-              <div className="text-center space-y-2">
-                <span
-                  className={`text-[10px] font-black uppercase tracking-widest block ${VARIANT_META[activeDialog.variant].eyebrowColor}`}
-                >
-                  {VARIANT_META[activeDialog.variant].eyebrow}
-                </span>
-                <h2
-                  id="ventio-alert-title"
-                  className="text-lg sm:text-xl font-black text-slate-900 leading-snug"
-                >
-                  {activeDialog.title}
-                </h2>
-                <p
-                  id="ventio-alert-message"
-                  className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line break-words"
-                >
-                  {activeDialog.message}
-                </p>
-              </div>
-
-              <div
-                className={`pt-1 ${
-                  activeDialog.isConfirm
-                    ? "flex flex-col-reverse sm:flex-row gap-2.5"
-                    : "flex"
-                }`}
+                {VARIANT_META[activeDialog.variant].eyebrow}
+              </span>
+              <h2
+                id="ventio-alert-title"
+                className="text-lg sm:text-xl font-black text-slate-900 leading-snug"
               >
-                {activeDialog.isConfirm && (
-                  <ActionButton
-                    variant="neutral"
-                    onClick={() => closeCurrentDialog(false)}
-                    className="w-full sm:flex-1"
-                  >
-                    {activeDialog.cancelText}
-                  </ActionButton>
-                )}
+                {activeDialog.title}
+              </h2>
+              <p
+                id="ventio-alert-message"
+                className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line break-words"
+              >
+                {activeDialog.message}
+              </p>
+            </div>
 
+            <div
+              className={`pt-1 ${
+                activeDialog.isConfirm
+                  ? "flex flex-col-reverse sm:flex-row gap-2.5"
+                  : "flex"
+              }`}
+            >
+              {activeDialog.isConfirm && (
                 <ActionButton
-                  buttonRef={confirmButtonRef}
-                  variant="primary"
-                  onClick={() => closeCurrentDialog(true)}
-                  className={
-                    activeDialog.isConfirm ? "w-full sm:flex-1" : "w-full"
-                  }
+                  variant="neutral"
+                  onClick={() => closeDialogById(activeDialog.id, false)}
+                  className="w-full sm:flex-1"
                 >
-                  {activeDialog.confirmText}
+                  {activeDialog.cancelText}
                 </ActionButton>
-              </div>
+              )}
+
+              <ActionButton
+                buttonRef={confirmButtonRef}
+                variant="primary"
+                onClick={() => closeDialogById(activeDialog.id, true)}
+                className={
+                  activeDialog.isConfirm ? "w-full sm:flex-1" : "w-full"
+                }
+              >
+                {activeDialog.confirmText}
+              </ActionButton>
             </div>
           </div>
         </div>
@@ -313,7 +300,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   return (
-    <NotificationContext.Provider value={{ showToast, showAlert, showConfirm }}>
+    <NotificationContext.Provider
+      value={{ showToast, showAlert, showConfirm }}
+    >
       {children}
       {typeof document !== "undefined"
         ? createPortal(portalContent, document.body)

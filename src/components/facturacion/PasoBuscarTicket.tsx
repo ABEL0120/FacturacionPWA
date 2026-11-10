@@ -21,7 +21,6 @@ interface PasoBuscarTicketProps {
   ticketsSeleccionados: TicketConsultaResponseDto[];
   ticketResumen: TicketResumenInfo;
   loadingTicket: boolean;
-  ticketError: string;
   onBuscarTicket: () => void;
   onQuitarTicket: (folio: string) => void;
   onContinuarPaso2: () => void;
@@ -38,7 +37,6 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
   ticketsSeleccionados,
   ticketResumen,
   loadingTicket,
-  ticketError,
   onBuscarTicket,
   onQuitarTicket,
   onContinuarPaso2,
@@ -109,8 +107,6 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
             className="font-bold"
           />
         </div>
-
-        {ticketError && <AlertBanner variant="error" message={ticketError} />}
 
         <ActionButton
           type="submit"

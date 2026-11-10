@@ -24,7 +24,6 @@ import {
   soloDigitos,
 } from "../../utils/validators";
 import { ActionButton } from "../common/ActionButton";
-import { AlertBanner } from "../common/AlertBanner";
 import { FormInput, FormSelect } from "../common/FormField";
 
 interface ModalRegistroRfcProps {
@@ -89,7 +88,6 @@ export const ModalRegistroRfc: React.FC<ModalRegistroRfcProps> = ({
     telefono: "",
   });
   const [loadingGuardar, setLoadingGuardar] = useState(false);
-  const [modalError, setModalError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -110,7 +108,6 @@ export const ModalRegistroRfc: React.FC<ModalRegistroRfcProps> = ({
         email: user?.email || "",
         telefono: user?.telefono || "",
       });
-      setModalError("");
     }
   }, [isOpen, rfcInicial, estadosCatalogo, user?.email, user?.telefono]);
 
@@ -123,35 +120,27 @@ export const ModalRegistroRfc: React.FC<ModalRegistroRfcProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setModalError("");
 
     if (!user?.numeroCliente || user.numeroCliente <= 0) {
-      const msg =
-        "Se requiere una sesión de cliente con número de cliente válido para registrar un nuevo RFC.";
-      setModalError(msg);
-      showWarning(msg);
+      showWarning(
+        "Se requiere una sesión de cliente con número de cliente válido para registrar un nuevo RFC.",
+      );
       return;
     }
 
     const rfcLimpio = normalizarRfc(form.rfc);
     if (!esRfcLongitudValida(rfcLimpio)) {
-      const msg = "Ingresa un RFC válido de 12 o 13 caracteres.";
-      setModalError(msg);
-      showWarning(msg);
+      showWarning("Ingresa un RFC válido de 12 o 13 caracteres.");
       return;
     }
 
     if (!form.razonSocial.trim()) {
-      const msg = "Ingresa la Razón Social o Nombre Completo.";
-      setModalError(msg);
-      showWarning(msg);
+      showWarning("Ingresa la Razón Social o Nombre Completo.");
       return;
     }
 
     if (!esCodigoPostalValido(form.cp)) {
-      const msg = "Ingresa un Código Postal válido de 5 dígitos.";
-      setModalError(msg);
-      showWarning(msg);
+      showWarning("Ingresa un Código Postal válido de 5 dígitos.");
       return;
     }
 
@@ -180,7 +169,6 @@ export const ModalRegistroRfc: React.FC<ModalRegistroRfcProps> = ({
       await onSuccess(guardado);
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "No fue posible guardar el RFC.");
-      setModalError(errorMsg);
     } finally {
       setLoadingGuardar(false);
     }
@@ -447,8 +435,6 @@ export const ModalRegistroRfc: React.FC<ModalRegistroRfcProps> = ({
                 className="border-slate-300"
               />
             </div>
-
-            {modalError && <AlertBanner variant="error" message={modalError} />}
 
             <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
               <ActionButton

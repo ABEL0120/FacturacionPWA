@@ -46,4 +46,3 @@ export const SessionInfoCard: React.FC<SessionInfoCardProps> = ({
     </div>
   );
 };
-

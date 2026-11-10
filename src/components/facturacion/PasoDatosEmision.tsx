@@ -10,7 +10,6 @@ import {
 } from "../../types/facturacion.types";
 import { formatMoney } from "../../utils/formatters";
 import { ActionButton } from "../common/ActionButton";
-import { AlertBanner } from "../common/AlertBanner";
 import { FormInput, FormSelect } from "../common/FormField";
 
 interface PasoDatosEmisionProps {
@@ -35,7 +34,6 @@ interface PasoDatosEmisionProps {
   monedasCatalogo: MonedaCatalogoDto[];
   loadingVistaPrevia: boolean;
   loadingGenerar: boolean;
-  generarError: string;
   onVistaPrevia: () => void;
   onGenerarFactura: () => void;
   onVolverPaso2: () => void;
@@ -63,7 +61,6 @@ export const PasoDatosEmision: React.FC<PasoDatosEmisionProps> = ({
   monedasCatalogo,
   loadingVistaPrevia,
   loadingGenerar,
-  generarError,
   onVistaPrevia,
   onGenerarFactura,
   onVolverPaso2,
@@ -235,10 +232,6 @@ export const PasoDatosEmision: React.FC<PasoDatosEmisionProps> = ({
           )}
         </div>
 
-        {generarError && (
-          <AlertBanner variant="error" message={generarError} />
-        )}
-
         <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
           <ActionButton
             variant="soft"
@@ -259,7 +252,7 @@ export const PasoDatosEmision: React.FC<PasoDatosEmisionProps> = ({
             disabled={loadingVistaPrevia}
             className="w-full sm:w-auto sm:flex-1 shadow-[#010080]/25"
           >
-            Generar Factura CFDI 4.0
+            Generar Factura
           </ActionButton>
 
           <ActionButton

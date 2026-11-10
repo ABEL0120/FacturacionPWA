@@ -10,7 +10,7 @@ import { PasoBuscarTicket } from "../components/facturacion/PasoBuscarTicket";
 import { PasoComprobanteGenerado } from "../components/facturacion/PasoComprobanteGenerado";
 import { PasoDatosEmision } from "../components/facturacion/PasoDatosEmision";
 import { PasoSeleccionarRfc } from "../components/facturacion/PasoSeleccionarRfc";
-import { SessionInfoCard } from "../components/facturacion/SessionInfoCard";
+// import { SessionInfoCard } from "../components/facturacion/SessionInfoCard";
 import { StepperProgress } from "../components/facturacion/StepperProgress";
 
 export const Home: React.FC = () => {
@@ -33,13 +33,13 @@ export const Home: React.FC = () => {
 
       <IonContent className="bg-white" style={{ "--background": "#ffffff" }}>
         <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
-          {isAuthenticated && user && (
+          {/* {isAuthenticated && user && (
             <SessionInfoCard
               user={user}
               initData={flow.init.initData}
               rfcActivo={flow.cliente?.rfc}
             />
-          )}
+          )} */}
 
           {flow.mostrarProcesoPrueba && (
             <AlertBanner
@@ -87,7 +87,6 @@ export const Home: React.FC = () => {
               ticketsSeleccionados={flow.ticketsSeleccionados}
               ticketResumen={flow.ticketResumen}
               loadingTicket={flow.loadingTicket}
-              ticketError={flow.ticketError}
               onBuscarTicket={flow.buscarTicket}
               onQuitarTicket={flow.quitarTicket}
               onContinuarPaso2={() => flow.setPaso(2)}
@@ -103,15 +102,12 @@ export const Home: React.FC = () => {
               onRfcBusquedaChange={flow.setRfcBusqueda}
               cliente={flow.cliente}
               loadingRfc={flow.loadingRfc}
-              rfcNoRegistrado={flow.rfcNoRegistrado}
-              rfcError={flow.rfcError}
               puedeRegistrarRfc={Boolean(
                 user?.numeroCliente && user.numeroCliente > 0,
               )}
               onBuscarRfc={flow.buscarRfc}
               onAbrirRegistroRfc={flow.abrirModalRegistroRfc}
               onLimpiarCliente={() => flow.setCliente(null)}
-              onOcultarNoRegistrado={() => flow.setRfcNoRegistrado(false)}
               onVolverPaso1={() => flow.setPaso(1)}
               onContinuarPaso3={() => flow.setPaso(3)}
             />
@@ -142,7 +138,6 @@ export const Home: React.FC = () => {
                 monedasCatalogo={flow.init.monedasCatalogo}
                 loadingVistaPrevia={flow.loadingVistaPrevia}
                 loadingGenerar={flow.loadingGenerar}
-                generarError={flow.generarError}
                 onVistaPrevia={flow.ejecutarVistaPrevia}
                 onGenerarFactura={flow.ejecutarGenerarFactura}
                 onVolverPaso2={() => flow.setPaso(2)}

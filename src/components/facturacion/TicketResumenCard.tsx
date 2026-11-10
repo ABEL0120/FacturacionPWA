@@ -3,7 +3,6 @@ import { IonIcon } from "@ionic/react";
 import {
   addCircleOutline,
   arrowForwardOutline,
-  checkmarkCircleOutline,
   receiptOutline,
   trashOutline,
 } from "ionicons/icons";
@@ -60,14 +59,6 @@ export const TicketResumenCard: React.FC<TicketResumenCardProps> = ({
               </p>
             )}
           </div>
-        </div>
-
-        <div className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black self-start sm:self-auto flex items-center gap-1.5 border border-emerald-200 shrink-0">
-          <IonIcon
-            icon={checkmarkCircleOutline}
-            className="text-sm text-emerald-600 shrink-0"
-          />
-          <span>Válido para Facturar</span>
         </div>
       </div>
 

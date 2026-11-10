@@ -22,9 +22,8 @@ import { useToast } from "./useToast";
 import { useFactTicketInit } from "./useFactTicketInit";
 
 export const useFacturacionFlow = (user: UserSession | null) => {
-  const { showSuccess, showWarning, showInfo } = useToast();
-  const { showErrorAlert, showWarningAlert, showSuccessAlert, showConfirm } =
-    useAlert();
+  const { showSuccess, showWarning } = useToast();
+  const { showErrorAlert, showConfirm } = useAlert();
 
   const [paso, setPaso] = useState<PasoFacturacion>(1);
 
@@ -37,13 +36,10 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   const [validacionGrupo, setValidacionGrupo] =
     useState<ValidarTicketsResponseDto | null>(null);
   const [loadingTicket, setLoadingTicket] = useState<boolean>(false);
-  const [ticketError, setTicketError] = useState<string>("");
 
   const [rfcBusqueda, setRfcBusqueda] = useState<string>("");
   const [cliente, setCliente] = useState<ClienteFiscalDto | null>(null);
   const [loadingRfc, setLoadingRfc] = useState<boolean>(false);
-  const [rfcNoRegistrado, setRfcNoRegistrado] = useState<boolean>(false);
-  const [rfcError, setRfcError] = useState<string>("");
   const [modalRegistro, setModalRegistro] = useState<boolean>(false);
   const [rfcParaRegistrar, setRfcParaRegistrar] = useState<string>("");
 
@@ -55,7 +51,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   const [emailEnvio, setEmailEnvio] = useState<string>("");
   const [loadingVistaPrevia, setLoadingVistaPrevia] = useState<boolean>(false);
   const [loadingGenerar, setLoadingGenerar] = useState<boolean>(false);
-  const [generarError, setGenerarError] = useState<string>("");
 
   const [facturaEmitida, setFacturaEmitida] =
     useState<FacturaTicketResponseDto | null>(null);
@@ -116,8 +111,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
         setFormaPago(fp);
       }
       setEmailEnvio(c.mail?.trim() || user?.email || "");
-      setRfcNoRegistrado(false);
-      setRfcError("");
     },
     [user?.email],
   );
@@ -149,20 +142,14 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   );
 
   const buscarTicket = async () => {
-    setTicketError("");
-
     if (!folio.trim()) {
-      const msg = "Por favor ingresa el folio del ticket.";
-      setTicketError(msg);
-      showWarning(msg);
+      showWarning("Por favor ingresa el folio del ticket.");
       return;
     }
 
     const transaccionNum = parseEnteroPositivo(transaccion);
     if (!transaccionNum) {
-      const msg = "Por favor ingresa la transacción / referencia (REF:).";
-      setTicketError(msg);
-      showWarning(msg);
+      showWarning("Por favor ingresa la transacción / referencia (REF:).");
       return;
     }
 
@@ -177,7 +164,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
 
     setLoadingTicket(true);
     let errorMsg: string | null = null;
-    let mostrarAvisoNotaCredito = false;
     try {
       const consultado = await facturacionService.consultarTicket(requestDto);
 
@@ -188,11 +174,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
         if (yaExiste) {
           throw new Error(`El ticket ${consultado.folio} ya está agregado.`);
         }
-
-        const requeriaNcPrevio = Boolean(
-          validacionGrupo?.requiereNotaCredito ||
-            ticketsSeleccionados[0]?.requiereNotaCredito,
-        );
 
         const listaSolicitudes = [
           ...ticketsSeleccionados.map(toConsultarRequest),
@@ -209,24 +190,16 @@ export const useFacturacionFlow = (user: UserSession | null) => {
         setAgregarOtroTicket(false);
         setFolio("");
         setTransaccion("");
-
-        if (!requeriaNcPrevio && grupo.requiereNotaCredito) {
-          mostrarAvisoNotaCredito = true;
-        } else {
-          showSuccess(`Ticket ${consultado.folio} agregado al comprobante.`, 2200);
-        }
+        showSuccess(
+          `Ticket ${consultado.folio} agregado al comprobante.`,
+          2200,
+        );
       } else {
         setTicketsSeleccionados([consultado]);
         setValidacionGrupo(null);
-        if (consultado.requiereNotaCredito) {
-          mostrarAvisoNotaCredito = true;
-        } else {
-          showSuccess("¡Ticket encontrado y validado con éxito!", 2200);
-        }
       }
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "Error al consultar el ticket.");
-      setTicketError(errorMsg);
       if (!agregarOtroTicket) {
         setTicketsSeleccionados([]);
         setValidacionGrupo(null);
@@ -240,15 +213,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
         title: "No se pudo validar el ticket",
         message: errorMsg,
       });
-      return;
-    }
-
-    if (mostrarAvisoNotaCredito) {
-      await showWarningAlert({
-        title: "Ticket incluido en Factura Global",
-        message:
-          "Este consumo forma parte de una Factura Global previa. Al generar tu comprobante se emitirá automáticamente una Nota de Crédito relacionada.",
-      });
     }
   };
 
@@ -256,7 +220,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     const restantes = ticketsSeleccionados.filter(
       (t) => t.folio !== folioQuitar,
     );
-    setTicketError("");
 
     if (restantes.length === 0) {
       setTicketsSeleccionados([]);
@@ -283,7 +246,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       setValidacionGrupo(grupo);
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "Error al recalcular los tickets.");
-      setTicketError(errorMsg);
     } finally {
       setLoadingTicket(false);
     }
@@ -300,7 +262,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     setAgregarOtroTicket(true);
     setFolio("");
     setTransaccion("");
-    setTicketError("");
   };
 
   const cancelarAgregarOtroTicket = () => {
@@ -314,17 +275,13 @@ export const useFacturacionFlow = (user: UserSession | null) => {
 
   const buscarRfc = async (rfcObjetivo = rfcBusqueda) => {
     const rfcLimpio = normalizarRfc(rfcObjetivo);
-    setRfcError("");
 
     if (!esRfcLongitudValida(rfcLimpio)) {
-      const msg = "Ingresa un RFC válido de 12 o 13 caracteres.";
-      setRfcError(msg);
-      showWarning(msg);
+      showWarning("Ingresa un RFC válido de 12 o 13 caracteres.");
       return;
     }
 
     setLoadingRfc(true);
-    setRfcNoRegistrado(false);
     let errorMsg: string | null = null;
     let rfcParaConfirmar: string | null = null;
 
@@ -335,15 +292,12 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       );
       if (res.existe && res.cliente) {
         aplicarDatosCliente(res.cliente, ticketResumen.formaPagoSat);
-        showSuccess(`RFC ${res.cliente.rfc} verificado correctamente.`, 2200);
       } else {
         setCliente(null);
-        setRfcNoRegistrado(true);
         rfcParaConfirmar = res.rfc || rfcLimpio;
       }
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "Error al consultar el RFC.");
-      setRfcError(errorMsg);
     } finally {
       setLoadingRfc(false);
     }
@@ -403,29 +357,29 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   };
 
   const validarCamposPaso3 = (): boolean => {
-    setGenerarError("");
     if (ticketsSeleccionados.length === 0 || !cliente) {
-      const msg = "Datos incompletos de ticket o receptor.";
-      setGenerarError(msg);
-      showWarning(msg);
+      showWarning("Datos incompletos de ticket o receptor.");
       return false;
     }
     if (!regimenFiscal) {
-      const msg = "Selecciona el Régimen Fiscal del receptor.";
-      setGenerarError(msg);
-      showWarning(msg);
+      showWarning("Selecciona el Régimen Fiscal del receptor.");
       return false;
     }
     if (!usoCfdi) {
-      const msg = "Selecciona el Tipo de Gasto / Uso de CFDI.";
-      setGenerarError(msg);
-      showWarning(msg);
+      showWarning("Selecciona el Tipo de Gasto / Uso de CFDI.");
       return false;
     }
     if (!ticketResumen.formaPagoSat && !formaPago) {
-      const msg = "Selecciona la Forma de Pago.";
-      setGenerarError(msg);
-      showWarning(msg);
+      showWarning("Selecciona la Forma de Pago.");
+      return false;
+    }
+    const monedaFinal = moneda.trim().toUpperCase() || "MXN";
+    const tipoCambioNum = monedaFinal === "MXN" ? 1.0 : Number(tipoCambio);
+    if (
+      monedaFinal !== "MXN" &&
+      (Number.isNaN(tipoCambioNum) || tipoCambioNum <= 0)
+    ) {
+      showWarning("El tipo de cambio debe ser mayor a 0.");
       return false;
     }
     return true;
@@ -484,10 +438,8 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       );
       setFacturaEmitida(res);
       setPaso(4);
-      showInfo("Vista previa CFDI 4.0 generada correctamente.");
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "Error al generar vista previa.");
-      setGenerarError(errorMsg);
     } finally {
       setLoadingVistaPrevia(false);
     }
@@ -504,7 +456,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     if (!validarCamposPaso3()) return;
     setLoadingGenerar(true);
     let errorMsg: string | null = null;
-    let generadaExitosamente = false;
     try {
       const factura = await facturacionService.generarFactura(
         construirPayloadFactura(),
@@ -522,10 +473,8 @@ export const useFacturacionFlow = (user: UserSession | null) => {
           : prev,
       );
       setPaso(4);
-      generadaExitosamente = true;
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "Error al generar la factura.");
-      setGenerarError(errorMsg);
     } finally {
       setLoadingGenerar(false);
     }
@@ -534,15 +483,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       await showErrorAlert({
         title: "Error al generar la factura",
         message: errorMsg,
-      });
-      return;
-    }
-
-    if (generadaExitosamente) {
-      await showSuccessAlert({
-        title: "Pre-factura CFDI 4.0 generada",
-        message:
-          "La estructura CFDI 4.0 quedó lista y pendiente de firma digital y timbrado. Ya puedes revisar el detalle o descargar el XML y PDF.",
       });
     }
   };
@@ -561,9 +501,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     setAgregarOtroTicket(false);
     setTicketsSeleccionados([]);
     setValidacionGrupo(null);
-    setTicketError("");
-    setRfcError("");
-    setGenerarError("");
     setFacturaEmitida(null);
   };
 
@@ -584,7 +521,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     ticketsSeleccionados,
     ticketResumen,
     loadingTicket,
-    ticketError,
     buscarTicket,
     quitarTicket,
     iniciarAgregarOtroTicket,
@@ -594,9 +530,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     cliente,
     setCliente,
     loadingRfc,
-    rfcNoRegistrado,
-    setRfcNoRegistrado,
-    rfcError,
     modalRegistro,
     setModalRegistro,
     rfcParaRegistrar,
@@ -617,7 +550,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     setEmailEnvio,
     loadingVistaPrevia,
     loadingGenerar,
-    generarError,
     ejecutarVistaPrevia,
     ejecutarGenerarFactura,
     facturaEmitida,
