@@ -156,7 +156,8 @@ export const ForgotPasswordPage: React.FC = () => {
                       Recuperar Contraseña
                     </h1>
                     <p className="text-xs text-slate-500">
-                      Verificaremos tu identidad mediante tu RFC y correo electrónico registrado
+                      Verificaremos tu identidad mediante tu RFC y correo
+                      electrónico registrado
                     </p>
                   </div>
 
@@ -209,7 +210,6 @@ export const ForgotPasswordPage: React.FC = () => {
                           <IonSpinner name="dots" className="text-white h-5" />
                         ) : (
                           <>
-                            <IonIcon icon={shieldCheckmarkOutline} className="text-lg shrink-0" />
                             <span>Validar y Continuar</span>
                           </>
                         )}
@@ -229,7 +229,8 @@ export const ForgotPasswordPage: React.FC = () => {
                       Nueva Contraseña
                     </h1>
                     <p className="text-xs text-slate-500">
-                      Introduce tu nueva contraseña para el RFC <strong>{rfc}</strong>
+                      Introduce tu nueva contraseña para el RFC{" "}
+                      <strong>{rfc}</strong>
                     </p>
                   </div>
 
@@ -240,7 +241,10 @@ export const ForgotPasswordPage: React.FC = () => {
                       </label>
                       <div className="relative flex items-center">
                         <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
-                          <IonIcon icon={lockClosedOutline} className="text-lg" />
+                          <IonIcon
+                            icon={lockClosedOutline}
+                            className="text-lg"
+                          />
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
@@ -269,7 +273,10 @@ export const ForgotPasswordPage: React.FC = () => {
                       </label>
                       <div className="relative flex items-center">
                         <span className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
-                          <IonIcon icon={lockClosedOutline} className="text-lg" />
+                          <IonIcon
+                            icon={lockClosedOutline}
+                            className="text-lg"
+                          />
                         </span>
                         <input
                           type={showPassword ? "text" : "password"}
@@ -292,7 +299,10 @@ export const ForgotPasswordPage: React.FC = () => {
                           <IonSpinner name="dots" className="text-white h-5" />
                         ) : (
                           <>
-                            <IonIcon icon={keyOutline} className="text-lg shrink-0" />
+                            <IonIcon
+                              icon={keyOutline}
+                              className="text-lg shrink-0"
+                            />
                             <span>Actualizar Contraseña</span>
                           </>
                         )}
@@ -313,7 +323,10 @@ export const ForgotPasswordPage: React.FC = () => {
               {paso === 3 && (
                 <div className="text-center py-4 space-y-5">
                   <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
-                    <IonIcon icon={checkmarkCircleOutline} className="text-4xl" />
+                    <IonIcon
+                      icon={checkmarkCircleOutline}
+                      className="text-4xl"
+                    />
                   </div>
 
                   <div className="space-y-1">
@@ -321,7 +334,8 @@ export const ForgotPasswordPage: React.FC = () => {
                       ¡Contraseña Actualizada!
                     </h2>
                     <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                      Tu contraseña ha sido restablecida exitosamente. Ya puedes iniciar sesión con tu nueva clave.
+                      Tu contraseña ha sido restablecida exitosamente. Ya puedes
+                      iniciar sesión con tu nueva clave.
                     </p>
                   </div>
 
@@ -356,4 +370,3 @@ export const ForgotPasswordPage: React.FC = () => {
 };
 
 export default ForgotPasswordPage;
-
