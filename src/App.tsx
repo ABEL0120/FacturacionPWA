@@ -9,11 +9,11 @@ import {
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { OfflineBanner } from "./components/OfflineBanner";
-import { PwaInstallGate } from "./components/PwaInstallGate";
 import { MenuLateral } from "./components/MenuLateral";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NotificationProvider } from "./components/common/NotificationProvider";
 import { AuthProvider } from "./context/AuthContext";
+import { PwaInstallProvider } from "./context/PwaInstallProvider";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -82,9 +82,9 @@ const App: React.FC = () => (
   <IonApp>
     <NotificationProvider>
       <AuthProvider>
-        <UpdatePrompt />
-        <OfflineBanner />
-        <PwaInstallGate>
+        <PwaInstallProvider>
+          <UpdatePrompt />
+          <OfflineBanner />
           <IonReactRouter>
             <MenuLateral />
             <IonRouterOutlet id="main-content">
@@ -97,7 +97,7 @@ const App: React.FC = () => (
               </Route>
             </IonRouterOutlet>
           </IonReactRouter>
-        </PwaInstallGate>
+        </PwaInstallProvider>
       </AuthProvider>
     </NotificationProvider>
   </IonApp>

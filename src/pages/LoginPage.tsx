@@ -14,6 +14,7 @@ import { getErrorMessage, isNotAllowedError } from "../utils/formatters";
 import { ActionButton } from "../components/common/ActionButton";
 import { AuthPageLayout } from "../components/common/AuthPageLayout";
 import { FormInput, PasswordInput } from "../components/common/FormField";
+import { PwaInstallHint } from "../components/common/PwaInstallHint";
 
 export const LoginPage: React.FC = () => {
   const history = useHistory();
@@ -175,6 +176,8 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <PwaInstallHint />
     </AuthPageLayout>
   );
 };

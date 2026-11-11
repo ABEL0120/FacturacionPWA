@@ -12,6 +12,7 @@ import {
   IonFooter,
 } from "@ionic/react";
 import {
+  downloadOutline,
   homeOutline,
   logInOutline,
   logOutOutline,
@@ -19,11 +20,13 @@ import {
 import { useLocation, useHistory } from "react-router-dom";
 import { VentioLogo } from "./VentioLogo";
 import { useAuth } from "../context/AuthContext";
+import { usePwaInstall } from "../hooks/usePwaInstall";
 
 export const MenuLateral: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const { user, isAuthenticated, logout } = useAuth();
+  const { isStandalone, openInstallModal } = usePwaInstall();
 
   const handleLogout = () => {
     history.replace("/login");
@@ -99,6 +102,31 @@ export const MenuLateral: React.FC = () => {
               <IonLabel>Inicio</IonLabel>
             </IonItem>
           </IonMenuToggle>
+
+          {!isStandalone && (
+            <IonMenuToggle>
+              <IonItem
+                button
+                onClick={openInstallModal}
+                className="rounded-xl transition-colors cursor-pointer text-slate-700 hover:bg-slate-100"
+                detail={false}
+              >
+                <IonIcon
+                  slot="start"
+                  icon={downloadOutline}
+                  className="text-[#0b5ed7]"
+                />
+                <IonLabel>
+                  <span className="font-bold text-slate-800 block text-sm">
+                    Instalar Aplicación
+                  </span>
+                  <span className="text-[11px] text-slate-500 block">
+                    Disponible en móvil y escritorio
+                  </span>
+                </IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+          )}
 
           {!isAuthenticated ? (
             <IonMenuToggle autoHide={false}>

@@ -15,7 +15,8 @@ import {
   NotificationVariant,
   ToastItem,
 } from "../../types/notification.types";
-import { ActionButton } from "./ActionButton";
+
+type NativeAlertPlatform = "ios" | "android" | "desktop";
 
 interface PendingDialog {
   id: number;
@@ -32,48 +33,71 @@ const VARIANT_META: Record<
   NotificationVariant,
   {
     icon: string;
-    eyebrow: string;
-    eyebrowColor: string;
-    iconBadge: string;
+    dialogIconColor: string;
+    toastIconColor: string;
   }
 > = {
   success: {
     icon: checkmarkCircleOutline,
-    eyebrow: "Confirmación",
-    eyebrowColor: "text-emerald-700",
-    iconBadge: "bg-emerald-50 border-emerald-200 text-emerald-600",
+    dialogIconColor: "text-emerald-600",
+    toastIconColor: "text-emerald-400 sm:text-emerald-600",
   },
   info: {
     icon: informationCircleOutline,
-    eyebrow: "Información",
-    eyebrowColor: "text-[#0b5ed7]",
-    iconBadge: "bg-[#eef5ff] border-[#b6d4fe] text-[#0b5ed7]",
+    dialogIconColor: "text-[#0b5ed7]",
+    toastIconColor: "text-sky-400 sm:text-[#0b5ed7]",
   },
   warning: {
     icon: warningOutline,
-    eyebrow: "Aviso Importante",
-    eyebrowColor: "text-amber-700",
-    iconBadge: "bg-amber-50 border-amber-200 text-amber-600",
+    dialogIconColor: "text-amber-600",
+    toastIconColor: "text-amber-400 sm:text-amber-600",
   },
   error: {
     icon: alertCircleOutline,
-    eyebrow: "Atención",
-    eyebrowColor: "text-rose-700",
-    iconBadge: "bg-rose-50 border-rose-200 text-rose-600",
+    dialogIconColor: "text-rose-600",
+    toastIconColor: "text-rose-400 sm:text-rose-600",
   },
 };
+
+function detectNativeAlertPlatform(): NativeAlertPlatform {
+  if (typeof navigator === "undefined" || typeof window === "undefined") {
+    return "desktop";
+  }
+  const ua = navigator.userAgent;
+  const isTouchMac = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+  if (/iPad|iPhone|iPod/i.test(ua) || isTouchMac) {
+    return "ios";
+  }
+  if (/Android/i.test(ua) || window.innerWidth < 640) {
+    return "android";
+  }
+  return "desktop";
+}
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [dialogQueue, setDialogQueue] = useState<PendingDialog[]>([]);
+  const [alertPlatform, setAlertPlatform] = useState<NativeAlertPlatform>(() =>
+    detectNativeAlertPlatform(),
+  );
   const nextIdRef = useRef(1);
   const timersRef = useRef<Map<number, number>>(new Map());
   const resolvedIdsRef = useRef<Set<number>>(new Set());
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   const activeDialog = dialogQueue[0] ?? null;
+
+  useEffect(() => {
+    const syncPlatform = () => {
+      setAlertPlatform(detectNativeAlertPlatform());
+    };
+    window.addEventListener("resize", syncPlatform);
+    return () => {
+      window.removeEventListener("resize", syncPlatform);
+    };
+  }, []);
 
   const dismissToast = useCallback((id: number) => {
     const timer = timersRef.current.get(id);
@@ -82,6 +106,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       timersRef.current.delete(id);
     }
     setToasts((prev) => prev.filter((item) => item.id !== id));
+  }, []);
+
+  const clearAllToasts = useCallback(() => {
+    timersRef.current.forEach((timer) => window.clearTimeout(timer));
+    timersRef.current.clear();
+    setToasts([]);
   }, []);
 
   const showToast = useCallback(
@@ -96,7 +126,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       const id = nextIdRef.current++;
       setToasts((prev) => {
         const filtered = prev.filter((t) => t.message !== cleanMessage);
-        return [...filtered.slice(-2), { id, message: cleanMessage, variant }];
+        return [...filtered.slice(-1), { id, message: cleanMessage, variant }];
       });
 
       const timer = window.setTimeout(() => {
@@ -109,6 +139,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const enqueueDialog = useCallback(
     (options: ConfirmOptions, isConfirm: boolean): Promise<boolean> => {
+      clearAllToasts();
       return new Promise((resolve) => {
         const id = nextIdRef.current++;
         setDialogQueue((prev) => [
@@ -126,7 +157,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
         ]);
       });
     },
-    [],
+    [clearAllToasts],
   );
 
   const showAlert = useCallback(
@@ -187,13 +218,20 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [activeDialog, closeDialogById]);
 
+  const activeMeta = activeDialog ? VARIANT_META[activeDialog.variant] : null;
+  const stackIosButtons = Boolean(
+    activeDialog?.isConfirm &&
+      (activeDialog.confirmText.length > 12 ||
+        (activeDialog.cancelText?.length ?? 0) > 12),
+  );
+
   const portalContent = (
     <>
       {toasts.length > 0 && (
         <div
           aria-live="polite"
-          className="fixed left-3 right-3 sm:left-auto sm:right-5 z-[99999] flex flex-col items-center sm:items-end gap-2.5 pointer-events-none"
-          style={{ top: "max(0.85rem, env(safe-area-inset-top))" }}
+          className="fixed left-4 right-4 sm:left-auto sm:right-5 z-[99999] flex flex-col items-center sm:items-end gap-2 pointer-events-none"
+          style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
         >
           {toasts.map((toast) => {
             const meta = VARIANT_META[toast.variant];
@@ -201,15 +239,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
               <div
                 key={toast.id}
                 role="status"
-                className="w-full max-w-sm bg-white border border-slate-200 rounded-2xl px-3.5 py-3 shadow-2xl shadow-slate-900/15 flex items-center gap-3 pointer-events-auto animate-toast-in"
+                className="w-full max-w-[360px] bg-slate-900/95 sm:bg-white text-white sm:text-slate-800 border border-white/10 sm:border-slate-200/90 rounded-2xl sm:rounded-xl px-3.5 py-2.5 shadow-[0_12px_32px_rgba(15,23,42,0.28)] sm:shadow-[0_10px_28px_rgba(15,23,42,0.14)] backdrop-blur-md flex items-center gap-2.5 pointer-events-auto animate-toast-in"
               >
-                <div
-                  className={`w-9 h-9 rounded-xl border ${meta.iconBadge} flex items-center justify-center shrink-0`}
-                >
-                  <IonIcon icon={meta.icon} className="text-xl" />
-                </div>
+                <IonIcon
+                  icon={meta.icon}
+                  className={`text-xl shrink-0 ${meta.toastIconColor}`}
+                />
 
-                <p className="text-xs sm:text-[13px] font-bold text-slate-800 leading-snug flex-1 min-w-0">
+                <p className="text-[13px] font-medium leading-snug flex-1 min-w-0">
                   {toast.message}
                 </p>
 
@@ -217,9 +254,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
                   type="button"
                   onClick={() => dismissToast(toast.id)}
                   aria-label="Cerrar notificación"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white sm:hover:text-slate-700 hover:bg-white/10 sm:hover:bg-slate-100 transition-colors shrink-0"
                 >
-                  <IonIcon icon={closeOutline} className="text-lg" />
+                  <IonIcon icon={closeOutline} className="text-base" />
                 </button>
               </div>
             );
@@ -227,73 +264,150 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
         </div>
       )}
 
-      {activeDialog && (
+      {activeDialog && activeMeta && (
         <div
           role="alertdialog"
           aria-modal="true"
           aria-labelledby="ventio-alert-title"
           aria-describedby="ventio-alert-message"
-          className="fixed inset-0 z-[100000] bg-slate-950/55 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-[100000] bg-black/40 sm:bg-slate-950/35 flex items-center justify-center p-5 animate-fade-in"
         >
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-7 space-y-5 max-h-[85dvh] overflow-y-auto animate-dialog-in">
-            <div
-              className={`w-14 h-14 rounded-2xl ${VARIANT_META[activeDialog.variant].iconBadge} border flex items-center justify-center mx-auto shadow-xs`}
-            >
-              <IonIcon
-                icon={VARIANT_META[activeDialog.variant].icon}
-                className="text-3xl"
-              />
-            </div>
-
-            <div className="text-center space-y-2">
-              <span
-                className={`text-[10px] font-black uppercase tracking-widest block ${VARIANT_META[activeDialog.variant].eyebrowColor}`}
-              >
-                {VARIANT_META[activeDialog.variant].eyebrow}
-              </span>
-              <h2
-                id="ventio-alert-title"
-                className="text-lg sm:text-xl font-black text-slate-900 leading-snug"
-              >
-                {activeDialog.title}
-              </h2>
-              <p
-                id="ventio-alert-message"
-                className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line break-words"
-              >
-                {activeDialog.message}
-              </p>
-            </div>
-
-            <div
-              className={`pt-1 ${
-                activeDialog.isConfirm
-                  ? "flex flex-col-reverse sm:flex-row gap-2.5"
-                  : "flex"
-              }`}
-            >
-              {activeDialog.isConfirm && (
-                <ActionButton
-                  variant="neutral"
-                  onClick={() => closeDialogById(activeDialog.id, false)}
-                  className="w-full sm:flex-1"
+          {alertPlatform === "ios" && (
+            <div className="w-[min(calc(100vw-48px),288px)] bg-white rounded-[14px] shadow-[0_14px_40px_rgba(0,0,0,0.24)] border border-slate-200/80 overflow-hidden animate-dialog-in">
+              <div className="px-4 pt-5 pb-4 text-center space-y-1.5 max-h-[65dvh] overflow-y-auto">
+                <h2
+                  id="ventio-alert-title"
+                  className="text-[16px] font-semibold text-slate-900 leading-snug tracking-[-0.01em]"
                 >
-                  {activeDialog.cancelText}
-                </ActionButton>
-              )}
+                  {activeDialog.title}
+                </h2>
+                <p
+                  id="ventio-alert-message"
+                  className="text-[13px] text-slate-600 leading-[1.38] whitespace-pre-line break-words"
+                >
+                  {activeDialog.message}
+                </p>
+              </div>
 
-              <ActionButton
-                buttonRef={confirmButtonRef}
-                variant="primary"
-                onClick={() => closeDialogById(activeDialog.id, true)}
+              <div
                 className={
-                  activeDialog.isConfirm ? "w-full sm:flex-1" : "w-full"
+                  activeDialog.isConfirm
+                    ? stackIosButtons
+                      ? "border-t border-slate-200/90 flex flex-col-reverse divide-y divide-y-reverse divide-slate-200/90"
+                      : "border-t border-slate-200/90 grid grid-cols-2 divide-x divide-slate-200/90"
+                    : "border-t border-slate-200/90"
                 }
               >
-                {activeDialog.confirmText}
-              </ActionButton>
+                {activeDialog.isConfirm && (
+                  <button
+                    type="button"
+                    onClick={() => closeDialogById(activeDialog.id, false)}
+                    className="w-full h-11 px-3 text-[16px] font-normal text-[#007aff] hover:bg-slate-100/70 active:bg-slate-200/70 transition-colors flex items-center justify-center"
+                  >
+                    {activeDialog.cancelText}
+                  </button>
+                )}
+                <button
+                  ref={confirmButtonRef}
+                  type="button"
+                  onClick={() => closeDialogById(activeDialog.id, true)}
+                  className="w-full h-11 px-3 text-[16px] font-semibold text-[#007aff] hover:bg-slate-100/70 active:bg-slate-200/70 transition-colors flex items-center justify-center"
+                >
+                  {activeDialog.confirmText}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {alertPlatform === "android" && (
+            <div className="w-[min(calc(100vw-48px),320px)] bg-white rounded-[24px] shadow-[0_18px_44px_rgba(15,23,42,0.22)] border border-slate-200/70 overflow-hidden animate-dialog-in">
+              <div className="px-6 pt-6 pb-3 space-y-2.5 max-h-[65dvh] overflow-y-auto">
+                <div className="flex items-start gap-2.5">
+                  <IonIcon
+                    icon={activeMeta.icon}
+                    className={`text-[22px] shrink-0 mt-0.5 ${activeMeta.dialogIconColor}`}
+                  />
+                  <h2
+                    id="ventio-alert-title"
+                    className="text-[18px] font-semibold text-slate-900 leading-snug text-left"
+                  >
+                    {activeDialog.title}
+                  </h2>
+                </div>
+                <p
+                  id="ventio-alert-message"
+                  className="text-[14px] text-slate-600 leading-relaxed text-left whitespace-pre-line break-words"
+                >
+                  {activeDialog.message}
+                </p>
+              </div>
+
+              <div className="px-5 pb-4 pt-2 flex items-center justify-end gap-2">
+                {activeDialog.isConfirm && (
+                  <button
+                    type="button"
+                    onClick={() => closeDialogById(activeDialog.id, false)}
+                    className="min-h-10 px-4 rounded-full text-[14px] font-semibold text-slate-600 hover:bg-slate-100 active:bg-slate-200/70 transition-colors"
+                  >
+                    {activeDialog.cancelText}
+                  </button>
+                )}
+                <button
+                  ref={confirmButtonRef}
+                  type="button"
+                  onClick={() => closeDialogById(activeDialog.id, true)}
+                  className="min-h-10 px-5 rounded-full text-[14px] font-semibold bg-[#010080] text-white hover:bg-[#02029a] active:bg-[#000060] transition-colors"
+                >
+                  {activeDialog.confirmText}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {alertPlatform === "desktop" && (
+            <div className="w-full max-w-[400px] bg-white rounded-xl shadow-[0_20px_50px_rgba(15,23,42,0.22)] border border-slate-200/90 overflow-hidden animate-dialog-in">
+              <div className="p-5 flex items-start gap-3.5 max-h-[65dvh] overflow-y-auto">
+                <IonIcon
+                  icon={activeMeta.icon}
+                  className={`text-[22px] shrink-0 mt-0.5 ${activeMeta.dialogIconColor}`}
+                />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <h2
+                    id="ventio-alert-title"
+                    className="text-[15px] font-semibold text-slate-900 leading-snug"
+                  >
+                    {activeDialog.title}
+                  </h2>
+                  <p
+                    id="ventio-alert-message"
+                    className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-line break-words"
+                  >
+                    {activeDialog.message}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 border-t border-slate-200/80 px-5 py-3 flex items-center justify-end gap-2">
+                {activeDialog.isConfirm && (
+                  <button
+                    type="button"
+                    onClick={() => closeDialogById(activeDialog.id, false)}
+                    className="min-h-[38px] px-4 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 active:bg-slate-200/70 text-slate-700 text-[13px] font-medium transition-colors"
+                  >
+                    {activeDialog.cancelText}
+                  </button>
+                )}
+                <button
+                  ref={confirmButtonRef}
+                  type="button"
+                  onClick={() => closeDialogById(activeDialog.id, true)}
+                  className="min-h-[38px] px-4 rounded-lg bg-[#010080] hover:bg-[#02029a] active:bg-[#000060] text-white text-[13px] font-semibold shadow-2xs transition-colors"
+                >
+                  {activeDialog.confirmText}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
