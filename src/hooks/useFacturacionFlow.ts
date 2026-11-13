@@ -67,9 +67,7 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       descuento: validacionGrupo
         ? validacionGrupo.descuentoTotal
         : primerTicket?.descuento || 0,
-      iva: validacionGrupo
-        ? validacionGrupo.ivaTotal
-        : primerTicket?.iva || 0,
+      iva: validacionGrupo ? validacionGrupo.ivaTotal : primerTicket?.iva || 0,
       total: validacionGrupo
         ? validacionGrupo.granTotal
         : primerTicket?.total || 0,
@@ -556,4 +554,3 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     reiniciarFlujo,
   };
 };
-
