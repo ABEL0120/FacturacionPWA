@@ -1,5 +1,6 @@
 import React from "react";
-import { searchOutline } from "ionicons/icons";
+import { IonIcon } from "@ionic/react";
+import { documentTextOutline, searchOutline } from "ionicons/icons";
 import {
   TicketConsultaResponseDto,
   TicketResumenInfo,
@@ -24,6 +25,7 @@ interface PasoBuscarTicketProps {
   onBuscarTicket: () => void;
   onQuitarTicket: (folio: string) => void;
   onContinuarPaso2: () => void;
+  onConsultarFacturados: () => void;
 }
 
 export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
@@ -40,6 +42,7 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
   onBuscarTicket,
   onQuitarTicket,
   onContinuarPaso2,
+  onConsultarFacturados,
 }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,14 +51,25 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
-          Paso 1: Búsqueda del Ticket
-        </h1>
-        <p className="text-xs text-slate-500">
-          Ubica en tu ticket de compra el Folio (Ticket) y la Transacción (REF:)
-          e ingrésalos para continuar
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
+            Paso 1: Búsqueda del Ticket
+          </h1>
+          <p className="text-xs text-slate-500">
+            Ubica en tu ticket de compra el Folio (Ticket) y la Transacción (REF:)
+            e ingrésalos para continuar
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onConsultarFacturados}
+          className="min-h-10 px-4 py-2 rounded-xl bg-[#eef5ff] hover:bg-[#dceafe] border border-[#b6d4fe] text-[#010080] text-xs font-extrabold inline-flex items-center justify-center gap-1.5 transition-colors shrink-0 self-start sm:self-auto"
+        >
+          <IonIcon icon={documentTextOutline} className="text-base shrink-0" />
+          <span>Consulta Facturados</span>
+        </button>
       </div>
 
       <AlertBanner

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   IonMenu,
   IonHeader,
@@ -8,10 +8,10 @@ import {
   IonItem,
   IonIcon,
   IonLabel,
-  IonMenuToggle,
   IonFooter,
 } from "@ionic/react";
 import {
+  documentTextOutline,
   downloadOutline,
   homeOutline,
   logInOutline,
@@ -23,18 +23,32 @@ import { useAuth } from "../context/AuthContext";
 import { usePwaInstall } from "../hooks/usePwaInstall";
 
 export const MenuLateral: React.FC = () => {
+  const menuRef = useRef<HTMLIonMenuElement>(null);
   const location = useLocation();
   const history = useHistory();
   const { user, isAuthenticated, logout } = useAuth();
   const { isStandalone, openInstallModal } = usePwaInstall();
 
+  const handleNavigate = (path: string) => {
+    void menuRef.current?.close();
+    if (location.pathname !== path) {
+      history.push(path);
+    }
+  };
+
+  const handleOpenInstall = () => {
+    void menuRef.current?.close();
+    openInstallModal();
+  };
+
   const handleLogout = () => {
+    void menuRef.current?.close();
     history.replace("/login");
     logout();
   };
 
   return (
-    <IonMenu contentId="main-content" type="overlay">
+    <IonMenu ref={menuRef} contentId="main-content" type="overlay">
       <IonHeader className="ion-no-border">
         <IonToolbar className="ventio-toolbar px-2">
           <div className="flex items-center gap-2 px-3 py-1">
@@ -79,12 +93,34 @@ export const MenuLateral: React.FC = () => {
         )}
 
         <IonList lines="none" className="space-y-1 px-2">
-          <IonMenuToggle autoHide={false}>
-            <IonItem
-              routerLink="/home"
-              routerDirection="none"
-              className={`rounded-xl transition-colors cursor-pointer ${
+          <IonItem
+            button
+            onClick={() => handleNavigate("/home")}
+            className={`rounded-xl transition-colors cursor-pointer ${
+              location.pathname === "/home" || location.pathname === "/"
+                ? "text-[#0b5ed7] font-bold bg-[#eef5ff]"
+                : "text-slate-700 hover:bg-slate-100"
+            }`}
+            detail={false}
+          >
+            <IonIcon
+              slot="start"
+              icon={homeOutline}
+              className={
                 location.pathname === "/home" || location.pathname === "/"
+                  ? "text-[#0b5ed7]"
+                  : "text-slate-500"
+              }
+            />
+            <IonLabel>Inicio</IonLabel>
+          </IonItem>
+
+          {isAuthenticated && (
+            <IonItem
+              button
+              onClick={() => handleNavigate("/consultar-facturados")}
+              className={`rounded-xl transition-colors cursor-pointer ${
+                location.pathname === "/consultar-facturados"
                   ? "text-[#0b5ed7] font-bold bg-[#eef5ff]"
                   : "text-slate-700 hover:bg-slate-100"
               }`}
@@ -92,80 +128,74 @@ export const MenuLateral: React.FC = () => {
             >
               <IonIcon
                 slot="start"
-                icon={homeOutline}
+                icon={documentTextOutline}
                 className={
-                  location.pathname === "/home" || location.pathname === "/"
+                  location.pathname === "/consultar-facturados"
                     ? "text-[#0b5ed7]"
                     : "text-slate-500"
                 }
               />
-              <IonLabel>Inicio</IonLabel>
+              <IonLabel>Consultar Facturados</IonLabel>
             </IonItem>
-          </IonMenuToggle>
+          )}
 
           {!isStandalone && (
-            <IonMenuToggle>
-              <IonItem
-                button
-                onClick={openInstallModal}
-                className="rounded-xl transition-colors cursor-pointer text-slate-700 hover:bg-slate-100"
-                detail={false}
-              >
-                <IonIcon
-                  slot="start"
-                  icon={downloadOutline}
-                  className="text-[#0b5ed7]"
-                />
-                <IonLabel>
-                  <span className="font-bold text-slate-800 block text-sm">
-                    Instalar Aplicación
-                  </span>
-                  <span className="text-[11px] text-slate-500 block">
-                    Disponible en móvil y escritorio
-                  </span>
-                </IonLabel>
-              </IonItem>
-            </IonMenuToggle>
+            <IonItem
+              button
+              onClick={handleOpenInstall}
+              className="rounded-xl transition-colors cursor-pointer text-slate-700 hover:bg-slate-100"
+              detail={false}
+            >
+              <IonIcon
+                slot="start"
+                icon={downloadOutline}
+                className="text-[#0b5ed7]"
+              />
+              <IonLabel>
+                <span className="font-bold text-slate-800 block text-sm">
+                  Instalar Aplicación
+                </span>
+                <span className="text-[11px] text-slate-500 block">
+                  Disponible en móvil y escritorio
+                </span>
+              </IonLabel>
+            </IonItem>
           )}
 
           {!isAuthenticated ? (
-            <IonMenuToggle autoHide={false}>
-              <IonItem
-                routerLink="/login"
-                routerDirection="none"
-                className={`rounded-xl transition-colors cursor-pointer ${
-                  location.pathname === "/login"
-                    ? "text-[#0b5ed7] font-bold bg-[#eef5ff]"
-                    : "text-slate-700 hover:bg-slate-100"
-                }`}
-                detail={false}
-              >
-                <IonIcon
-                  slot="start"
-                  icon={logInOutline}
-                  className="text-slate-500"
-                />
-                <IonLabel>Iniciar Sesión</IonLabel>
-              </IonItem>
-            </IonMenuToggle>
+            <IonItem
+              button
+              onClick={() => handleNavigate("/login")}
+              className={`rounded-xl transition-colors cursor-pointer ${
+                location.pathname === "/login"
+                  ? "text-[#0b5ed7] font-bold bg-[#eef5ff]"
+                  : "text-slate-700 hover:bg-slate-100"
+              }`}
+              detail={false}
+            >
+              <IonIcon
+                slot="start"
+                icon={logInOutline}
+                className="text-slate-500"
+              />
+              <IonLabel>Iniciar Sesión</IonLabel>
+            </IonItem>
           ) : (
-            <IonMenuToggle autoHide={false}>
-              <IonItem
-                button
-                onClick={handleLogout}
-                className="rounded-xl transition-colors cursor-pointer text-rose-600 hover:bg-rose-50"
-                detail={false}
-              >
-                <IonIcon
-                  slot="start"
-                  icon={logOutOutline}
-                  className="text-rose-600"
-                />
-                <IonLabel className="text-rose-600 font-bold">
-                  Cerrar Sesión
-                </IonLabel>
-              </IonItem>
-            </IonMenuToggle>
+            <IonItem
+              button
+              onClick={handleLogout}
+              className="rounded-xl transition-colors cursor-pointer text-rose-600 hover:bg-rose-50"
+              detail={false}
+            >
+              <IonIcon
+                slot="start"
+                icon={logOutOutline}
+                className="text-rose-600"
+              />
+              <IonLabel className="text-rose-600 font-bold">
+                Cerrar Sesión
+              </IonLabel>
+            </IonItem>
           )}
         </IonList>
       </IonContent>

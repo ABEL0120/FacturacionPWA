@@ -15,6 +15,7 @@ import { NotificationProvider } from "./components/common/NotificationProvider";
 import { AuthProvider } from "./context/AuthContext";
 import { PwaInstallProvider } from "./context/PwaInstallProvider";
 import Home from "./pages/Home";
+import ConsultarFacturadosPage from "./pages/ConsultarFacturadosPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -92,6 +93,11 @@ const App: React.FC = () => (
               <Route exact path="/registro" component={RegisterPage} />
               <Route exact path="/recuperar" component={ForgotPasswordPage} />
               <ProtectedRoute exact path="/home" component={Home} />
+              <ProtectedRoute
+                exact
+                path="/consultar-facturados"
+                component={ConsultarFacturadosPage}
+              />
               <Route exact path="/">
                 <Redirect to="/home" />
               </Route>

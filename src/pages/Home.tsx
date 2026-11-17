@@ -90,6 +90,9 @@ export const Home: React.FC = () => {
               onBuscarTicket={flow.buscarTicket}
               onQuitarTicket={flow.quitarTicket}
               onContinuarPaso2={() => flow.setPaso(2)}
+              onConsultarFacturados={() =>
+                history.push("/consultar-facturados")
+              }
             />
           )}
 
