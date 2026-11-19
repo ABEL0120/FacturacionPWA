@@ -89,8 +89,10 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("facturacion_user");
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      const basePath = import.meta.env.BASE_URL.replace(/\/+$/, "");
+      const loginPath = `${basePath}/login`;
+      if (window.location.pathname !== loginPath) {
+        window.location.href = loginPath;
       }
     }
     return Promise.reject(error);

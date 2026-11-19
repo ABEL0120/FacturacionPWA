@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  arrowBackOutline,
-  refreshOutline,
-  searchOutline,
-} from "ionicons/icons";
+import { arrowBackOutline, searchOutline } from "ionicons/icons";
 import { ActionButton } from "../common/ActionButton";
 import { FormInput } from "../common/FormField";
 
@@ -14,7 +10,7 @@ interface CfdiConsultaFiltrosProps {
   onFolioChange: (value: string) => void;
   loading: boolean;
   onBuscar: () => void;
-  onRestaurar: () => void;
+  onRestaurar?: () => void;
   onRegresar: () => void;
 }
 
@@ -25,7 +21,6 @@ export const CfdiConsultaFiltros: React.FC<CfdiConsultaFiltrosProps> = ({
   onFolioChange,
   loading,
   onBuscar,
-  onRestaurar,
   onRegresar,
 }) => {
   const handleSubmit = (e: React.FormEvent) => {

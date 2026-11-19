@@ -1,7 +1,7 @@
 {
-  "short_name": "Facturación",
-  "name": "Facturación PWA",
-  "description": "Sistema de Facturación Móvil y PWA",
+  "short_name": "Ventio",
+  "name": "Ventio Facturación",
+  "description": "Sistema de Facturación Electrónica CFDI 4.0 Ventio",
   "icons": [
     {
       "src": "pwa-64x64-v3.png",
@@ -48,7 +48,7 @@
   ],
   "start_url": "/?mode=pwa",
   "display": "standalone",
-  "theme_color": "#2563eb",
-  "background_color": "#2563eb",
+  "theme_color": "#010080",
+  "background_color": "#010080",
   "orientation": "portrait"
 }

@@ -79,6 +79,11 @@ function UpdatePrompt() {
   );
 }
 
+const routerBase =
+  import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/"
+    ? import.meta.env.BASE_URL.replace(/\/+$/, "")
+    : undefined;
+
 const App: React.FC = () => (
   <IonApp>
     <NotificationProvider>
@@ -86,7 +91,7 @@ const App: React.FC = () => (
         <PwaInstallProvider>
           <UpdatePrompt />
           <OfflineBanner />
-          <IonReactRouter>
+          <IonReactRouter basename={routerBase}>
             <MenuLateral />
             <IonRouterOutlet id="main-content">
               <Route exact path="/login" component={LoginPage} />
