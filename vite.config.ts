@@ -8,6 +8,19 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const rawBase = env.VITE_BASE_PATH || "/";
   const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+  const apiProxy = {
+    "/api": {
+      target: "http://127.0.0.1:5121",
+      changeOrigin: true,
+      secure: false,
+    },
+    "/FacturacionAPI": {
+      target: "http://127.0.0.1:5121",
+      changeOrigin: true,
+      secure: false,
+      rewrite: (path: string) => path.replace(/^\/FacturacionAPI/, ""),
+    },
+  };
 
   return {
     base,
@@ -135,26 +148,14 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       allowedHosts: true,
       cors: true,
-      proxy: {
-        "/api": {
-          target: "http://127.0.0.1:5121",
-          changeOrigin: true,
-          secure: false,
-        },
-      },
+      proxy: apiProxy,
     },
     preview: {
       host: true,
       port: 4173,
       allowedHosts: true,
       cors: true,
-      proxy: {
-        "/api": {
-          target: "http://127.0.0.1:5121",
-          changeOrigin: true,
-          secure: false,
-        },
-      },
+      proxy: apiProxy,
     },
     build: {
       chunkSizeWarningLimit: 800,

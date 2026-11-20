@@ -21,9 +21,9 @@ import { getErrorMessage, isNotAllowedError } from "../utils/formatters";
 import {
   esCodigoPostalValido,
   esEmailValido,
-  esPasswordLongitudValida,
   esRfcLongitudValida,
   esTelefonoValido,
+  evaluarPasswordRegistro,
   normalizarRfc,
   soloDigitos,
 } from "../utils/validators";
@@ -125,8 +125,11 @@ export const RegisterPage: React.FC = () => {
       return false;
     }
 
-    if (!esPasswordLongitudValida(form.password)) {
-      showWarning("La contraseña debe tener entre 3 y 13 caracteres.");
+    const reglasPassword = evaluarPasswordRegistro(form.password);
+    if (!reglasPassword.esValida) {
+      showWarning(
+        "La contraseña debe tener entre 8 y 13 caracteres e incluir 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (# * $ ! @ & %).",
+      );
       return false;
     }
 
@@ -447,7 +450,7 @@ export const RegisterPage: React.FC = () => {
                 maxLength={13}
                 value={form.password}
                 onChange={(e) => updateField("password", e.target.value)}
-                placeholder="De 3 a 13 caracteres"
+                placeholder="Mín. 8 caracteres (Ej: Factura#1)"
                 showPassword={showPassword}
                 onToggleShowPassword={() => setShowPassword((prev) => !prev)}
               />
@@ -463,6 +466,43 @@ export const RegisterPage: React.FC = () => {
                 showToggleButton={false}
               />
             </div>
+
+            {(() => {
+              const reglas = evaluarPasswordRegistro(form.password);
+              const items = [
+                {
+                  label: "Mínimo 8 caracteres (máx. 13)",
+                  ok: reglas.longitudValida,
+                },
+                { label: "Mínimo 1 mayúscula (A-Z)", ok: reglas.tieneMayuscula },
+                { label: "Mínimo 1 minúscula (a-z)", ok: reglas.tieneMinuscula },
+                { label: "Mínimo 1 número (0-9)", ok: reglas.tieneNumero },
+                {
+                  label: "1 carácter especial (# * $ ! @ & %)",
+                  ok: reglas.tieneEspecial,
+                },
+              ];
+              return (
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5">
+                  <span className="text-[11px] font-bold text-slate-600 block">
+                    Requisitos de contraseña:
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {items.map((item) => (
+                      <div
+                        key={item.label}
+                        className={`text-[11px] font-semibold flex items-center gap-1.5 ${
+                          item.ok ? "text-emerald-700" : "text-slate-500"
+                        }`}
+                      >
+                        <span>{item.ok ? "✓" : "•"}</span>
+                        <span>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {supportsPasskey && (

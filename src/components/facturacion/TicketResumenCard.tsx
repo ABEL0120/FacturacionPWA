@@ -1,7 +1,6 @@
 import React from "react";
 import { IonIcon } from "@ionic/react";
 import {
-  addCircleOutline,
   arrowForwardOutline,
   receiptOutline,
   trashOutline,
@@ -18,7 +17,6 @@ interface TicketResumenCardProps {
   ticketsSeleccionados: TicketConsultaResponseDto[];
   resumen: TicketResumenInfo;
   onQuitarTicket: (folio: string) => void;
-  onAgregarOtro: () => void;
   onContinuar: () => void;
 }
 
@@ -26,7 +24,6 @@ export const TicketResumenCard: React.FC<TicketResumenCardProps> = ({
   ticketsSeleccionados,
   resumen,
   onQuitarTicket,
-  onAgregarOtro,
   onContinuar,
 }) => {
   return (
@@ -132,7 +129,8 @@ export const TicketResumenCard: React.FC<TicketResumenCardProps> = ({
                   {formatMoney(item.total)}
                 </span>
                 <span className="text-slate-500 text-[11px]">
-                  Sub: {formatMoney(item.subtotal)} • IVA: {formatMoney(item.iva)}
+                  Sub: {formatMoney(item.subtotal)} • IVA:{" "}
+                  {formatMoney(item.iva)}
                 </span>
               </div>
             </div>
@@ -159,23 +157,15 @@ export const TicketResumenCard: React.FC<TicketResumenCardProps> = ({
             </div>
             <div className="flex justify-between font-black text-sm text-[#010080] pt-1.5 border-t border-slate-100">
               <span>TOTAL:</span>
-              <span>{formatMoney(resumen.total)} MXN</span>
+              <span>
+                {formatMoney(resumen.total)} {resumen.moneda || "MXN"}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="pt-3 border-t border-[#b6d4fe] flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-        <ActionButton
-          variant="outlineAccent"
-          onClick={onAgregarOtro}
-          icon={addCircleOutline}
-          iconClassName="text-base text-[#0b5ed7] shrink-0"
-          className="w-full sm:w-auto px-5 text-xs"
-        >
-          Agregar Otro Ticket
-        </ActionButton>
-
+      <div className="pt-3 border-t border-[#b6d4fe] flex justify-end">
         <ActionButton
           variant="accent"
           onClick={onContinuar}
@@ -184,7 +174,7 @@ export const TicketResumenCard: React.FC<TicketResumenCardProps> = ({
           iconClassName="text-base shrink-0"
           className="w-full sm:w-auto px-8"
         >
-          Continuar a Datos Fiscales
+          Continuar
         </ActionButton>
       </div>
     </div>

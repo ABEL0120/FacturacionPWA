@@ -5,7 +5,7 @@ import {
   TicketConsultaResponseDto,
   TicketResumenInfo,
 } from "../../types/facturacion.types";
-import { soloDigitos } from "../../utils/validators";
+import { soloDecimal, soloDigitos } from "../../utils/validators";
 import { ActionButton } from "../common/ActionButton";
 import { AlertBanner } from "../common/AlertBanner";
 import { FormInput } from "../common/FormField";
@@ -16,9 +16,8 @@ interface PasoBuscarTicketProps {
   onFolioChange: (value: string) => void;
   transaccion: string;
   onTransaccionChange: (value: string) => void;
-  agregarOtroTicket: boolean;
-  onCancelarAgregarOtro: () => void;
-  onIniciarAgregarOtro: () => void;
+  total: string;
+  onTotalChange: (value: string) => void;
   ticketsSeleccionados: TicketConsultaResponseDto[];
   ticketResumen: TicketResumenInfo;
   loadingTicket: boolean;
@@ -33,9 +32,8 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
   onFolioChange,
   transaccion,
   onTransaccionChange,
-  agregarOtroTicket,
-  onCancelarAgregarOtro,
-  onIniciarAgregarOtro,
+  total,
+  onTotalChange,
   ticketsSeleccionados,
   ticketResumen,
   loadingTicket,
@@ -57,8 +55,8 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
             Paso 1: Búsqueda del Ticket
           </h1>
           <p className="text-xs text-slate-500">
-            Ubica en tu ticket de compra el Folio (Ticket) y la Transacción (REF:)
-            e ingrésalos para continuar
+            Ubica en tu ticket de compra el Folio junto con la Transacción
+            (REF:), el Total o ambos para continuar
           </p>
         </div>
 
@@ -81,23 +79,7 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
         onSubmit={handleSubmit}
         className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 shadow-sm space-y-5"
       >
-        {agregarOtroTicket && (
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-[#eef5ff] border border-[#b6d4fe] px-3.5 py-2 rounded-xl text-xs">
-            <span className="font-bold text-[#010080]">
-              Agregando un ticket adicional de la misma sucursal (
-              {ticketResumen.sucursalNombre})
-            </span>
-            <button
-              type="button"
-              onClick={onCancelarAgregarOtro}
-              className="text-[#0b5ed7] font-bold hover:underline"
-            >
-              Cancelar adicional
-            </button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormInput
             label="Folio del Ticket *"
             surface="white"
@@ -110,7 +92,7 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
           />
 
           <FormInput
-            label="Transacción (REF:) *"
+            label="Transacción (REF:)"
             surface="white"
             type="text"
             inputMode="numeric"
@@ -120,7 +102,24 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
             placeholder="REF: (Ej: 123456)"
             className="font-bold"
           />
+
+          <FormInput
+            label="Total ($)"
+            surface="white"
+            type="text"
+            inputMode="decimal"
+            maxLength={12}
+            value={total}
+            onChange={(e) => onTotalChange(soloDecimal(e.target.value))}
+            placeholder="Ej: 245.50"
+            className="font-bold"
+          />
         </div>
+
+        <p className="text-[11px] font-medium text-slate-500">
+          Puedes consultar ingresando <strong>Folio y Transacción</strong>,{" "}
+          <strong>Folio y Total</strong>, o los <strong>3 campos</strong>.
+        </p>
 
         <ActionButton
           type="submit"
@@ -130,9 +129,7 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
           iconClassName="text-lg shrink-0"
           className="w-full px-5 tracking-wide"
         >
-          {agregarOtroTicket
-            ? "Validar y Agregar Ticket"
-            : "Cargar Información del Ticket"}
+          Cargar Información del Ticket
         </ActionButton>
       </form>
 
@@ -141,7 +138,6 @@ export const PasoBuscarTicket: React.FC<PasoBuscarTicketProps> = ({
           ticketsSeleccionados={ticketsSeleccionados}
           resumen={ticketResumen}
           onQuitarTicket={onQuitarTicket}
-          onAgregarOtro={onIniciarAgregarOtro}
           onContinuar={onContinuarPaso2}
         />
       )}

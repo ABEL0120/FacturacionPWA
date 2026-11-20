@@ -4,7 +4,6 @@ import { arrowBackOutline, eyeOutline, mailOutline } from "ionicons/icons";
 import {
   CatalogoItemDto,
   ClienteFiscalDto,
-  MonedaCatalogoDto,
   TicketConsultaResponseDto,
   TicketResumenInfo,
 } from "../../types/facturacion.types";
@@ -22,16 +21,11 @@ interface PasoDatosEmisionProps {
   onUsoCfdiChange: (value: string) => void;
   formaPago: string;
   onFormaPagoChange: (value: string) => void;
-  moneda: string;
-  onMonedaChange: (value: string) => void;
-  tipoCambio: string;
-  onTipoCambioChange: (value: string) => void;
   emailEnvio: string;
   onEmailEnvioChange: (value: string) => void;
   regimenesCatalogo: CatalogoItemDto[];
   usosCfdiCatalogo: CatalogoItemDto[];
   formasPagoCatalogo: CatalogoItemDto[];
-  monedasCatalogo: MonedaCatalogoDto[];
   loadingVistaPrevia: boolean;
   loadingGenerar: boolean;
   onVistaPrevia: () => void;
@@ -49,22 +43,20 @@ export const PasoDatosEmision: React.FC<PasoDatosEmisionProps> = ({
   onUsoCfdiChange,
   formaPago,
   onFormaPagoChange,
-  moneda,
-  onMonedaChange,
-  tipoCambio,
-  onTipoCambioChange,
   emailEnvio,
   onEmailEnvioChange,
   regimenesCatalogo,
   usosCfdiCatalogo,
   formasPagoCatalogo,
-  monedasCatalogo,
   loadingVistaPrevia,
   loadingGenerar,
   onVistaPrevia,
   onGenerarFactura,
   onVolverPaso2,
 }) => {
+  const monedaTicket = (ticketResumen.moneda || "MXN").trim().toUpperCase();
+  const monedaDescripcion = (ticketResumen.monedaDesc || "").trim();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onGenerarFactura();
@@ -104,7 +96,7 @@ export const PasoDatosEmision: React.FC<PasoDatosEmisionProps> = ({
           </span>
           <p className="font-bold text-slate-800 text-sm">
             {ticketsSeleccionados.map((t) => t.folio).join(", ")} •{" "}
-            {formatMoney(ticketResumen.total)} {moneda}
+            {formatMoney(ticketResumen.total)} {monedaTicket}
           </p>
           <p className="text-slate-500">
             Subtotal: {formatMoney(ticketResumen.subtotal)} • IVA:{" "}
@@ -156,80 +148,57 @@ export const PasoDatosEmision: React.FC<PasoDatosEmisionProps> = ({
             ))}
           </FormSelect>
 
+          <FormInput
+            label="Correo de Envío"
+            surface="white"
+            type="email"
+            icon={mailOutline}
+            value={emailEnvio}
+            onChange={(e) => onEmailEnvioChange(e.target.value)}
+            placeholder="factura@cliente.com"
+          />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormSelect
-              label="Moneda"
-              surface="white"
-              value={moneda}
-              onChange={(e) => onMonedaChange(e.target.value)}
-            >
-              {monedasCatalogo.map((item) => (
-                <option key={item.numero} value={item.numero}>
-                  {item.numero} - {item.descripcion}
-                </option>
-              ))}
-            </FormSelect>
-
-            {moneda !== "MXN" ? (
-              <FormInput
-                label="Tipo de Cambio *"
-                surface="white"
-                type="number"
-                step="0.0001"
-                value={tipoCambio}
-                onChange={(e) => onTipoCambioChange(e.target.value)}
-              />
+            {ticketResumen.formaPagoSat ? (
+              <div className="bg-[#eef5ff] border border-[#b6d4fe] rounded-xl p-3.5 text-xs space-y-0.5">
+                <span className="text-[10px] font-black uppercase text-[#010080] tracking-wider block">
+                  Forma de Pago (Registrada en Ticket)
+                </span>
+                <p className="font-bold text-slate-800">
+                  {ticketResumen.formaPagoSat}
+                  {ticketResumen.formaPagoDesc
+                    ? ` - ${ticketResumen.formaPagoDesc}`
+                    : ""}
+                </p>
+              </div>
             ) : (
-              <FormInput
-                label="Correo de Envío"
+              <FormSelect
+                label="Forma de Pago (Respaldo SAT) *"
                 surface="white"
-                type="email"
-                icon={mailOutline}
-                value={emailEnvio}
-                onChange={(e) => onEmailEnvioChange(e.target.value)}
-                placeholder="factura@cliente.com"
-              />
+                value={formaPago}
+                onChange={(e) => onFormaPagoChange(e.target.value)}
+              >
+                {formasPagoCatalogo.map((item) => (
+                  <option key={item.numero} value={item.numero}>
+                    {item.numero} - {item.descripcion}
+                  </option>
+                ))}
+              </FormSelect>
             )}
-          </div>
 
-          {moneda !== "MXN" && (
-            <FormInput
-              label="Correo de Envío"
-              surface="white"
-              type="email"
-              icon={mailOutline}
-              value={emailEnvio}
-              onChange={(e) => onEmailEnvioChange(e.target.value)}
-              placeholder="factura@cliente.com"
-            />
-          )}
-
-          {ticketResumen.formaPagoSat ? (
             <div className="bg-[#eef5ff] border border-[#b6d4fe] rounded-xl p-3.5 text-xs space-y-0.5">
               <span className="text-[10px] font-black uppercase text-[#010080] tracking-wider block">
-                Forma de Pago (Registrada en Ticket)
+                Moneda
               </span>
               <p className="font-bold text-slate-800">
-                {ticketResumen.formaPagoSat}
-                {ticketResumen.formaPagoDesc
-                  ? ` - ${ticketResumen.formaPagoDesc}`
+                {monedaTicket}
+                {monedaDescripcion ? ` - ${monedaDescripcion}` : ""}
+                {monedaTicket !== "MXN" && ticketResumen.tipoCambio > 0
+                  ? ` (TC ${Number(ticketResumen.tipoCambio).toFixed(4)})`
                   : ""}
               </p>
             </div>
-          ) : (
-            <FormSelect
-              label="Forma de Pago (Respaldo SAT) *"
-              surface="white"
-              value={formaPago}
-              onChange={(e) => onFormaPagoChange(e.target.value)}
-            >
-              {formasPagoCatalogo.map((item) => (
-                <option key={item.numero} value={item.numero}>
-                  {item.numero} - {item.descripcion}
-                </option>
-              ))}
-            </FormSelect>
-          )}
+          </div>
         </div>
 
         <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3">

@@ -113,6 +113,9 @@ export interface TicketConsultaResponseDto {
   fecha: string;
   formaPagoSat: string;
   formaPagoDescripcion: string;
+  moneda: string;
+  monedaDescripcion: string;
+  tipoCambio: number;
   requiereNotaCredito: boolean;
   uuidGlobal: string;
   subtotal: number;
@@ -128,6 +131,9 @@ export interface ValidarTicketsResponseDto {
   serieFactura: string;
   formaPagoSat: string;
   formaPagoDescripcion: string;
+  moneda: string;
+  monedaDescripcion: string;
+  tipoCambio: number;
   requiereNotaCredito: boolean;
   subtotalTotal: number;
   ivaTotal: number;
@@ -286,6 +292,9 @@ export interface TicketResumenInfo {
   requiereNotaCredito: boolean;
   formaPagoSat: string;
   formaPagoDesc: string;
+  moneda: string;
+  monedaDesc: string;
+  tipoCambio: number;
   uuidGlobal: string;
   fecha: string;
 }

@@ -8,7 +8,6 @@ import {
   PasoFacturacion,
   TicketConsultaResponseDto,
   TicketResumenInfo,
-  ValidarTicketsResponseDto,
 } from "../types/facturacion.types";
 import { facturacionService } from "../services/facturacionService";
 import { getErrorMessage } from "../utils/formatters";
@@ -16,6 +15,7 @@ import {
   esRfcLongitudValida,
   normalizarRfc,
   parseEnteroPositivo,
+  parseImportePositivo,
 } from "../utils/validators";
 import { useAlert } from "./useAlert";
 import { useToast } from "./useToast";
@@ -29,12 +29,10 @@ export const useFacturacionFlow = (user: UserSession | null) => {
 
   const [folio, setFolio] = useState<string>("");
   const [transaccion, setTransaccion] = useState<string>("");
-  const [agregarOtroTicket, setAgregarOtroTicket] = useState<boolean>(false);
+  const [totalTicket, setTotalTicket] = useState<string>("");
   const [ticketsSeleccionados, setTicketsSeleccionados] = useState<
     TicketConsultaResponseDto[]
   >([]);
-  const [validacionGrupo, setValidacionGrupo] =
-    useState<ValidarTicketsResponseDto | null>(null);
   const [loadingTicket, setLoadingTicket] = useState<boolean>(false);
 
   const [rfcBusqueda, setRfcBusqueda] = useState<string>("");
@@ -46,8 +44,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   const [regimenFiscal, setRegimenFiscal] = useState<string>("612");
   const [usoCfdi, setUsoCfdi] = useState<string>("G03");
   const [formaPago, setFormaPago] = useState<string>("01");
-  const [moneda, setMoneda] = useState<string>("MXN");
-  const [tipoCambio, setTipoCambio] = useState<string>("1");
   const [emailEnvio, setEmailEnvio] = useState<string>("");
   const [loadingVistaPrevia, setLoadingVistaPrevia] = useState<boolean>(false);
   const [loadingGenerar, setLoadingGenerar] = useState<boolean>(false);
@@ -57,38 +53,30 @@ export const useFacturacionFlow = (user: UserSession | null) => {
 
   const ticketResumen = useMemo<TicketResumenInfo>(() => {
     const primerTicket = ticketsSeleccionados[0] || null;
+    const monedaTicket = (primerTicket?.moneda || "MXN").trim().toUpperCase();
+    const monedaDesc =
+      (primerTicket?.monedaDescripcion || "").trim() ||
+      (monedaTicket === "MXN" ? "Peso Mexicano" : "");
     return {
-      sucursalNombre: validacionGrupo
-        ? validacionGrupo.sucursalNombre
-        : primerTicket?.sucursalNombre || "",
-      subtotal: validacionGrupo
-        ? validacionGrupo.subtotalTotal
-        : primerTicket?.subtotal || 0,
-      descuento: validacionGrupo
-        ? validacionGrupo.descuentoTotal
-        : primerTicket?.descuento || 0,
-      iva: validacionGrupo ? validacionGrupo.ivaTotal : primerTicket?.iva || 0,
-      total: validacionGrupo
-        ? validacionGrupo.granTotal
-        : primerTicket?.total || 0,
-      partidas: validacionGrupo
-        ? validacionGrupo.partidas
-        : primerTicket?.partidas || [],
-      requiereNotaCredito: validacionGrupo
-        ? validacionGrupo.requiereNotaCredito
-        : Boolean(primerTicket?.requiereNotaCredito),
-      formaPagoSat: (validacionGrupo
-        ? validacionGrupo.formaPagoSat
-        : primerTicket?.formaPagoSat || ""
-      ).trim(),
-      formaPagoDesc: (validacionGrupo
-        ? validacionGrupo.formaPagoDescripcion
-        : primerTicket?.formaPagoDescripcion || ""
-      ).trim(),
+      sucursalNombre: primerTicket?.sucursalNombre || "",
+      subtotal: primerTicket?.subtotal || 0,
+      descuento: primerTicket?.descuento || 0,
+      iva: primerTicket?.iva || 0,
+      total: primerTicket?.total || 0,
+      partidas: primerTicket?.partidas || [],
+      requiereNotaCredito: Boolean(primerTicket?.requiereNotaCredito),
+      formaPagoSat: (primerTicket?.formaPagoSat || "").trim(),
+      formaPagoDesc: (primerTicket?.formaPagoDescripcion || "").trim(),
+      moneda: monedaTicket,
+      monedaDesc,
+      tipoCambio:
+        monedaTicket === "MXN"
+          ? 1.0
+          : Number(primerTicket?.tipoCambio || 1.0),
       uuidGlobal: primerTicket?.uuidGlobal || "",
       fecha: primerTicket?.fecha || "",
     };
-  }, [ticketsSeleccionados, validacionGrupo]);
+  }, [ticketsSeleccionados]);
 
   useEffect(() => {
     if (user?.email) {
@@ -127,34 +115,40 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   const clienteIdUsuario =
     user?.numeroCliente && user.numeroCliente > 0 ? user.numeroCliente : null;
 
-  const toConsultarRequest = useCallback(
-    (t: TicketConsultaResponseDto): ConsultarTicketRequestDto => ({
-      folio: t.folio,
-      serie: t.serie || "",
-      total: t.total,
-      transaccion: t.transaccion || null,
-      numeroCliente: clienteIdUsuario,
-      mailUsuario: user?.email || null,
-    }),
-    [clienteIdUsuario, user?.email],
-  );
-
   const buscarTicket = async () => {
     if (!folio.trim()) {
       showWarning("Por favor ingresa el folio del ticket.");
       return;
     }
 
-    const transaccionNum = parseEnteroPositivo(transaccion);
-    if (!transaccionNum) {
-      showWarning("Por favor ingresa la transacción / referencia (REF:).");
+    const tieneTransaccionInput = transaccion.trim().length > 0;
+    const tieneTotalInput = totalTicket.trim().length > 0;
+    const transaccionNum = tieneTransaccionInput
+      ? parseEnteroPositivo(transaccion)
+      : null;
+    const totalNum = tieneTotalInput ? parseImportePositivo(totalTicket) : null;
+
+    if (tieneTransaccionInput && !transaccionNum) {
+      showWarning("Ingresa una Transacción (REF:) válida mayor a 0.");
+      return;
+    }
+
+    if (tieneTotalInput && !totalNum) {
+      showWarning("Ingresa un Total válido mayor a 0.");
+      return;
+    }
+
+    if (!transaccionNum && !totalNum) {
+      showWarning(
+        "Ingresa la Transacción (REF:), el Total del ticket o ambos.",
+      );
       return;
     }
 
     const requestDto: ConsultarTicketRequestDto = {
       folio: folio.trim(),
       serie: "",
-      total: null,
+      total: totalNum,
       transaccion: transaccionNum,
       numeroCliente: clienteIdUsuario,
       mailUsuario: user?.email || null,
@@ -164,44 +158,10 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     let errorMsg: string | null = null;
     try {
       const consultado = await facturacionService.consultarTicket(requestDto);
-
-      if (agregarOtroTicket && ticketsSeleccionados.length > 0) {
-        const yaExiste = ticketsSeleccionados.some(
-          (t) => t.folio.toUpperCase() === consultado.folio.toUpperCase(),
-        );
-        if (yaExiste) {
-          throw new Error(`El ticket ${consultado.folio} ya está agregado.`);
-        }
-
-        const listaSolicitudes = [
-          ...ticketsSeleccionados.map(toConsultarRequest),
-          requestDto,
-        ];
-        const grupo = await facturacionService.validarTickets({
-          tickets: listaSolicitudes,
-          numeroCliente: requestDto.numeroCliente,
-          mailUsuario: requestDto.mailUsuario,
-        });
-
-        setTicketsSeleccionados((prev) => [...prev, consultado]);
-        setValidacionGrupo(grupo);
-        setAgregarOtroTicket(false);
-        setFolio("");
-        setTransaccion("");
-        showSuccess(
-          `Ticket ${consultado.folio} agregado al comprobante.`,
-          2200,
-        );
-      } else {
-        setTicketsSeleccionados([consultado]);
-        setValidacionGrupo(null);
-      }
+      setTicketsSeleccionados([consultado]);
     } catch (err: unknown) {
       errorMsg = getErrorMessage(err, "Error al consultar el ticket.");
-      if (!agregarOtroTicket) {
-        setTicketsSeleccionados([]);
-        setValidacionGrupo(null);
-      }
+      setTicketsSeleccionados([]);
     } finally {
       setLoadingTicket(false);
     }
@@ -215,55 +175,9 @@ export const useFacturacionFlow = (user: UserSession | null) => {
   };
 
   const quitarTicket = async (folioQuitar: string) => {
-    const restantes = ticketsSeleccionados.filter(
-      (t) => t.folio !== folioQuitar,
+    setTicketsSeleccionados((prev) =>
+      prev.filter((t) => t.folio !== folioQuitar),
     );
-
-    if (restantes.length === 0) {
-      setTicketsSeleccionados([]);
-      setValidacionGrupo(null);
-      setAgregarOtroTicket(false);
-      return;
-    }
-
-    if (restantes.length === 1) {
-      setTicketsSeleccionados(restantes);
-      setValidacionGrupo(null);
-      return;
-    }
-
-    setLoadingTicket(true);
-    let errorMsg: string | null = null;
-    try {
-      const grupo = await facturacionService.validarTickets({
-        tickets: restantes.map(toConsultarRequest),
-        numeroCliente: clienteIdUsuario,
-        mailUsuario: user?.email || null,
-      });
-      setTicketsSeleccionados(restantes);
-      setValidacionGrupo(grupo);
-    } catch (err: unknown) {
-      errorMsg = getErrorMessage(err, "Error al recalcular los tickets.");
-    } finally {
-      setLoadingTicket(false);
-    }
-
-    if (errorMsg) {
-      await showErrorAlert({
-        title: "Error al actualizar tickets",
-        message: errorMsg,
-      });
-    }
-  };
-
-  const iniciarAgregarOtroTicket = () => {
-    setAgregarOtroTicket(true);
-    setFolio("");
-    setTransaccion("");
-  };
-
-  const cancelarAgregarOtroTicket = () => {
-    setAgregarOtroTicket(false);
   };
 
   const abrirModalRegistroRfc = (rfcInicial?: string) => {
@@ -371,15 +285,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       showWarning("Selecciona la Forma de Pago.");
       return false;
     }
-    const monedaFinal = moneda.trim().toUpperCase() || "MXN";
-    const tipoCambioNum = monedaFinal === "MXN" ? 1.0 : Number(tipoCambio);
-    if (
-      monedaFinal !== "MXN" &&
-      (Number.isNaN(tipoCambioNum) || tipoCambioNum <= 0)
-    ) {
-      showWarning("El tipo de cambio debe ser mayor a 0.");
-      return false;
-    }
     return true;
   };
 
@@ -388,14 +293,9 @@ export const useFacturacionFlow = (user: UserSession | null) => {
       throw new Error("Datos incompletos para emitir la factura.");
     }
 
-    const monedaFinal = moneda.trim().toUpperCase() || "MXN";
-    const tipoCambioNum = monedaFinal === "MXN" ? 1.0 : Number(tipoCambio);
-    if (
-      monedaFinal !== "MXN" &&
-      (Number.isNaN(tipoCambioNum) || tipoCambioNum <= 0)
-    ) {
-      throw new Error("El tipo de cambio debe ser mayor a 0.");
-    }
+    const monedaFinal = ticketResumen.moneda.trim().toUpperCase() || "MXN";
+    const tipoCambioNum =
+      monedaFinal === "MXN" ? 1.0 : Number(ticketResumen.tipoCambio || 1.0);
 
     return {
       numeroCliente: cliente.numeroCliente || user?.numeroCliente || 0,
@@ -485,20 +385,12 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     }
   };
 
-  const cambiarMoneda = (nuevaMoneda: string) => {
-    setMoneda(nuevaMoneda);
-    if (nuevaMoneda === "MXN") {
-      setTipoCambio("1");
-    }
-  };
-
   const reiniciarFlujo = () => {
     setPaso(1);
     setFolio("");
     setTransaccion("");
-    setAgregarOtroTicket(false);
+    setTotalTicket("");
     setTicketsSeleccionados([]);
-    setValidacionGrupo(null);
     setFacturaEmitida(null);
   };
 
@@ -515,14 +407,13 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     setFolio,
     transaccion,
     setTransaccion,
-    agregarOtroTicket,
+    totalTicket,
+    setTotalTicket,
     ticketsSeleccionados,
     ticketResumen,
     loadingTicket,
     buscarTicket,
     quitarTicket,
-    iniciarAgregarOtroTicket,
-    cancelarAgregarOtroTicket,
     rfcBusqueda,
     setRfcBusqueda,
     cliente,
@@ -540,10 +431,6 @@ export const useFacturacionFlow = (user: UserSession | null) => {
     setUsoCfdi,
     formaPago,
     setFormaPago,
-    moneda,
-    cambiarMoneda,
-    tipoCambio,
-    setTipoCambio,
     emailEnvio,
     setEmailEnvio,
     loadingVistaPrevia,
